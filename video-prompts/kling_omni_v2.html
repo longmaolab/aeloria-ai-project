@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>可灵 Omni · 3段提示词</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0e18;
+    color: #c8d0e8;
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 28px 16px 60px;
+  }
+
+  h1 { font-size: 1.3rem; color: #7ab0ff; text-align: center; margin-bottom: 6px; }
+  .sub { text-align: center; font-size: 0.8rem; color: #445070; margin-bottom: 28px; }
+
+  /* audio tip */
+  .audio-tip {
+    background: #0e1a30; border: 1px solid #1e3060;
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 28px;
+    font-size: 0.82rem; line-height: 1.7; color: #7090c0;
+  }
+  .audio-tip .atitle { color: #7ab0ff; font-weight: 700; margin-bottom: 6px; }
+  .audio-tip ul { padding-left: 16px; }
+  .audio-tip li { margin-bottom: 4px; }
+  .audio-tip strong { color: #90c0f0; }
+
+  /* card */
+  .card {
+    background: #0e1428; border: 1px solid #1e2a50;
+    border-radius: 12px; overflow: hidden; margin-bottom: 20px;
+  }
+  .card-head {
+    background: #0a1030;
+    padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #1a2448;
+  }
+  .card-head .left { display: flex; align-items: center; gap: 10px; }
+  .num {
+    width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+    background: #1a3060; color: #7ab0ff; border: 1px solid #3060b0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.9rem;
+  }
+  .card-head .name { font-size: 0.9rem; color: #fff; font-weight: 600; }
+  .card-head .dur  { font-size: 0.72rem; color: #4a6090; margin-top: 2px; }
+  .dur-badge {
+    font-size: 0.72rem; font-weight: 700; padding: 3px 12px; border-radius: 12px;
+    background: #142040; color: #7ab0ff; border: 1px solid #2a4a90;
+  }
+
+  /* textarea */
+  .ta-wrap { padding: 12px 16px; }
+  textarea {
+    width: 100%; background: #060a14; border: 1px solid #1a2440;
+    border-radius: 8px; color: #c8d8f8; font-size: 0.88rem;
+    line-height: 1.8; padding: 12px 14px; resize: none;
+    font-family: inherit; outline: none;
+  }
+  textarea:focus { border-color: #3060b0; }
+
+  /* copy btn */
+  .btn-row {
+    padding: 0 16px 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .copy-btn {
+    background: #1a3060; border: 1px solid #3060c0;
+    color: #7ab0ff; border-radius: 8px;
+    padding: 9px 28px; font-size: 0.88rem; font-weight: 700;
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+  }
+  .copy-btn:hover  { background: #203878; border-color: #5088e0; }
+  .copy-btn:active { background: #102850; }
+  .copy-btn.ok { background: #0e2c18; border-color: #30a060; color: #60e090; }
+  .hint { font-size: 0.72rem; color: #3a4870; line-height: 1.5; }
+
+  /* settings */
+  .settings {
+    padding: 10px 16px 14px;
+    border-top: 1px solid #141e38;
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .chip {
+    font-size: 0.7rem; padding: 2px 10px; border-radius: 10px;
+    background: #101828; border: 1px solid #1c2640; color: #5870a0;
+  }
+  .chip.hi { background: #0e1e3c; border-color: #2a4480; color: #7ab0ff; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<h1>⚡ 可灵 Omni · 3段提示词</h1>
+<p class="sub">银甲龙猫·托罗恩觉醒 · 每段10秒 · 共30秒</p>
+
+<!-- 音画同步说明 -->
+<div class="audio-tip">
+  <div class="atitle">🎵 关于可灵「音画同步」——配音从哪来？</div>
+  <ul>
+    <li><strong>方式一：自己上传音乐</strong> — 在可灵生成视频时，点「添加音频」上传你的 MP3 文件，可灵会让视频节奏自动对齐音乐。推荐在网易云/QQ音乐下载一首史诗纯音乐。</li>
+    <li><strong>方式二：可灵自带曲库</strong> — 可灵界面里有内置音乐库，可以直接选"史诗""奇幻"风格的背景音乐。</li>
+    <li><strong>方式三：剪映配乐</strong>（最方便）— 先在可灵生成纯视频，再导入剪映后加音乐，剪映的音乐素材库更丰富，还可以"自动踩点"卡节拍。</li>
+  </ul>
+</div>
+
+<!-- 第一段 -->
+<div class="card">
+  <div class="card-head">
+    <div class="left">
+      <div class="num">1</div>
+      <div>
+        <div class="name">第一幕 · 沉睡</div>
+        <div class="dur">航拍森林 → 地下封印 → 眼睛觉醒 · 0–10秒</div>
+      </div>
+    </div>
+    <span class="dur-badge">0–10s</span>
+  </div>
+  <div class="ta-wrap">
+    <textarea id="t1" rows="5" readonly>镜头从高空俯冲向晨雾中的奇幻发光古树林，穿透地面来到地下空腔，银甲龙猫战士蜷缩在盘根古树中沉睡，铠甲上蓝绿色符文缓缓流动如将熄余烬，随后推向眼睛极端特写，黑暗瞳孔中缓缓燃起绿色光芒变为金色，奇幻电影风格，史诗画质</textarea>
+  </div>
+  <div class="btn-row">
+    <button class="copy-btn" onclick="doCopy('t1', this)">点击复制</button>
+    <span class="hint">复制后粘贴到可灵输入框</span>
+  </div>
+  <div class="settings">
+    <span class="chip hi">引擎：Omni</span>
+    <span class="chip hi">时长：10秒</span>
+    <span class="chip">16:9</span>
+    <span class="chip">运镜：俯冲推进</span>
+  </div>
+</div>
+
+<!-- 第二段 -->
+<div class="card">
+  <div class="card-head">
+    <div class="left">
+      <div class="num">2</div>
+      <div>
+        <div class="name">第二幕 · 崛起</div>
+        <div class="dur">符文激活 → 破土而出 → 逆光剪影 · 10–20秒</div>
+      </div>
+    </div>
+    <span class="dur-badge">10–20s</span>
+  </div>
+  <div class="ta-wrap">
+    <textarea id="t2" rows="5" readonly>银甲龙猫战士铠甲上金绿色符文从胸口连锁点亮蔓延全身，随即猛力破土而出，土石四溅银甲爆发金光，极低仰角广角镜头，接爪击地冲击波特写、胸甲符文旋转特写、双眼金光爆发特写，最后定格侧面逆光全身剪影，晨光形成圣光光晕，史诗奇幻电影风格</textarea>
+  </div>
+  <div class="btn-row">
+    <button class="copy-btn" onclick="doCopy('t2', this)">点击复制</button>
+    <span class="hint">复制后粘贴到可灵输入框</span>
+  </div>
+  <div class="settings">
+    <span class="chip hi">引擎：Omni</span>
+    <span class="chip hi">时长：10秒</span>
+    <span class="chip">16:9</span>
+    <span class="chip">运镜：自由镜头</span>
+  </div>
+</div>
+
+<!-- 第三段 -->
+<div class="card">
+  <div class="card-head">
+    <div class="left">
+      <div class="num">3</div>
+      <div>
+        <div class="name">第三幕 · 宣言</div>
+        <div class="dur">深呼吸 → 仰天长啸 → 背影定格 · 20–30秒</div>
+      </div>
+    </div>
+    <span class="dur-badge">20–30s</span>
+  </div>
+  <div class="ta-wrap">
+    <textarea id="t3" rows="5" readonly>银甲龙猫战士正面深吸气胸甲起伏金色瞳孔聚焦，随后仰天长啸，音波冲击波四散，树木弯折鸟群惊飞云层被推开，银甲爆发最强金绿光芒，镜头旋转上升，最终拉远定格：他孤独伫立古树之巅俯视奇幻森林，画面静止如史诗油画，震撼壮丽</textarea>
+  </div>
+  <div class="btn-row">
+    <button class="copy-btn" onclick="doCopy('t3', this)">点击复制</button>
+    <span class="hint">复制后粘贴到可灵输入框</span>
+  </div>
+  <div class="settings">
+    <span class="chip hi">引擎：Omni</span>
+    <span class="chip hi">时长：10秒</span>
+    <span class="chip">16:9</span>
+    <span class="chip">运镜：旋转上升+拉远</span>
+  </div>
+</div>
+
+<script>
+function doCopy(id, btn) {
+  var ta = document.getElementById(id);
+  ta.select();
+  ta.setSelectionRange(0, 99999);
+  var ok = false;
+  try {
+    ok = document.execCommand('copy');
+  } catch(e) {}
+  if (!ok && navigator.clipboard) {
+    navigator.clipboard.writeText(ta.value).catch(function(){});
+    ok = true;
+  }
+  if (ok) {
+    btn.textContent = '✓ 已复制';
+    btn.classList.add('ok');
+    setTimeout(function(){ btn.textContent = '点击复制'; btn.classList.remove('ok'); }, 2000);
+  } else {
+    // fallback: just highlight so user can Ctrl+C manually
+    ta.focus();
+    btn.textContent = '请按 Ctrl+C';
+    setTimeout(function(){ btn.textContent = '点击复制'; }, 3000);
+  }
+}
+</script>
+</body>
+</html>

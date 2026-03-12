@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>艾洛瑞亚大陆 · 地图志</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#070810;color:#d4c9b0;
+  font-family:'Noto Serif SC','STSong',serif;
+  padding:32px 16px 100px;
+}
+.wrap{max-width:900px;margin:0 auto}
+
+/* ── HEADER ── */
+.atlas-header{text-align:center;margin-bottom:48px}
+.atlas-eyebrow{font-size:0.7em;letter-spacing:0.25em;color:rgba(212,201,176,0.4);text-transform:uppercase;margin-bottom:12px}
+.atlas-title{
+  font-size:2.4em;font-weight:900;color:#e8dfc8;margin-bottom:6px;
+  text-shadow:0 0 40px rgba(74,222,128,0.1);
+}
+.atlas-sub{font-size:0.85em;color:rgba(212,201,176,0.35);letter-spacing:0.12em;margin-bottom:20px}
+.atlas-meta{font-size:0.72em;color:rgba(212,201,176,0.25);letter-spacing:0.08em;line-height:2}
+
+/* ── ASCII MAP ── */
+.map-section{
+  background:#0a0b10;
+  border:1px solid rgba(212,201,176,0.1);
+  border-radius:18px;
+  padding:32px;
+  margin-bottom:40px;
+  position:relative;
+  overflow:hidden;
+}
+.map-section::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(74,222,128,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 60%, rgba(96,165,250,0.03) 0%, transparent 50%);
+  pointer-events:none;
+}
+.map-title{
+  font-size:0.7em;letter-spacing:0.2em;color:rgba(212,201,176,0.3);
+  text-transform:uppercase;margin-bottom:20px;text-align:center;
+}
+.ascii-map{
+  font-family:'Courier New',Courier,monospace;
+  font-size:0.8em;
+  line-height:1.45;
+  color:#9ca3b0;
+  white-space:pre;
+  overflow-x:auto;
+  text-align:center;
+}
+/* colored regions in map */
+.ascii-map .r-north{color:#93c5fd}
+.ascii-map .r-west{color:#86efac}
+.ascii-map .r-east{color:#60a5fa}
+.ascii-map .r-south{color:#fde68a}
+.ascii-map .r-ice{color:#bfdbfe}
+.ascii-map .r-label{color:#e8dfc8;font-weight:bold}
+.ascii-map .r-city{color:#fbbf24}
+.ascii-map .r-sea{color:#1e3a5f}
+.ascii-map .r-border{color:rgba(212,201,176,0.25)}
+
+.map-legend{
+  display:flex;gap:20px;flex-wrap:wrap;justify-content:center;
+  margin-top:20px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,0.05);
+}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:0.75em;color:rgba(212,201,176,0.5)}
+.legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* ── REGION ENTRIES ── */
+.regions{display:flex;flex-direction:column;gap:24px;margin-bottom:40px}
+
+.region-card{
+  background:#0a0b10;
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:16px;
+  overflow:hidden;
+}
+.region-card::before{content:'';display:block;height:2px}
+
+.rg-head{
+  display:flex;align-items:flex-start;gap:16px;
+  padding:20px 24px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.rg-icon{
+  width:52px;height:52px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5em;flex-shrink:0;
+}
+.rg-meta{flex:1}
+.rg-name-zh{font-size:1.1em;font-weight:700;color:#e8dfc8;margin-bottom:2px}
+.rg-name-en{font-size:0.72em;color:rgba(212,201,176,0.3);letter-spacing:0.1em;margin-bottom:8px}
+.rg-tags{display:flex;gap:8px;flex-wrap:wrap}
+.rg-tag{font-size:0.68em;padding:2px 10px;border-radius:8px;background:rgba(255,255,255,0.05);color:rgba(212,201,176,0.5)}
+
+.rg-body{
+  display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:rgba(255,255,255,0.03);
+}
+.rg-col{background:#0a0b10;padding:18px 22px}
+.rg-col-title{
+  font-size:0.65em;text-transform:uppercase;letter-spacing:0.12em;
+  margin-bottom:10px;opacity:0.4;
+}
+.rg-prose{font-size:0.84em;color:#b8ad96;line-height:1.85;font-weight:300}
+.rg-prose .em{color:#e8dfc8;font-weight:600}
+.rg-prose .place{font-style:italic}
+
+.detail-list{list-style:none}
+.detail-list li{
+  font-size:0.82em;color:#b8ad96;line-height:1.7;
+  padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);
+  display:flex;gap:10px;align-items:flex-start;
+}
+.detail-list li:last-child{border-bottom:none}
+.detail-list .dl-key{
+  color:rgba(212,201,176,0.4);font-size:0.85em;
+  flex-shrink:0;width:48px;
+  padding-top:1px;
+}
+
+/* ── BORDERS & ROUTES ── */
+.routes-section{
+  background:#0a0b10;
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:16px;
+  padding:24px 28px;
+  margin-bottom:40px;
+}
+.routes-title{
+  font-size:0.75em;letter-spacing:0.15em;text-transform:uppercase;
+  color:rgba(212,201,176,0.35);margin-bottom:18px;
+  padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.route-item{
+  display:flex;gap:14px;align-items:flex-start;
+  margin-bottom:14px;
+  padding-bottom:14px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.route-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.route-icon{font-size:1.1em;flex-shrink:0;margin-top:2px}
+.route-text{font-size:0.83em;color:#b8ad96;line-height:1.75;font-weight:300}
+.route-text .em{color:#e8dfc8;font-weight:600}
+.route-text .dist{color:#fde68a;font-style:italic}
+
+/* ── CARTOGRAPHER NOTE ── */
+.carto-note{
+  background:rgba(212,201,176,0.03);
+  border:1px solid rgba(212,201,176,0.1);
+  border-radius:12px;
+  padding:20px 24px;
+  font-size:0.83em;color:#9ca3b0;line-height:1.9;font-style:italic;
+  text-align:center;
+}
+.carto-note strong{color:#c9bea5;font-style:normal}
+
+/* ── REGION COLOR THEMES ── */
+.rg-sylvan::before{background:linear-gradient(90deg,transparent,#4ade80,transparent)}
+.rg-sylvan .rg-icon{background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2)}
+.rg-sylvan .rg-col-title{color:#4ade80}
+
+.rg-ferrad::before{background:linear-gradient(90deg,transparent,#f87171,transparent)}
+.rg-ferrad .rg-icon{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2)}
+.rg-ferrad .rg-col-title{color:#f87171}
+
+.rg-azure::before{background:linear-gradient(90deg,transparent,#60a5fa,transparent)}
+.rg-azure .rg-icon{background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2)}
+.rg-azure .rg-col-title{color:#60a5fa}
+
+.rg-sahra::before{background:linear-gradient(90deg,transparent,#fbbf24,transparent)}
+.rg-sahra .rg-icon{background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2)}
+.rg-sahra .rg-col-title{color:#fbbf24}
+
+.rg-frost::before{background:linear-gradient(90deg,transparent,#bfdbfe,transparent)}
+.rg-frost .rg-icon{background:rgba(191,219,254,0.08);border:1px solid rgba(191,219,254,0.15)}
+.rg-frost .rg-col-title{color:#bfdbfe}
+
+@media(max-width:620px){
+  .rg-body{grid-template-columns:1fr}
+  .atlas-title{font-size:1.7em}
+  .ascii-map{font-size:0.6em}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<div class="atlas-header">
+  <div class="atlas-eyebrow">Aeloria · Cartographic Atlas · Vol. III</div>
+  <div class="atlas-title">艾洛瑞亚大陆地图志</div>
+  <div class="atlas-sub">The Complete Cartographic Record of Aeloria</div>
+  <div class="atlas-meta">
+    初版绘制：林灵族制图师 维恩·苔索 · 木冠城历 Year 2401<br>
+    第七次修订：守护学院地理部 · 公元 2846年<br>
+    本志为文字版地图描述，用于无法携带卷轴的远行守护师
+  </div>
+</div>
+
+<!-- ASCII MAP -->
+<div class="map-section">
+  <div class="map-title">◈ 大陆全域俯瞰图（文字版）◈</div>
+  <div class="ascii-map">
+<span style="color:rgba(212,201,176,0.2)">╔═══════════════════════════════════════════════════════════════════╗
+║                    艾  洛  瑞  亚  大  陆                         ║
+║                       AELORIA CONTINENT                          ║
+╠═══════════════════════════════════════════════════════════════════╣</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#bfdbfe">▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓</span>   <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#bfdbfe">▓▓</span>  <span style="color:#e8dfc8;font-weight:bold">❄ 极霜荒原 FROSTVEIL</span>  <span style="color:#bfdbfe">▓▓</span>  <span style="color:#bfdbfe">[ 永冬 · 冰川 · 极光 · 封印巨兽 ]</span>  <span style="color:#bfdbfe">▓▓</span>  <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#bfdbfe">▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓</span>   <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:rgba(212,201,176,0.15)">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>   <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#9ca3b0">···</span> <span style="color:#86efac">▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓</span> <span style="color:#9ca3b0">···</span> <span style="color:#9ca3b0">     大陆中心      </span> <span style="color:#9ca3b0">···</span>  <span style="color:#93c5fd">░░░░░░░░░░░░░░░</span>  <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#9ca3b0">···</span> <span style="color:#86efac">▓</span> <span style="color:#e8dfc8;font-weight:bold">🌳 灵森域</span>  <span style="color:#86efac">▓</span> <span style="color:#9ca3b0">···</span> <span style="color:#9ca3b0">  ◈ 源灵汇聚点 ◈  </span>  <span style="color:#9ca3b0">···</span>  <span style="color:#93c5fd">░</span> <span style="color:#e8dfc8;font-weight:bold">⛰ 铁锻高原</span> <span style="color:#93c5fd">░</span>  <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#9ca3b0">···</span> <span style="color:#86efac">▓</span> <span style="color:#4ade80">Sylvanreach</span> <span style="color:#86efac">▓</span> <span style="color:#9ca3b0">···</span> <span style="color:#fbbf24">  ✦ 木冠城 ✦      </span>  <span style="color:#9ca3b0">···</span>  <span style="color:#93c5fd">░</span> <span style="color:#60a5fa">Ferradon</span>   <span style="color:#93c5fd">░</span>  <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#9ca3b0">···</span> <span style="color:#86efac">▓  木冠城★      ▓</span> <span style="color:#9ca3b0">···</span> <span style="color:#9ca3b0">                  </span>  <span style="color:#9ca3b0">···</span>  <span style="color:#93c5fd">░  卡尔德隆★  ░</span>  <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#9ca3b0">···</span> <span style="color:#86efac">▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓</span> <span style="color:#9ca3b0">···</span> <span style="color:#9ca3b0">   深绿禁区 ●     </span>  <span style="color:#9ca3b0">···</span>  <span style="color:#93c5fd">░░░░░░░░░░░░░░░</span>  <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:rgba(212,201,176,0.15)">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>   <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#9ca3b0">···</span>  <span style="color:#9ca3b0">                  </span>  <span style="color:#9ca3b0">···</span>   <span style="color:#9ca3b0">                 </span>   <span style="color:#9ca3b0">···</span>  <span style="color:#60a5fa">～～～～～～～</span>  <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#fde68a">▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒</span>  <span style="color:#9ca3b0">···</span>   <span style="color:#9ca3b0">    中央平原      </span>   <span style="color:#60a5fa">～</span> <span style="color:#e8dfc8;font-weight:bold">🌊 蓝潮群岛</span>  <span style="color:#60a5fa">～</span>  <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#fde68a">▒</span> <span style="color:#e8dfc8;font-weight:bold">🏜 赤沙帝国</span>   <span style="color:#fde68a">▒</span>  <span style="color:#9ca3b0">···</span>   <span style="color:#9ca3b0">    （未命名地）    </span>   <span style="color:#60a5fa">～</span> <span style="color:#60a5fa">Azure Tides</span> <span style="color:#60a5fa">～</span>  <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#fde68a">▒</span> <span style="color:#fbbf24">Sahra Dom.</span>    <span style="color:#fde68a">▒</span>  <span style="color:#9ca3b0">···</span>   <span style="color:#9ca3b0">                 </span>   <span style="color:#60a5fa">～  潮歌港★   ～</span>  <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#fde68a">▒  沙皇城★      ▒</span>  <span style="color:#9ca3b0">···</span>   <span style="color:#9ca3b0">                 </span>   <span style="color:#60a5fa">～～～～～～～</span>  <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">║</span>  <span style="color:#fde68a">▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒</span>  <span style="color:#9ca3b0">···</span>   <span style="color:#9ca3b0">                 </span>   <span style="color:#9ca3b0">   大东洋     </span>  <span style="color:rgba(212,201,176,0.15)">║</span>
+<span style="color:rgba(212,201,176,0.15)">╠═══════════════════════════════════════════════════════════════════╣
+║  ★ = 主要城市    ● = 禁区/危险地带    ◈ = 源灵核心点    ～ = 海域   ║
+╚═══════════════════════════════════════════════════════════════════╝</span>
+</div>
+  <div class="map-legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#86efac"></div>灵森域 · 西部</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#93c5fd"></div>铁锻高原 · 北方</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div>蓝潮群岛 · 东部</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fde68a"></div>赤沙帝国 · 南方</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#bfdbfe"></div>极霜荒原 · 北极</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div>主要城市</div>
+  </div>
+</div>
+
+<!-- REGION ENTRIES -->
+<div class="regions">
+
+  <!-- 灵森域 -->
+  <div class="region-card rg-sylvan">
+    <div class="rg-head">
+      <div class="rg-icon">🌳</div>
+      <div class="rg-meta">
+        <div class="rg-name-zh">灵森域 · 大陆西部</div>
+        <div class="rg-name-en">SYLVANREACH · Western Reaches</div>
+        <div class="rg-tags">
+          <span class="rg-tag">面积：约占大陆28%</span>
+          <span class="rg-tag">气候：常年温润多雨</span>
+          <span class="rg-tag">势力：守护联盟</span>
+          <span class="rg-tag">危险等级：✦✦✦✦✦（外来者）</span>
+        </div>
+      </div>
+    </div>
+    <div class="rg-body">
+      <div class="rg-col">
+        <div class="rg-col-title">地形地貌</div>
+        <div class="rg-prose">
+          <p>进入灵森域的第一感觉，是<span class="em">「被吞噬」</span>。</p>
+          <p>森林从脚下开始，向上延伸数百米，树冠连成一片无缝的绿色天花板，阳光只能以光柱的形式穿透下来，像神庙里的圣光。地面覆盖着厚达半米的苔藓，踩上去几乎无声，如同走在巨人的舌苔上。</p>
+          <p>越往西走，树的年龄越古老，树干直径可达十米以上，需要二十人手牵手才能合围。<span class="place">最古老的「先祖树」</span>据估计已有两万年历史，树顶无人见过，据说终年云雾缭绕。</p>
+          <p>地下是另一个世界。源灵根系在土壤以下数十米的深处纵横交错，发出微弱的绿色荧光。雨季时，雨水沿根系流动，整片大地在夜晚会透出隐约的光——外来者称此现象为<span class="em">「大地在呼吸」</span>。</p>
+          <p>域内有三条主要河流，皆从中央山脉发源，向西汇入<span class="place">无名西海</span>。河水清澈，可直接饮用，有治愈轻微伤口的效果（源灵含量极高）。</p>
+        </div>
+      </div>
+      <div class="rg-col">
+        <div class="rg-col-title">地标 · 城市 · 禁区</div>
+        <ul class="detail-list">
+          <li><span class="dl-key">主城</span><span>木冠城（Canopy Crown）——建于三棵先祖树的顶部，离地约200米，用活藤桥连接，是守护联盟的政治中心和守护学院所在地</span></li>
+          <li><span class="dl-key">禁区</span><span>深绿禁区（The Verdant Sanctum）——域内最深处，托罗恩的沉眠之地，未经守护学院授权者进入即视为入侵，守护师学员需通过三级考核方可申请进入资格</span></li>
+          <li><span class="dl-key">圣地</span><span>源灵汇聚点（Aether Confluence）——大陆地理中心，源灵根系在此处密度最高，地面常年有绿光涌出，林灵族的婚礼和成年礼在此举行</span></li>
+          <li><span class="dl-key">遗迹</span><span>铁冠战场旧址——三十年战争留下的创伤，机甲残骸被藤蔓吞噬，新树从机甲腹腔中生长而出，是自然反噬工业的最直观证明</span></li>
+          <li><span class="dl-key">生物</span><span>龙猫神兽（守林者）、巨鹿灵、藤蛇、树灵、发光萤虫群（每年春季形成百公里光带）</span></li>
+          <li><span class="dl-key">危险</span><span>迷路——域内无固定路径，外来者进入后极易失去方向感（源灵干扰磁场），平均每年有30名擅自闯入者需要搜救</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 铁锻高原 -->
+  <div class="region-card rg-ferrad">
+    <div class="rg-head">
+      <div class="rg-icon">⚙️</div>
+      <div class="rg-meta">
+        <div class="rg-name-zh">铁锻高原 · 大陆北方</div>
+        <div class="rg-name-en">FERRADON PLATEAU · Northern Highlands</div>
+        <div class="rg-tags">
+          <span class="rg-tag">面积：约占大陆20%</span>
+          <span class="rg-tag">气候：干燥、多风、季节性酸雨</span>
+          <span class="rg-tag">势力：工业联合军团</span>
+          <span class="rg-tag">危险等级：✦✦✦（工业污染）</span>
+        </div>
+      </div>
+    </div>
+    <div class="rg-body">
+      <div class="rg-col">
+        <div class="rg-col-title">地形地貌</div>
+        <div class="rg-prose">
+          <p>铁锻高原是艾洛瑞亚地势最高的区域，平均海拔三千米以上。地表以<span class="em">裸露岩石和金属矿脉</span>为主，几乎没有植被——那些曾经存在的树木在数百年前的开采运动中被砍伐殆尽，如今只剩下孤零零的枯干偶尔出现在矿场废墟边。</p>
+          <p>高原内有七座活火山，矮钢族的祖先称之为<span class="em">「大地的炉口」</span>，并以此为依托发展出了最初的冶炼技术。火山岩浆经过复杂的管道系统被引入卡尔德隆城，是整个城市工厂运转的核心热源。</p>
+          <p>天空常年有工厂烟雾，导致阳光呈橙灰色。城市上空漂浮着十余艘<span class="em">永久驻泊的工业飞艇</span>，既是仓库也是监视哨，从地面看上去像一群停滞不动的铁质云朵。</p>
+          <p>高原边缘与灵森域接壤的区域，是双方争议最激烈的边境地带——被称为<span class="em">「灰绿交界线」</span>，土地一半是被污染的灰色岩土，一半是顽强生长的野草，两种颜色的交界处清晰得像刀割。</p>
+        </div>
+      </div>
+      <div class="rg-col">
+        <div class="rg-col-title">地标 · 城市 · 禁区</div>
+        <ul class="detail-list">
+          <li><span class="dl-key">主城</span><span>钢都卡尔德隆（Kaldron）——建于最大火山的熔岩台地上，城市分为上中下三层：上层是军事和指挥中枢，中层是工厂和研发区，下层是矿工和工人居住区</span></li>
+          <li><span class="dl-key">设施</span><span>源灵压缩炉（核心设施）——将开采的源灵晶体高温压缩为液态能源的巨型装置，是机甲动力的来源，24小时运转，发出持续的低频轰鸣</span></li>
+          <li><span class="dl-key">军事</span><span>机甲装配厂（第一至第七号）——七座并列的巨型厂房，从矿石到成品机甲的全流程在此完成，产能最高时每天可出厂12台重型机甲</span></li>
+          <li><span class="dl-key">危地</span><span>七号矿洞——深度超过2000米，是已知源灵密度最高的开采点，也是事故率最高的区域，矿工民间传说此处有「地底哭声」（实为断裂的源灵根系发出的共鸣）</span></li>
+          <li><span class="dl-key">生物</span><span>铁甲鼠（适应污染环境的变异物种）、火岩蜥、高原秃鹫（翼展3米，以机甲废料中的有机物为食）</span></li>
+          <li><span class="dl-key">特产</span><span>源灵铁矿（含微量源灵能量的特殊金属，用于打造感应型武器）、卡尔德隆黑钢（硬度为普通钢铁的7倍）</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 蓝潮群岛 -->
+  <div class="region-card rg-azure">
+    <div class="rg-head">
+      <div class="rg-icon">🌊</div>
+      <div class="rg-meta">
+        <div class="rg-name-zh">蓝潮群岛 · 大陆东部海域</div>
+        <div class="rg-name-en">AZURE TIDES · Eastern Archipelago</div>
+        <div class="rg-tags">
+          <span class="rg-tag">面积：大小岛屿合计约占大陆15%</span>
+          <span class="rg-tag">气候：热带季风，偶有源灵风暴</span>
+          <span class="rg-tag">势力：航海联盟（中立）</span>
+          <span class="rg-tag">危险等级：✦✦✦（海域漩涡）</span>
+        </div>
+      </div>
+    </div>
+    <div class="rg-body">
+      <div class="rg-col">
+        <div class="rg-col-title">地形地貌</div>
+        <div class="rg-prose">
+          <p>蓝潮群岛由大小三百余座岛屿组成，散布在大东洋的西侧海域，岛屿之间距离从数公里到数十公里不等。</p>
+          <p>最大的主岛<span class="place">「潮心岛」</span>中央有一座休眠火山，山顶长年被云雾覆盖，岛民传说那是潮渊鲸灵沉眠的地方。</p>
+          <p>群岛以东是被称为<span class="em">「永恒漩涡带」</span>的危险海域——数十个大小漩涡常年存在，据推测是源灵根系在海底的延伸扭曲了水流方向所致。没有已知的船只曾穿越漩涡带并安全返回，海裔族将漩涡带以外的区域称为<span class="em">「世界的背面」</span>。</p>
+          <p>群岛的海水透明度极高，晴天可见海底二十米处。珊瑚礁中有大量发光生物，夜晚潜入其中如同置身星空之中——这也是外来游客最梦寐以求的体验。</p>
+        </div>
+      </div>
+      <div class="rg-col">
+        <div class="rg-col-title">地标 · 城市 · 禁区</div>
+        <ul class="detail-list">
+          <li><span class="dl-key">主城</span><span>潮歌港（Tidesong Harbor）——建于潮心岛南侧的天然港湾，是艾洛瑞亚最大的贸易港口，五大地区的商品在此汇聚，城市四分之一建在水面上，由浮桥和木桩支撑</span></li>
+          <li><span class="dl-key">奇观</span><span>鲸灵迁徙路线——每年秋分前后，数十头巨型鲸灵从深海浮出，沿固定路线环绕群岛一周后消失，是艾洛瑞亚最壮观的自然奇景之一，每年吸引大量观察者</span></li>
+          <li><span class="dl-key">设施</span><span>深海探测站——建于最深的海沟旁，是研究源灵在海洋中分布规律的科研设施，由林灵族和海裔族联合运营</span></li>
+          <li><span class="dl-key">禁区</span><span>永恒漩涡带——东侧禁航区，所有船只在官方海图上均标注「不得越界」，违者不受任何救援</span></li>
+          <li><span class="dl-key">生物</span><span>鲸灵、深海发光水母（翼展可达5米）、珊瑚森林守护虾（体型如狗，有轻微智慧）</span></li>
+          <li><span class="dl-key">特产</span><span>源灵珊瑚（用于制作感应型法器）、深海盐晶（有轻微治愈效果）、潮歌鱼干（出口全大陆的特色食品）</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 赤沙帝国 -->
+  <div class="region-card rg-sahra">
+    <div class="rg-head">
+      <div class="rg-icon">🏜️</div>
+      <div class="rg-meta">
+        <div class="rg-name-zh">赤沙帝国 · 大陆南方</div>
+        <div class="rg-name-en">SAHRA DOMINION · Southern Reaches</div>
+        <div class="rg-tags">
+          <span class="rg-tag">面积：约占大陆25%</span>
+          <span class="rg-tag">气候：极端干旱，昼夜温差巨大</span>
+          <span class="rg-tag">势力：沙皇帝国（独立）</span>
+          <span class="rg-tag">危险等级：✦✦✦✦（沙暴·遗迹陷阱）</span>
+        </div>
+      </div>
+    </div>
+    <div class="rg-body">
+      <div class="rg-col">
+        <div class="rg-col-title">地形地貌</div>
+        <div class="rg-prose">
+          <p>赤沙帝国的命名来自其标志性的<span class="em">赤红色沙漠</span>——沙粒中含有高浓度的氧化源灵矿物，导致整片沙漠呈现出深橙至暗红色的色泽，日落时分尤为壮观，像大地在燃烧。</p>
+          <p>沙漠表面看似荒无一物，但熟悉此地的向导知道，地下暗流纵横，<span class="em">古代遗迹</span>星罗棋布——那是一个在铁冠战争之前便已消失的文明留下的痕迹，称为<span class="em">「前世纪文明」</span>。其建筑技术至今无法被完全复现。</p>
+          <p>帝国南端有一条被称为<span class="em">「生命线」</span>的地下水脉，沙皇城即建于此。围绕水脉，有一片令人意外的绿洲，种植着帝国维持生存所需的所有农作物。</p>
+          <p>每年的大沙暴季（约持续两个月）期间，整个帝国北部将被覆盖，外出者必须佩戴符文护具，否则暴露在沙暴中超过一小时便会出现源灵中毒症状。</p>
+        </div>
+      </div>
+      <div class="rg-col">
+        <div class="rg-col-title">地标 · 城市 · 禁区</div>
+        <ul class="detail-list">
+          <li><span class="dl-key">主城</span><span>沙皇城（Solkar）——建于地下水脉上方，城市三分之二在地下，以保持恒定温度。地面建筑以石灰岩和源灵砂岩为主，城墙上刻满符文阵，据说能抵御任何魔法攻击</span></li>
+          <li><span class="dl-key">圣地</span><span>赤沙神殿（第一至第九层）——城市西南40公里处的地下建筑群，建造年代早于所有已知文明，最深的第九层至今无法进入（门上的符文阵无人能解）</span></li>
+          <li><span class="dl-key">预言</span><span>第七层残碑——记录着不完整预言的断裂石碑，内容与银甲龙猫觉醒事件高度吻合，是守护联盟重点关注的研究对象</span></li>
+          <li><span class="dl-key">地貌</span><span>「玻璃平原」——帝国东北部一片广阔的黑色玻璃状地面，据推测是某次远古源灵爆发将沙粒瞬间熔化形成，方圆200公里，夜晚映出星空，被称为「第二片天空」</span></li>
+          <li><span class="dl-key">生物</span><span>沙龙（源灵变异的沙漠蜥蜴，体长可达6米）、符文蝎（壳上天然生长符文图案，蜇人后会施加随机魔法效果）</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 极霜荒原 -->
+  <div class="region-card rg-frost">
+    <div class="rg-head">
+      <div class="rg-icon">❄️</div>
+      <div class="rg-meta">
+        <div class="rg-name-zh">极霜荒原 · 大陆北极</div>
+        <div class="rg-name-en">FROSTVEIL · The Polar Reach</div>
+        <div class="rg-tags">
+          <span class="rg-tag">面积：约占大陆12%（不含冰盖）</span>
+          <span class="rg-tag">气候：永冬，最低气温-80℃</span>
+          <span class="rg-tag">势力：无固定势力（极少人定居）</span>
+          <span class="rg-tag">危险等级：✦✦✦✦✦（极限生存）</span>
+        </div>
+      </div>
+    </div>
+    <div class="rg-body">
+      <div class="rg-col">
+        <div class="rg-col-title">地形地貌</div>
+        <div class="rg-prose">
+          <p>极霜荒原是艾洛瑞亚最神秘也最少被探索的区域。绝大多数地图对此地的描绘仅限于轮廓，内部地形几乎空白。</p>
+          <p>踏入荒原边界的人描述，这里的冰并非普通的冻结之物——冰层中封印着远古生物的轮廓，有些大得难以想象，在冰面下清晰可见，像博物馆里的标本，又像随时可能醒来的东西。</p>
+          <p>每年极光季，荒原上空的极光不是普通的大气现象——那是源灵从地底渗入天空形成的可见光，极光的颜色和形状据说可以「预报」大陆未来数月的自然事件，但只有极少数人掌握解读方法。</p>
+          <p>荒原中心有一处被称为<span class="em">「世界的静点」</span>的区域——方圆数公里内没有任何风，没有任何声音，源灵探测器在此处读数归零。没有人知道这意味着什么，或者是否意味着什么。</p>
+        </div>
+      </div>
+      <div class="rg-col">
+        <div class="rg-col-title">地标 · 城市 · 禁区</div>
+        <ul class="detail-list">
+          <li><span class="dl-key">定居</span><span>冰歌营地——唯一的半永久定居点，由约两百名来自各族的极地研究者和极少数世代居于此的「霜民」维持，建于地热资源丰富的温泉区域</span></li>
+          <li><span class="dl-key">封印</span><span>铁冠战争封印之地——当年诸古者联合将一批无法消灭的古代机甲封印于此，以永久冻层阻止其重新启动。封印每年检测一次，全部完好——迄今为止</span></li>
+          <li><span class="dl-key">奇观</span><span>源灵极光带——每年冬至前后72小时，极光在荒原上空达到最高强度，形成肉眼可见的源灵流动图案，是艾洛瑞亚最壮观的景象之一</span></li>
+          <li><span class="dl-key">禁地</span><span>世界静点——严禁进入，原因未经官方公布。林灵族典籍中有一句描述：「静处无声，是因为那里比任何地方都更靠近，息者的耳朵。」</span></li>
+          <li><span class="dl-key">生物</span><span>冰晶狼（半透明身体，体内可见蓝色光脉）、雪鲸（在冰面下游动，体长可达百米）、极光蝶（翅膀是冻结的极光片段）</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end regions -->
+
+<!-- ROUTES & BORDERS -->
+<div class="routes-section">
+  <div class="routes-title">◈ 主要路线 · 边境 · 战略要道</div>
+  <div class="route-item">
+    <div class="route-icon">🛤️</div>
+    <div class="route-text"><span class="em">绿铁通道</span>——灵森域木冠城 → 铁锻高原卡尔德隆，<span class="dist">全程约1200公里</span>，穿越大陆中央平原，是两大势力唯一的官方外交贸易路线，设有十二个检查哨所，平时开放商队通行，战时立即封闭。这条路线是「灰绿交界线」最宽的缺口，也是战略上最脆弱的位置。</div>
+  </div>
+  <div class="route-item">
+    <div class="route-icon">🚢</div>
+    <div class="route-text"><span class="em">潮歌航线</span>——潮歌港 → 大陆各主要海岸港口，<span class="dist">最短航程3天，最长21天</span>，由航海联盟维护，中立势力运营，五大地区均可使用。战时不受战争影响，是最稳定的物资运输路线。</div>
+  </div>
+  <div class="route-item">
+    <div class="route-icon">🏜️</div>
+    <div class="route-text"><span class="em">沙脉古道</span>——赤沙帝国沙皇城 → 大陆中部，<span class="dist">全程约900公里</span>，沿地下水脉走向铺设，是帝国与外界的主要陆路通道。道路两侧设有距离25公里一个的补给站，每站有符文护具出租（防沙暴用）。</div>
+  </div>
+  <div class="route-item">
+    <div class="route-icon">⚔️</div>
+    <div class="route-text"><span class="em">灰绿交界线</span>——铁锻高原南缘与灵森域北缘的接触地带，<span class="dist">全长约600公里</span>，现为双方均部署警戒力量的非军事缓冲区。这是艾洛瑞亚最紧张的边境线，平均每月发生数次小规模摩擦，被守护联盟称为「持续流血的伤口」。</div>
+  </div>
+  <div class="route-item">
+    <div class="route-icon">❄️</div>
+    <div class="route-text"><span class="em">极霜南道</span>——铁锻高原北缘 → 极霜荒原入口，<span class="dist">全程约400公里</span>，工业联合军团曾试图开发此路线以绕过灵森域获取新的资源，工程因极端气候和不明原因的机械失灵（推测为封印巨兽的感知干扰）宣告中止，沿途遗留有大量废弃工程设备。</div>
+  </div>
+</div>
+
+<!-- CARTOGRAPHER NOTE -->
+<div class="carto-note">
+  <strong>制图师注记</strong>：本志所载内容截止于公元2846年。大陆中央平原目前无固定政治势力，被各方视为缓冲地带与无主之地。「未命名地带」（中央平原东南区域）因源灵浓度异常，地形每隔数十年发生一次大规模改变，故本志不作描述，建议有意前往者携带最新版实地探测报告。<br><br>
+  本志为文字版，不替代卷轴地图。卷轴地图版请向木冠城守护学院图书馆借阅，凭守护师证方可领取。<br><br>
+  愿源灵引路。——制图师 维恩·苔索
+</div>
+
+</div><!-- end wrap -->
+</body>
+</html>

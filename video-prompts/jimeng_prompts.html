@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>即梦AI · 托罗恩觉醒 · 10个镜头提示词</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0e1020;
+    color: #d4d8f0;
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    padding: 24px 16px 48px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    padding: 24px 0 20px;
+    border-bottom: 1px solid #2a2d50;
+    margin-bottom: 28px;
+  }
+  .header h1 { font-size: 1.5rem; color: #a78bfa; }
+  .header .sub { font-size: 0.85rem; color: #6670a0; margin-top: 6px; }
+  .header .compare {
+    display: inline-flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; justify-content: center;
+  }
+  .compare-chip {
+    font-size: 0.72rem; padding: 3px 12px; border-radius: 12px;
+    background: #1a1e3a; border: 1px solid #2e3460; color: #8898d0;
+  }
+  .compare-chip.active { background: #2a1e50; border-color: #7060c0; color: #a78bfa; font-weight: 700; }
+
+  /* ── HOW TO USE ── */
+  .howto {
+    background: #0e1228;
+    border: 1px solid #2a2d50;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+  }
+  .howto-title { font-size: 0.8rem; color: #a78bfa; font-weight: 700; margin-bottom: 12px; }
+  .steps { display: flex; flex-wrap: wrap; gap: 10px; }
+  .step {
+    background: #141830; border-radius: 8px; padding: 10px 14px;
+    flex: 1; min-width: 155px; border: 1px solid #1e2240;
+  }
+  .step .snum { color: #818cf8; font-weight: 700; font-size: 1rem; }
+  .step .stext { font-size: 0.78rem; color: #8898c8; margin-top: 4px; line-height: 1.5; }
+
+  /* ── DIFF BOX ── */
+  .diff-box {
+    background: #100e28; border: 1px solid #3020a0;
+    border-radius: 8px; padding: 12px 16px;
+    margin-bottom: 28px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .diff-item { font-size: 0.78rem; }
+  .diff-item .dlabel { color: #a78bfa; font-weight: 700; margin-bottom: 4px; font-size: 0.72rem; letter-spacing: 1px; }
+  .diff-item ul { list-style: none; padding: 0; }
+  .diff-item li { color: #8898c8; padding: 2px 0; }
+  .diff-item li::before { content: "· "; color: #6060c0; }
+  @media(max-width:500px) { .diff-box { grid-template-columns: 1fr; } }
+
+  /* ── CARD ── */
+  .card {
+    background: #0e1228;
+    border: 1px solid #1e2450;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); }
+
+  .card-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    background: #0a0e20;
+    border-bottom: 1px solid #1e2450;
+  }
+  .shot-badge {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.9rem;
+    background: #1a1840; color: #818cf8; border: 2px solid #818cf8;
+  }
+  .card-title { flex: 1; }
+  .card-title .cname { font-size: 0.9rem; color: #fff; font-weight: 600; }
+  .card-title .cdur  { font-size: 0.72rem; color: #6670a0; margin-top: 2px; }
+  .dur-badge {
+    font-size: 0.72rem; font-weight: 700; padding: 2px 10px;
+    border-radius: 12px; background: #1a1840; color: #818cf8;
+    border: 1px solid #2e3480; white-space: nowrap;
+  }
+
+  .card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+
+  /* prompt box */
+  .prompt-box {
+    background: #080c1e; border: 1px solid #1a1e40; border-radius: 8px; overflow: hidden;
+  }
+  .prompt-label {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 12px; background: #0c1028;
+    border-bottom: 1px solid #1a1e40;
+    font-size: 0.7rem; color: #6670a0; letter-spacing: 1px; font-weight: 700;
+  }
+  .prompt-text {
+    padding: 10px 12px;
+    font-size: 0.85rem; line-height: 1.7; color: #d4d8f0;
+  }
+
+  /* style tags row */
+  .style-row {
+    background: #0c1030; border: 1px solid #1a2048; border-radius: 8px;
+    padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  }
+  .style-row .slabel { font-size: 0.68rem; color: #6670a0; font-weight: 700; letter-spacing: 1px; width: 100%; margin-bottom: 2px; }
+  .style-chip {
+    font-size: 0.7rem; padding: 2px 10px; border-radius: 12px;
+    background: #1a1e40; border: 1px solid #2e3480; color: #818cf8;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .style-chip:hover { background: #2a2860; }
+
+  /* copy button */
+  .copy-btn {
+    background: #1a1840; border: 1px solid #3030a0;
+    color: #818cf8; border-radius: 6px;
+    padding: 3px 12px; font-size: 0.7rem; font-weight: 700;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .copy-btn:hover  { background: #242060; border-color: #818cf8; }
+  .copy-btn.copied { background: #1a2860; color: #80c0ff; border-color: #4060c0; }
+
+  /* hint */
+  .hint {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 0.78rem; color: #7080a8;
+    background: #0c1028; border-radius: 6px; padding: 8px 10px;
+    border-left: 3px solid #4040a0;
+  }
+  .hint .hicon { flex-shrink: 0; }
+
+  /* settings row */
+  .settings-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .setting-chip {
+    font-size: 0.7rem; padding: 3px 10px; border-radius: 12px;
+    background: #121630; border: 1px solid #1e2248; color: #8898c8;
+  }
+
+  /* act divider */
+  .act-div {
+    display: flex; align-items: center; gap: 10px;
+    margin: 20px 0 12px;
+  }
+  .act-div hr { flex: 1; border: none; border-top: 1px solid #1e2240; }
+  .act-div span {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px;
+    padding: 2px 12px; border-radius: 20px; white-space: nowrap;
+    background: #1a1840; color: #818cf8; border: 1px solid #2e3480;
+  }
+  .act-div.warm span { background: #28180e; color: #f0b060; border-color: #503010; }
+  .act-div.hot  span { background: #281020; color: #f080a0; border-color: #501030; }
+
+  /* ── TIPS ── */
+  .tips {
+    margin-top: 28px;
+    background: #0e1228; border: 1px solid #1e2450; border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .tips h3 { font-size: 0.82rem; color: #a78bfa; margin-bottom: 12px; }
+  .tip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tip-item { font-size: 0.78rem; color: #7080a8; line-height: 1.5; }
+  .tip-item strong { color: #818cf8; }
+  @media(max-width:600px) { .tip-grid { grid-template-columns: 1fr; } }
+
+  /* story mode banner */
+  .story-mode {
+    background: linear-gradient(135deg, #1a0e38, #0e1a38);
+    border: 1px solid #4030a0;
+    border-radius: 10px; padding: 14px 18px;
+    margin-bottom: 20px;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .story-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .story-text h4 { font-size: 0.85rem; color: #c0a8ff; margin-bottom: 4px; }
+  .story-text p  { font-size: 0.78rem; color: #7878c0; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>✨ 即梦AI · 托罗恩觉醒 · 10个镜头提示词</h1>
+  <p class="sub">专为即梦AI优化 · jimeng.jianying.com · 与剪映无缝连接</p>
+  <div class="compare">
+    <span class="compare-chip">可灵：擅长写实电影感</span>
+    <span class="compare-chip active">★ 即梦：擅长动漫/吉卜力风</span>
+    <span class="compare-chip">两个都试，选最好的</span>
+  </div>
+</div>
+
+<!-- HOW TO USE -->
+<div class="howto">
+  <div class="howto-title">📋 使用流程（即梦版）</div>
+  <div class="steps">
+    <div class="step">
+      <div class="snum">① 打开即梦</div>
+      <div class="stext">jimeng.jianying.com → 登录抖音账号 → 选「视频生成」</div>
+    </div>
+    <div class="step">
+      <div class="snum">② 选模式</div>
+      <div class="stext">用「文本生视频」或「图片生视频」（推荐先图生视频）</div>
+    </div>
+    <div class="step">
+      <div class="snum">③ 复制粘贴</div>
+      <div class="stext">点复制按钮 → 粘贴到即梦输入框 → 选好风格 → 生成</div>
+    </div>
+    <div class="step">
+      <div class="snum">④ 一键到剪映</div>
+      <div class="stext">即梦生成后可直接发送到剪映，省去手动下载步骤</div>
+    </div>
+  </div>
+</div>
+
+<!-- DIFF -->
+<div class="diff-box">
+  <div class="diff-item">
+    <div class="dlabel">即梦 擅长</div>
+    <ul>
+      <li>吉卜力 / 宫崎骏动画风格</li>
+      <li>日系动漫厚涂质感</li>
+      <li>梦幻奇幻森林场景</li>
+      <li>情感细腻的角色特写</li>
+      <li>直接导入剪映，最方便</li>
+    </ul>
+  </div>
+  <div class="diff-item">
+    <div class="dlabel">提示词技巧</div>
+    <ul>
+      <li>加「吉卜力风格」画质更精美</li>
+      <li>加「细腻动画」让角色更生动</li>
+      <li>加「光影唯美」提升质感</li>
+      <li>S05/S09这种爆炸镜头加「震撼动态」</li>
+      <li>每条提示词在100字以内最佳</li>
+    </ul>
+  </div>
+</div>
+
+<!-- STORY MODE HINT -->
+<div class="story-mode">
+  <span class="story-icon">🎭</span>
+  <div class="story-text">
+    <h4>💡 推荐用即梦的「故事模式」</h4>
+    <p>即梦有「故事模式」，可以把多个镜头的提示词一起输入，AI自动保持角色一致性生成连贯视频片段。适合把10个镜头分成3幕（沉睡·崛起·宣言）分批生成。</p>
+  </div>
+</div>
+
+<!-- ─────────── ACT 1 ─────────── -->
+<div class="act-div"><hr><span>第一幕 · 沉睡 · 镜头 01–03</span><hr></div>
+
+<!-- S01 -->
+<div class="card">
+  <div class="card-header">
+    <div class="shot-badge">01</div>
+    <div class="card-title">
+      <div class="cname">宏观航拍 · 灵森域黎明</div>
+      <div class="cdur">时长：3秒 · 建立镜</div>
+    </div>
+    <span class="dur-badge">3s</span>
+  </div>
+  <div class="card-body">
+    <div class="prompt-box">
+      <div class="prompt-label">
+        <span>即梦提示词</span>
+        <button class="copy-btn" onclick="copyText(this, 'p01')">复制</button>
+      </div>
+      <div class="prompt-text" id="p01">吉卜力动画风格，黎明前的神秘古老森林，航拍视角从高空缓缓俯冲向发光的参天古树，晨雾弥漫，万树笼罩在蓝绿色薄雾中，光线幽暗唯美，仿佛通向另一个世界，光影细腻，梦幻</div>
+    </div>
+    <div class="style-row">
+      <span class="slabel">即梦风格标签（在界面里选）</span>
+      <span class="style-chip">吉卜力</span>
+      <span class="style-chip">动画</span>
+      <span class="style-chip">奇幻</span>
+      <span class="style-chip">唯美</span>
+    </div>
+    <div class="settings-row">
+      <span class="setting-chip">📐 16:9</span>
+      <span class="setting-chip">⏱ 3秒</span>
+      <span class="setting-chip">🎬 俯冲推进</span>
+    </div>
+  </div>
+</div>
+
+<!-- S02 -->
+<div class="card">
+  <div class="card-header">
+    <div class="shot-badge">02</div>
+    <div class="card-title">
+      <div class="cname">地下封印 · 沉睡的银甲巨兽</div>
+      <div class="cdur">时长：3秒 · 情境镜</div>
+    </div>
+    <span class="dur-badge">3s</span>
+  </div>
+  <div class="card-body">
+    <div class="prompt-box">
+      <div class="prompt-label">
+        <span>即梦提示词</span>
+        <button class="copy-btn" onclick="copyText(this, 'p02')">复制</button>
+      </div>
+      <div class="prompt-text" id="p02">吉卜力动画风格，俯视视角，地下空腔中一只穿着暗淡银色铠甲的巨型龙猫蜷缩在盘根古树中沉睡，铠甲上有蓝绿色流动符文，像即将熄灭的烛火，画面幽暗神秘，充满古老封印的沉重感</div>
+    </div>
+    <div class="style-row">
+      <span class="slabel">即梦风格标签</span>
+      <span class="style-chip">吉卜力</span>
+      <span class="style-chip">暗黑奇幻</span>
+      <span class="style-chip">动画</span>
+    </div>
+    <div class="settings-row">
+      <span class="setting-chip">📐 16:9</span>
+      <span class="setting-chip">⏱ 3秒</span>
+      <span class="setting-chip">🎬 俯视缓推</span>
+    </div>
+  </div>
+</div>
+
+<!-- S03 -->
+<div class="card">
+  <div class="card-header">
+    <div class="shot-badge">03</div>
+    <div class="card-title">
+      <div class="cname">眼睛特写 · 意识觉醒</div>
+      <div class="cdur">时长：3秒 · 情感极特写</div>
+    </div>
+    <span class="dur-badge">3s</span>
+  </div>
+  <div class="card-body">
+    <div class="prompt-box">
+      <div class="prompt-label">
+        <span>即梦提示词</span>
+        <button class="copy-btn" onclick="copyText(this, 'p03')">复制</button>
+      </div>
+      <div class="prompt-text" id="p03">吉卜力细腻动画风格，龙猫战士眼睛极端特写，眼睑轻微颤动，黑暗的瞳孔中缓慢燃起绿色光芒，逐渐变为闪烁的金色，瞳孔倒映出整片古老森林，意识重新觉醒的瞬间，唯美震撼</div>
+    </div>
+    <div class="style-row">
+      <span class="slabel">即梦风格标签</span>
+      <span class="style-chip">吉卜力</span>
+      <span class="style-chip">情感特写</span>
+      <span class="style-chip">细腻动画</span>
+    </div>
+    <div class="settings-row">
+      <span class="setting-chip">📐 1:1 或 16:9</span>
+      <span class="setting-chip">⏱ 3秒</span>
+      <span class="setting-chip">🎬 固定微推</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────── ACT 2 ─────────── -->
+<div class="act-div warm"><hr><span>第二幕 · 崛起 · 镜头 04–07</span><hr></div>
+
+<!-- S04 -->
+<div class="card">
+  <div class="card-header">
+    <div class="shot-badge" style="background:#281808;color:#f0a040;border-color:#c07020;">04</div>
+    <div class="card-title">
+      <div class="cname">银甲激活 · 符文连锁点亮</div>
+      <div class="cdur">时长：2秒 · 动作镜</div>
+    </div>
+    <span class="dur-badge" style="color:#f0a040;border-color:#503010;">2s</span>
+  </div>
+  <div class="card-body">
+    <div class="prompt-box">
+      <div class="prompt-label">
+        <span>即梦提示词</span>
+        <button class="copy-btn" onclick="copyText(this, 'p04')">复制</button>
+      </div>
+      <div class="prompt-text" id="p04">日本动漫风格，银色铠甲龙猫战士，铠甲上的金绿色符文从胸口像多米诺骨牌一样连锁点亮蔓延到全身，每片甲片依次闪光，速度越来越快，能量激活感，光效华丽，金属光泽细腻</div>
+    </div>
+    <div class="style-row">
+      <span class="slabel">即梦风格标签</span>
+      <span class="style-chip">日本动漫</span>
+      <span class="style-chip">奇幻动作</span>
+      <span class="style-chip">光效</span>
+    </div>
+    <div class="settings-row">
+      <span class="setting-chip">📐 16:9</span>
+      <span class="setting-chip">⏱ 2秒</span>
+      <span class="setting-chip">🎬 仰角固定</span>
+    </div>
+  </div>
+</div>
+
+<!-- S05 -->
+<div class="card">
+  <div class="card-header">
+    <div class="shot-badge" style="background:#281808;color:#f0a040;border-color:#c07020;">05</div>
+    <div class="card-title">
+      <div class="cname">破土而出 · ⭐ 最震撼镜头</div>
+      <div class="cdur">时长：2秒 · 爆发冲击</div>
+    </div>
+    <span class="dur-badge" style="color:#f0a040;border-color:#503010;">2s</span>
+  </div>
+  <div class="card-body">
+    <div class="prompt-box">
+      <div class="prompt-label">
+        <span>即梦提示词</span>
+        <button class="copy-btn" onclick="copyText(this, 'p05')">复制</button>
+      </div>
+      <div class="prompt-text" id="p05">史诗动漫风格，银甲龙猫战士猛力从地底破土而出，土石树根碎片向四方飞溅，银甲全面爆发金色光芒，极低仰角广角镜头，冲击波可见，震撼爆发，英雄登场感，高能动态</div>
+    </div>
+    <div class="hint">
+      <span class="hicon">💡</span>
+      <span>建议先用 ChatGPT 或即梦「图片生成」做一张破土的静帧，再用「<strong>图片生视频</strong>」让它动起来，比纯文生视频效果好很多</span>
+    </div>
+    <div class="style-row">
+      <span class="slabel">即梦风格标签</span>
+      <span class="style-chip">史诗动漫</span>
+      <span class="style-chip">动作爆发</span>
+      <span class="style-chip">高能</span>
+    </div>
+    <div class="settings-row">
+      <span class="setting-chip">📐 16:9</span>
+      <span class="setting-chip">⏱ 2秒</span>
+      <span class="setting-chip">🎬 极低仰角</span>
+    </div>
+  </div>
+</div>
+
+<!-- S06 -->
+<div class="card">
+  <div class="card-header">
+    <div class="shot-badge" style="background:#281808;color:#f0a040;border-color:#c07020;">06</div>
+    <div class="card-title">
+      <div class="cname">快切三连 · 爪 · 胸甲 · 眼</div>
+      <div class="cdur">3秒 · 分3条各1秒生成</div>
+    </div>
+    <span class="dur-badge" style="color:#f0a040;border-color:#503010;">3s</span>
+  </div>
+  <div class="card-body">
+    <div class="prompt-box">
+      <div class="prompt-label">
+        <span>提示词 A · 爪击地</span>
+        <button class="copy-btn" onclick="copyText(this, 'p06a')">复制</button>
+      </div>
+      <div class="prompt-text" id="p06a">动漫风格，银甲龙猫的巨爪特写猛击地面，地面瞬间产生放射状金色裂纹，冲击波扩散，仰角特写，震撼力量感，华丽光效</div>
+    </div>
+    <div class="prompt-box" style="margin-top:8px">
+      <div class="prompt-label">
+        <span>提示词 B · 胸甲符文旋转</span>
+        <button class="copy-btn" onclick="copyText(this, 'p06b')">复制</button>
+      </div>
+      <div class="prompt-text" id="p06b">动漫风格，银色铠甲胸甲中央特写，金绿色符文光圈高速旋转形成能量环，向外辐射光芒，神圣壮丽，极特写</div>
+    </div>
+    <div class="prompt-box" style="margin-top:8px">
+      <div class="prompt-label">
+        <span>提示词 C · 双眼光束</span>
+        <button class="copy-btn" onclick="copyText(this, 'p06c')">复制</button>
+      </div>
+      <div class="prompt-text" id="p06c">吉卜力动漫风格，龙猫战士面部特写，双眼同时爆发出金色光束，瞳孔中有整片森林倒影，觉醒之光，震撼情感</div>
+    </div>
+    <div class="settings-row">
+      <span class="setting-chip">💡 分3次各生成1秒片段</span>
+      <span class="setting-chip">在剪映快切拼接</span>
+    </div>
+  </div>
+</div>
+
+<!-- S07 -->
+<div class="card">
+  <div class="card-header">
+    <div class="shot-badge" style="background:#281808;color:#f0a040;border-color:#c07020;">07</div>
+    <div class="card-title">
+      <div class="cname">侧面逆光 · 力量静默</div>
+      <div class="cdur">时长：2秒 · 剪影镜</div>
+    </div>
+    <span class="dur-badge" style="color:#f0a040;border-color:#503010;">2s</span>
+  </div>
+  <div class="card-body">
+    <div class="prompt-box">
+      <div class="prompt-label">
+        <span>即梦提示词</span>
+        <button class="copy-btn" onclick="copyText(this, 'p07')">复制</button>
+      </div>
+      <div class="prompt-text" id="p07">吉卜力动画风格，银甲龙猫战士侧面全身剪影，低仰角逆光，金色晨光从身后形成圣光光晕，银甲轮廓微微发光，纹丝不动如山岳，风吹树叶，压迫性的静默力量，唯美光影</div>
+    </div>
+    <div class="style-row">
+      <span class="slabel">即梦风格标签</span>
+      <span class="style-chip">吉卜力</span>
+      <span class="style-chip">逆光剪影</span>
+      <span class="style-chip">唯美</span>
+    </div>
+    <div class="settings-row">
+      <span class="setting-chip">📐 16:9</span>
+      <span class="setting-chip">⏱ 2秒</span>
+      <span class="setting-chip">🎬 固定低仰角</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────── ACT 3 ─────────── -->
+<div class="act-div hot"><hr><span>第三幕 · 宣言 · 镜头 08–10</span><hr></div>
+
+<!-- S08 -->
+<div class="card">
+  <div class="card-header">
+    <div class="shot-badge" style="background:#280818;color:#f080a0;border-color:#c02060;">08</div>
+    <div class="card-title">
+      <div class="cname">正面特写 · 深呼吸</div>
+      <div class="cdur">时长：3秒 · 情感镜</div>
+    </div>
+    <span class="dur-badge" style="color:#f080a0;border-color:#501028;">3s</span>
+  </div>
+  <div class="card-body">
+    <div class="prompt-box">
+      <div class="prompt-label">
+        <span>即梦提示词</span>
+        <button class="copy-btn" onclick="copyText(this, 'p08')">复制</button>
+      </div>
+      <div class="prompt-text" id="p08">吉卜力动画细腻风格，银甲龙猫战士正面中近景，深深吸气，胸甲缓缓起伏，耳朵竖立，胡须轻颤，金色瞳孔聚焦清澈，百年沉睡后第一次感受世界的震撼神情，镜头极缓上升，背景虚化，情感动人</div>
+    </div>
+    <div class="style-row">
+      <span class="slabel">即梦风格标签</span>
+      <span class="style-chip">吉卜力</span>
+      <span class="style-chip">情感细腻</span>
+      <span class="style-chip">动画</span>
+    </div>
+    <div class="settings-row">
+      <span class="setting-chip">📐 16:9</span>
+      <span class="setting-chip">⏱ 3秒</span>
+      <span class="setting-chip">🎬 缓慢上升</span>
+    </div>
+  </div>
+</div>
+
+<!-- S09 -->
+<div class="card">
+  <div class="card-header">
+    <div class="shot-badge" style="background:#280818;color:#f080a0;border-color:#c02060;">09</div>
+    <div class="card-title">
+      <div class="cname">仰天长啸 · ⭐ 全片最高潮</div>
+      <div class="cdur">时长：4秒 · 史诗爆发</div>
+    </div>
+    <span class="dur-badge" style="color:#f080a0;border-color:#501028;">4s</span>
+  </div>
+  <div class="card-body">
+    <div class="prompt-box">
+      <div class="prompt-label">
+        <span>即梦提示词</span>
+        <button class="copy-btn" onclick="copyText(this, 'p09')">复制</button>
+      </div>
+      <div class="prompt-text" id="p09">史诗动漫风格，银甲龙猫战士仰天发出震天长啸，音波冲击波向四方扩散，树木弯折，落叶飞旋，云层被推开，鸟群惊飞，银甲爆发最强金绿色光芒，镜头从脚下旋转上升到俯视全景，极其震撼壮丽</div>
+    </div>
+    <div class="hint">
+      <span class="hicon">⭐</span>
+      <span>这是全片最重要的镜头！多生成几次，挑动态最好的。也可以用即梦「故事模式」连接S08→S09让动作更连贯</span>
+    </div>
+    <div class="style-row">
+      <span class="slabel">即梦风格标签</span>
+      <span class="style-chip">史诗动漫</span>
+      <span class="style-chip">爆发</span>
+      <span class="style-chip">震撼</span>
+      <span class="style-chip">高能</span>
+    </div>
+    <div class="settings-row">
+      <span class="setting-chip">📐 16:9</span>
+      <span class="setting-chip">⏱ 4秒</span>
+      <span class="setting-chip">🎬 旋转上升</span>
+    </div>
+  </div>
+</div>
+
+<!-- S10 -->
+<div class="card">
+  <div class="card-header">
+    <div class="shot-badge" style="background:#280818;color:#f080a0;border-color:#c02060;">10</div>
+    <div class="card-title">
+      <div class="cname">片名定格 · 背影伫立</div>
+      <div class="cdur">时长：4秒 · 结尾镜</div>
+    </div>
+    <span class="dur-badge" style="color:#f080a0;border-color:#501028;">4s</span>
+  </div>
+  <div class="card-body">
+    <div class="prompt-box">
+      <div class="prompt-label">
+        <span>即梦提示词</span>
+        <button class="copy-btn" onclick="copyText(this, 'p10')">复制</button>
+      </div>
+      <div class="prompt-text" id="p10">吉卜力动画风格，银甲龙猫战士孤独伫立在古树顶端，俯视广阔奇幻森林，镜头缓缓拉远直到他变成金色晨光中发光的剪影，画面最终静止如一幅史诗油画，壮丽孤独，充满未来感</div>
+    </div>
+    <div class="hint">
+      <span class="hicon">💡</span>
+      <span>最后定格时，在<strong>剪映</strong>里加标题字幕：「银甲龙猫·托罗恩」+「TORON AWAKENS」，字体选方正黑体或思源黑体</span>
+    </div>
+    <div class="style-row">
+      <span class="slabel">即梦风格标签</span>
+      <span class="style-chip">吉卜力</span>
+      <span class="style-chip">唯美收尾</span>
+      <span class="style-chip">动画</span>
+    </div>
+    <div class="settings-row">
+      <span class="setting-chip">📐 16:9</span>
+      <span class="setting-chip">⏱ 4秒</span>
+      <span class="setting-chip">🎬 缓慢拉远后静止</span>
+    </div>
+  </div>
+</div>
+
+<!-- TIPS -->
+<div class="tips">
+  <h3>⚡ 即梦 vs 可灵：怎么选？</h3>
+  <div class="tip-grid">
+    <div class="tip-item"><strong>用即梦的情况：</strong><br>想要吉卜力/宫崎骏的温暖动画感；情感细腻的镜头（S03眼睛、S08呼吸、S10定格）；生成后直接用剪映剪辑最方便</div>
+    <div class="tip-item"><strong>用可灵的情况：</strong><br>想要写实电影感；爆炸冲击类镜头（S05破土、S09长啸）；想要更强的物理动态效果</div>
+    <div class="tip-item"><strong>最佳组合策略：</strong><br>S01/S02/S03/S07/S08/S10 → <strong>即梦</strong>（吉卜力风）<br>S04/S05/S06/S09 → <strong>可灵</strong>（爆炸冲击）<br>全部在剪映里拼合</div>
+    <div class="tip-item"><strong>即梦免费额度：</strong><br>每天有免费生成次数，建议把最重要的镜头（S05、S09）优先生成，其次是S01和S10的大场景</div>
+  </div>
+</div>
+
+<script>
+function copyText(btn, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = el.textContent.trim();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => flash(btn));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    flash(btn);
+  }
+}
+function flash(btn) {
+  const orig = btn.textContent;
+  btn.textContent = '✓ 已复制'; btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+}
+</script>
+</body>
+</html>

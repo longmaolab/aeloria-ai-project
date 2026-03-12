@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>艾洛瑞亚 · 五大角色图鉴</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#09090e;color:#e8e8f0;
+  font-family:'PingFang SC','Microsoft YaHei',sans-serif;
+  padding:28px 16px 80px;
+}
+
+/* ── WORLD HEADER ── */
+.world-header{
+  max-width:960px;margin:0 auto 48px;
+  text-align:center;position:relative;
+}
+.world-label{font-size:0.75em;letter-spacing:0.25em;color:#4ade80;text-transform:uppercase;margin-bottom:10px}
+.world-title{
+  font-size:3em;font-weight:900;line-height:1.1;
+  background:linear-gradient(135deg,#e8e8f0 0%,#6b7280 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:8px;
+}
+.world-sub{font-size:1em;color:#4b5563;letter-spacing:0.1em;margin-bottom:24px}
+.faction-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.faction{
+  font-size:0.75em;padding:4px 14px;border-radius:20px;
+  display:flex;align-items:center;gap:6px;
+}
+
+/* ── CHARACTER CARD ── */
+.char-grid{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+
+.char-card{
+  background:#111118;
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:20px;overflow:hidden;
+  position:relative;
+}
+
+/* top color bar */
+.char-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+}
+
+/* hero strip */
+.hero-strip{
+  display:flex;align-items:flex-start;gap:0;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.avatar-panel{
+  width:140px;min-width:140px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px 16px;
+  border-right:1px solid rgba(255,255,255,0.05);
+  gap:8px;
+}
+.avatar-emoji{font-size:3.6em;line-height:1}
+.char-num{font-size:0.65em;letter-spacing:0.15em;color:#4b5563;text-transform:uppercase}
+.rarity-stars{font-size:0.85em;letter-spacing:0.05em}
+
+.identity-panel{flex:1;padding:20px 24px}
+.char-faction-tag{
+  font-size:0.7em;padding:3px 12px;border-radius:10px;
+  display:inline-flex;align-items:center;gap:5px;
+  margin-bottom:10px;font-weight:600;letter-spacing:0.04em;
+}
+.char-name-zh{font-size:1.7em;font-weight:900;line-height:1;margin-bottom:4px}
+.char-name-en{font-size:0.82em;color:#6b7280;letter-spacing:0.08em;margin-bottom:10px}
+.char-title{
+  font-size:0.85em;color:#9ca3b0;
+  border-left:3px solid;padding-left:10px;
+  line-height:1.5;margin-bottom:14px;
+}
+.quick-tags{display:flex;gap:8px;flex-wrap:wrap}
+.qtag{
+  font-size:0.72em;padding:3px 10px;border-radius:8px;
+  background:rgba(255,255,255,0.05);color:#9ca3b0;
+}
+
+/* body grid */
+.body-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:1px;
+  background:rgba(255,255,255,0.04);
+}
+.section{background:#111118;padding:20px 22px}
+.sec-title{
+  font-size:0.68em;text-transform:uppercase;letter-spacing:0.12em;
+  margin-bottom:12px;display:flex;align-items:center;gap:7px;
+}
+.sec-title::before{
+  content:'';width:3px;height:12px;border-radius:2px;display:inline-block;
+}
+
+/* appearance */
+.appear-item{
+  display:flex;gap:9px;margin-bottom:10px;align-items:flex-start;
+}
+.appear-dot{width:6px;height:6px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.appear-text{font-size:0.84em;color:#c4c4d4;line-height:1.65}
+.appear-text strong{color:#e8e8f0}
+
+/* skills */
+.skill-item{
+  display:flex;gap:10px;align-items:flex-start;
+  margin-bottom:12px;
+  background:rgba(255,255,255,0.03);
+  border-radius:10px;padding:10px 12px;
+}
+.skill-icon{font-size:1.2em;flex-shrink:0;margin-top:1px}
+.skill-name{font-size:0.85em;font-weight:700;margin-bottom:3px}
+.skill-desc{font-size:0.78em;color:#9ca3b0;line-height:1.55}
+
+/* personality + story */
+.prose{font-size:0.85em;color:#c4c4d4;line-height:1.85}
+.prose .hi{font-weight:600;color:#e8e8f0}
+.prose .em{font-weight:600}
+.prose blockquote{
+  margin:12px 0;padding:10px 14px;
+  border-radius:0 8px 8px 0;
+  border-left:3px solid;
+  font-style:italic;font-size:0.92em;
+  line-height:1.65;
+}
+
+/* stat bars */
+.stat-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.stat-label{font-size:0.75em;color:#6b7280;width:52px;flex-shrink:0}
+.stat-bg{flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden}
+.stat-fill{height:100%;border-radius:3px}
+.stat-val{font-size:0.75em;font-weight:700;width:28px;text-align:right}
+
+/* image prompt strip */
+.prompt-strip{
+  padding:16px 22px;
+  background:rgba(0,0,0,0.25);
+  border-top:1px solid rgba(255,255,255,0.04);
+}
+.prompt-label{font-size:0.68em;text-transform:uppercase;letter-spacing:0.1em;color:#4b5563;margin-bottom:8px}
+.prompt-text{
+  font-size:0.82em;color:#9ca3b0;line-height:1.7;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);
+  border-radius:9px;padding:12px 14px;
+  cursor:text;user-select:text;
+}
+.prompt-text .kw{color:#4ade80}
+.prompt-text .style{color:#93c5fd}
+.copy-btn{
+  margin-top:8px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:8px;padding:8px;
+  color:#6b7280;font-size:0.8em;cursor:pointer;
+  transition:all .2s;
+}
+.copy-btn:hover{background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.25);color:#4ade80}
+.copy-btn.ok{background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.3);color:#4ade80}
+
+/* ── PER-CHARACTER COLOR THEMES ── */
+/* Toron — green */
+.c-toron::before{background:linear-gradient(90deg,transparent,#4ade80,transparent)}
+.c-toron .char-faction-tag{background:rgba(74,222,128,0.1);color:#4ade80}
+.c-toron .char-title{border-color:#4ade80}
+.c-toron .rarity-stars{color:#4ade80}
+.c-toron .sec-title{color:#4ade80}.c-toron .sec-title::before{background:#4ade80}
+.c-toron .prose blockquote{background:rgba(74,222,128,0.05);border-color:#4ade80;color:#a7f3d0}
+.c-toron .stat-fill{background:linear-gradient(90deg,#065f46,#4ade80)}
+.c-toron .stat-val{color:#4ade80}
+
+/* Ah Qing — blue */
+.c-aqing::before{background:linear-gradient(90deg,transparent,#60a5fa,transparent)}
+.c-aqing .char-faction-tag{background:rgba(96,165,250,0.1);color:#60a5fa}
+.c-aqing .char-title{border-color:#60a5fa}
+.c-aqing .rarity-stars{color:#60a5fa}
+.c-aqing .sec-title{color:#60a5fa}.c-aqing .sec-title::before{background:#60a5fa}
+.c-aqing .prose blockquote{background:rgba(96,165,250,0.05);border-color:#60a5fa;color:#bfdbfe}
+.c-aqing .stat-fill{background:linear-gradient(90deg,#1e3a5f,#60a5fa)}
+.c-aqing .stat-val{color:#60a5fa}
+
+/* Runkar — red/grey */
+.c-runkar::before{background:linear-gradient(90deg,transparent,#f87171,transparent)}
+.c-runkar .char-faction-tag{background:rgba(248,113,113,0.1);color:#f87171}
+.c-runkar .char-title{border-color:#f87171}
+.c-runkar .rarity-stars{color:#f87171}
+.c-runkar .sec-title{color:#f87171}.c-runkar .sec-title::before{background:#f87171}
+.c-runkar .prose blockquote{background:rgba(248,113,113,0.05);border-color:#f87171;color:#fecaca}
+.c-runkar .stat-fill{background:linear-gradient(90deg,#7f1d1d,#f87171)}
+.c-runkar .stat-val{color:#f87171}
+
+/* Silvi — purple/teal */
+.c-silvi::before{background:linear-gradient(90deg,transparent,#c084fc,transparent)}
+.c-silvi .char-faction-tag{background:rgba(192,132,252,0.1);color:#c084fc}
+.c-silvi .char-title{border-color:#c084fc}
+.c-silvi .rarity-stars{color:#c084fc}
+.c-silvi .sec-title{color:#c084fc}.c-silvi .sec-title::before{background:#c084fc}
+.c-silvi .prose blockquote{background:rgba(192,132,252,0.05);border-color:#c084fc;color:#e9d5ff}
+.c-silvi .stat-fill{background:linear-gradient(90deg,#4c1d95,#c084fc)}
+.c-silvi .stat-val{color:#c084fc}
+
+/* Aeka — gold */
+.c-aeka::before{background:linear-gradient(90deg,transparent,#fbbf24,transparent)}
+.c-aeka .char-faction-tag{background:rgba(251,191,36,0.1);color:#fbbf24}
+.c-aeka .char-title{border-color:#fbbf24}
+.c-aeka .rarity-stars{color:#fbbf24}
+.c-aeka .sec-title{color:#fbbf24}.c-aeka .sec-title::before{background:#fbbf24}
+.c-aeka .prose blockquote{background:rgba(251,191,36,0.05);border-color:#fbbf24;color:#fde68a}
+.c-aeka .stat-fill{background:linear-gradient(90deg,#78350f,#fbbf24)}
+.c-aeka .stat-val{color:#fbbf24}
+
+@media(max-width:680px){
+  .body-grid{grid-template-columns:1fr}
+  .hero-strip{flex-direction:column}
+  .avatar-panel{width:100%;flex-direction:row;border-right:none;border-bottom:1px solid rgba(255,255,255,0.05)}
+  .world-title{font-size:2em}
+}
+</style>
+</head>
+<body>
+
+<!-- WORLD HEADER -->
+<div class="world-header">
+  <div class="world-label">📖 角色图鉴 · Character Compendium</div>
+  <div class="world-title">艾洛瑞亚大陆</div>
+  <div class="world-sub">AELORIA · 被生命与风守护的大陆</div>
+  <div class="faction-row">
+    <span class="faction" style="background:rgba(74,222,128,0.1);color:#4ade80">🌿 守护联盟</span>
+    <span class="faction" style="background:rgba(96,165,250,0.1);color:#60a5fa">⚔️ 见习守护师</span>
+    <span class="faction" style="background:rgba(248,113,113,0.1);color:#f87171">⚙️ 工业联合军团</span>
+    <span class="faction" style="background:rgba(192,132,252,0.1);color:#c084fc">🌸 林灵族</span>
+    <span class="faction" style="background:rgba(251,191,36,0.1);color:#fbbf24">🦅 自由天空</span>
+  </div>
+</div>
+
+<div class="char-grid">
+
+<!-- ══════════════════════════════════════
+     CHARACTER 01 · TORON
+══════════════════════════════════════ -->
+<div class="char-card c-toron">
+  <div class="hero-strip">
+    <div class="avatar-panel">
+      <div class="avatar-emoji">🐾</div>
+      <div class="char-num">No.001</div>
+      <div class="rarity-stars">★★★★★</div>
+    </div>
+    <div class="identity-panel">
+      <div class="char-faction-tag">🌿 守护联盟 · 森林神兽</div>
+      <div class="char-name-zh">银甲龙猫 · 托罗恩</div>
+      <div class="char-name-en">TORON · The Verdant Warden</div>
+      <div class="char-title" style="border-color:#4ade80">
+        森罗守护者第七代 · 源灵之化身 · 深绿禁区主宰<br>
+        「沉睡八百年，一吼惊天地」
+      </div>
+      <div class="quick-tags">
+        <span class="qtag">种族：灵兽族·神兽级</span>
+        <span class="qtag">年龄：2847岁</span>
+        <span class="qtag">身高：2.1m（含甲）</span>
+        <span class="qtag">属性：自然·机甲融合</span>
+        <span class="qtag">阵营：守护联盟</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="body-grid">
+    <div class="section">
+      <div class="sec-title">🎨 外形设定</div>
+      <div class="appear-item"><div class="appear-dot" style="background:#4ade80"></div><div class="appear-text"><strong>体型</strong> — 宫崎骏式圆润庞大，像熊又像猫，腹部微微突出，有可爱的亲切感</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#c0c0c0"></div><div class="appear-text"><strong>银甲</strong> — 背部、肩部、四肢覆盖银白色甲胄，纹路是树木年轮图案，甲缝中有苔藓生长</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#4ade80"></div><div class="appear-text"><strong>核心晶体</strong> — 胸口嵌入发光的绿色源灵晶体，是能量中枢，战斗时爆发强光</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#fbbf24"></div><div class="appear-text"><strong>眼睛</strong> — 平时琥珀金色，战斗时变蓝白发光，眼神有千年智慧的深邃</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#60a5fa"></div><div class="appear-text"><strong>胡须</strong> — 12根发光胡须，兼作传感器，能探测500米内所有生命气息</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#c084fc"></div><div class="appear-text"><strong>武器</strong> — 叶形能量伞（平时是雨伞，展开变3米盾牌）</div></div>
+
+      <br>
+      <div class="sec-title">📊 能力数值</div>
+      <div class="stat-row"><div class="stat-label">生命力</div><div class="stat-bg"><div class="stat-fill" style="width:98%"></div></div><div class="stat-val">98</div></div>
+      <div class="stat-row"><div class="stat-label">攻击力</div><div class="stat-bg"><div class="stat-fill" style="width:82%"></div></div><div class="stat-val">82</div></div>
+      <div class="stat-row"><div class="stat-label">防御力</div><div class="stat-bg"><div class="stat-fill" style="width:95%"></div></div><div class="stat-val">95</div></div>
+      <div class="stat-row"><div class="stat-label">速度</div><div class="stat-bg"><div class="stat-fill" style="width:55%"></div></div><div class="stat-val">55</div></div>
+      <div class="stat-row"><div class="stat-label">源灵力</div><div class="stat-bg"><div class="stat-fill" style="width:100%"></div></div><div class="stat-val">MAX</div></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">⚔️ 核心技能</div>
+      <div class="skill-item">
+        <div class="skill-icon">🌊</div>
+        <div><div class="skill-name">森罗震荡</div><div class="skill-desc">以身体为中心释放同心圆冲击波，波纹携带源灵净化力量，将污染能量驱散，半径200公里</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">🌱</div>
+        <div><div class="skill-name">千年根压</div><div class="skill-desc">召唤地下古树根系从地面暴发，缠绕并石化敌人，末端附腐蚀孢子</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">🍃</div>
+        <div><div class="skill-name">种子雨</div><div class="skill-desc">腹部核心超载释放，射出数千颗种子炸弹，落地后30秒长成完整森林</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">🛡️</div>
+        <div><div class="skill-name">伞盾圣域（被动）</div><div class="skill-desc">展开叶形能量伞形成球形结界，内部生命体每秒回复5%生命，免疫所有伤害</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">💭 性格与故事</div>
+      <div class="prose">
+        <p>外表威严如山，内心仍是那只<span class="hi">爱睡觉的憨厚神兽</span>。他不主动战斗，但一旦有生灵受威胁，会在30秒内全副武装出现。</p>
+        <br>
+        <p>他在橡树洞穴里有一张千年苔藓铺成的巨床，<span class="hi">每次睡觉小动物们都会爬满他肚皮</span>。他对孩子的笑声完全没有抵抗力。</p>
+        <br>
+        <blockquote>「八百年前，他用同样的眼神，见过同样的贪婪。结果——都一样。」</blockquote>
+        <br>
+        <p>公元2847年，他接受了林灵科学家的纳米机甲改造，成为<span class="em">自然魔法 × 未来科技</span>的融合守护神。</p>
+        <br>
+        <p><strong>弱点：</strong>接受改造后无法完全进入深眠恢复，动用终极技后需睡眠48小时。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="prompt-strip">
+    <div class="prompt-label">🎨 图像AI提示词（直接复制）</div>
+    <div class="prompt-text" id="p-toron"><span class="kw">A massive round bear-cat creature</span> with chubby belly and pointed ears, covered in <span class="kw">silver tree-ring pattern armor</span>, glowing green crystal core on chest, 12 luminous whiskers, warm amber eyes that glow blue-white in battle. Armor has moss growing in the cracks showing age. Stands 2 meters tall. <span class="kw">Calm powerful presence, cute but intimidating</span>. <span class="style">Miyazaki Totoro-inspired design, Japanese manga art style, detailed armor linework, forest guardian deity aesthetic</span>. Full body character sheet, white background, front view.</div>
+    <button class="copy-btn" onclick="cp('p-toron',this)">📋 复制提示词</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     CHARACTER 02 · AH QING
+══════════════════════════════════════ -->
+<div class="char-card c-aqing">
+  <div class="hero-strip">
+    <div class="avatar-panel">
+      <div class="avatar-emoji">🌿</div>
+      <div class="char-num">No.002</div>
+      <div class="rarity-stars">★★★★☆</div>
+    </div>
+    <div class="identity-panel">
+      <div class="char-faction-tag">⚔️ 守护联盟 · 见习守护师</div>
+      <div class="char-name-zh">阿青 · 卡尔·维丹</div>
+      <div class="char-name-en">AH QING · Kael Verdant</div>
+      <div class="char-title" style="border-color:#60a5fa">
+        深绿禁区第一见习守护师 · 源灵感知天才 · 龙猫的觉醒者<br>
+        「他来叫醒了沉睡八百年的守护神」
+      </div>
+      <div class="quick-tags">
+        <span class="qtag">种族：人类</span>
+        <span class="qtag">年龄：16岁</span>
+        <span class="qtag">身高：168cm</span>
+        <span class="qtag">属性：源灵感知·植物系</span>
+        <span class="qtag">故乡：木冠城</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="body-grid">
+    <div class="section">
+      <div class="sec-title">🎨 外形设定</div>
+      <div class="appear-item"><div class="appear-dot" style="background:#4ade80"></div><div class="appear-text"><strong>整体</strong> — 略偏瘦的少年身形，动作敏捷，眼神干净，有股天生的野性气质</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#86efac"></div><div class="appear-text"><strong>头发</strong> — 深棕色微卷发，额前有一缕浅绿色的发丝（源灵感染的痕迹）</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#60a5fa"></div><div class="appear-text"><strong>眼睛</strong> — 深蓝绿色，能看见源灵流动的光纹（特殊能力）</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#fbbf24"></div><div class="appear-text"><strong>服装</strong> — 旧款守护师学徒皮甲，墨绿色，手臂上有手绘的树纹符文，左肩挂一条干枯的树叶护符</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#f87171"></div><div class="appear-text"><strong>武器</strong> — 一根由源灵老树枝制成的短杖，末端有发光绿色晶石，同时能作近战和魔法引导</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#c084fc"></div><div class="appear-text"><strong>标志</strong> — 右手手背有一个淡绿色的树叶烙印，是守护师印记</div></div>
+
+      <br>
+      <div class="sec-title">📊 能力数值</div>
+      <div class="stat-row"><div class="stat-label">生命力</div><div class="stat-bg"><div class="stat-fill" style="width:62%"></div></div><div class="stat-val">62</div></div>
+      <div class="stat-row"><div class="stat-label">攻击力</div><div class="stat-bg"><div class="stat-fill" style="width:55%"></div></div><div class="stat-val">55</div></div>
+      <div class="stat-row"><div class="stat-label">防御力</div><div class="stat-bg"><div class="stat-fill" style="width:40%"></div></div><div class="stat-val">40</div></div>
+      <div class="stat-row"><div class="stat-label">速度</div><div class="stat-bg"><div class="stat-fill" style="width:88%"></div></div><div class="stat-val">88</div></div>
+      <div class="stat-row"><div class="stat-label">源灵感知</div><div class="stat-bg"><div class="stat-fill" style="width:95%"></div></div><div class="stat-val">95</div></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">⚔️ 核心技能</div>
+      <div class="skill-item">
+        <div class="skill-icon">👁️</div>
+        <div><div class="skill-name">源灵之眼（被动）</div><div class="skill-desc">天生能感知源灵流动，可以看见敌人的能量弱点，对所有攻击+15%命中率</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">🌱</div>
+        <div><div class="skill-name">召唤藤蔓</div><div class="skill-desc">用短杖引导地面藤蔓快速生长，可缠绕固定敌人，或搭桥越过障碍</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">💚</div>
+        <div><div class="skill-name">源灵共鸣</div><div class="skill-desc">与林灵族或神兽同伴建立心灵链接，共享视野和感知，战斗中传递坐标</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">🏃</div>
+        <div><div class="skill-name">树冠飞步</div><div class="skill-desc">在树枝间极速移动，可在战斗中绕到敌人后方，触发背刺效果</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">💭 性格与故事</div>
+      <div class="prose">
+        <p>表面上是个<span class="hi">冲动、嘴硬的少年</span>，实际上内心极为细腻——他是唯一一个能听见森林「说话」的人类。</p>
+        <br>
+        <p>从小在木冠城长大，父母都是守护师，在一次机甲入侵中失踪。他独自进入深绿禁区寻找答案，意外成为唤醒托罗恩的人。</p>
+        <br>
+        <blockquote>「我不是来当英雄的。我只是想找到我爸妈。」</blockquote>
+        <br>
+        <p>性格成长弧：从<span class="em">「只想找父母」→「意识到自己是守护师」→「选择留下守护森林」</span>。</p>
+        <br>
+        <p><strong>与托罗恩的关系：</strong>一开始托罗恩完全无视他，后来逐渐把他当成「今生的阿月和小梅」。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="prompt-strip">
+    <div class="prompt-label">🎨 图像AI提示词</div>
+    <div class="prompt-text" id="p-aqing"><span class="kw">A 16-year-old boy</span> with slightly lean build, quick eyes, untamed deep brown wavy hair with a single strand of pale green. <span class="kw">Deep blue-green eyes that shimmer with faint green energy lines</span>. Wearing worn dark green leather apprentice armor with hand-drawn tree-vein runes on forearms, dried leaf talisman on left shoulder. Carries <span class="kw">a short glowing green crystal-tipped wooden staff</span>. Green leaf-shaped birthmark on right hand. <span class="style">Japanese manga character design, clean line art, adventurous teen protagonist energy, forest setting, detailed costume</span>. Full body, front view, white background.</div>
+    <button class="copy-btn" onclick="cp('p-aqing',this)">📋 复制提示词</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     CHARACTER 03 · RUNKAR
+══════════════════════════════════════ -->
+<div class="char-card c-runkar">
+  <div class="hero-strip">
+    <div class="avatar-panel">
+      <div class="avatar-emoji">⚙️</div>
+      <div class="char-num">No.003</div>
+      <div class="rarity-stars">★★★★★</div>
+    </div>
+    <div class="identity-panel">
+      <div class="char-faction-tag">⚙️ 工业联合军团 · 最高督导</div>
+      <div class="char-name-zh">铁心总督 · 鲁恩克</div>
+      <div class="char-name-en">RUNKAR · The Iron Consul</div>
+      <div class="char-title" style="border-color:#f87171">
+        工业联合军团最高督导 · 卡尔德隆城主 · 源灵开采计划首席设计师<br>
+        「他不是坏人——他只是相信，文明的代价就是自然的消耗」
+      </div>
+      <div class="quick-tags">
+        <span class="qtag">种族：人类·矮钢族混血</span>
+        <span class="qtag">年龄：54岁</span>
+        <span class="qtag">身高：185cm</span>
+        <span class="qtag">属性：魔能科技·机甲操控</span>
+        <span class="qtag">阵营：工业联合军团</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="body-grid">
+    <div class="section">
+      <div class="sec-title">🎨 外形设定</div>
+      <div class="appear-item"><div class="appear-dot" style="background:#9ca3b0"></div><div class="appear-text"><strong>整体</strong> — 高大壮实，虽已五十多岁但身形依然挺拔，背脊笔直如铁</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#6b7280"></div><div class="appear-text"><strong>头发</strong> — 钢灰色短发，两鬓略白，留有精心打理的短须</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#f87171"></div><div class="appear-text"><strong>眼睛</strong> — 右眼是人类暗棕色，左眼是机械义眼（银色，有红色扫描光圈），可直接读取机甲数据</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#9ca3b0"></div><div class="appear-text"><strong>服装</strong> — 深灰色高领指挥官长袍，右肩有工业联合军团的齿轮金属徽章，左臂是机械义肢（精致的铜色合金）</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#fbbf24"></div><div class="appear-text"><strong>标志</strong> — 随身携带一枚小型源灵能量石，用金属链悬挂在胸前——是他已故女儿留下的</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#60a5fa"></div><div class="appear-text"><strong>气质</strong> — 不苟言笑，说话简洁有力，绝不废话，在下属面前永远冷静</div></div>
+
+      <br>
+      <div class="sec-title">📊 能力数值</div>
+      <div class="stat-row"><div class="stat-label">生命力</div><div class="stat-bg"><div class="stat-fill" style="width:70%"></div></div><div class="stat-val">70</div></div>
+      <div class="stat-row"><div class="stat-label">攻击力</div><div class="stat-bg"><div class="stat-fill" style="width:88%"></div></div><div class="stat-val">88</div></div>
+      <div class="stat-row"><div class="stat-label">防御力</div><div class="stat-bg"><div class="stat-fill" style="width:80%"></div></div><div class="stat-val">80</div></div>
+      <div class="stat-row"><div class="stat-label">智慧</div><div class="stat-bg"><div class="stat-fill" style="width:96%"></div></div><div class="stat-val">96</div></div>
+      <div class="stat-row"><div class="stat-label">领导力</div><div class="stat-bg"><div class="stat-fill" style="width:99%"></div></div><div class="stat-val">99</div></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">⚔️ 核心技能</div>
+      <div class="skill-item">
+        <div class="skill-icon">🤖</div>
+        <div><div class="skill-name">义眼全域感知</div><div class="skill-desc">机械义眼可同步操控指挥50台机甲，战场上所有机甲都是他的眼睛和手</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">💥</div>
+        <div><div class="skill-name">源灵炮</div><div class="skill-desc">机械义肢内置压缩源灵能量炮，单发可摧毁一栋建筑，充能时间15秒</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">🛡️</div>
+        <div><div class="skill-name">钢铁意志（被动）</div><div class="skill-desc">精神攻击完全无效，任何恐惧/迷惑效果免疫，但同时也对感情麻木</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">⚡</div>
+        <div><div class="skill-name">紧急觉醒协议</div><div class="skill-desc">当战局不利时激活，呼叫天空中的旗舰「卡尔德隆号」降临战场，进行地毯式轰炸</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">💭 性格与故事</div>
+      <div class="prose">
+        <p>鲁恩克不是单纯的反派。他年轻时是一个<span class="hi">深爱自然的工程师</span>，相信科技和自然可以共存。</p>
+        <br>
+        <p>转折点：他的女儿因灵森域的疾病去世，当时缺乏医疗资源。他认为如果工业文明更发达，她就不会死。此后他开始相信<span class="em">「自然是美好的，但文明进步更重要」</span>。</p>
+        <br>
+        <blockquote>「我不是来破坏森林的。我是来让这个世界不再有孩子因为缺医少药而死去。」</blockquote>
+        <br>
+        <p>他胸前那枚源灵石是女儿的遗物。他每次下令开采时，都会攥紧那枚石头。</p>
+        <br>
+        <p><strong>剧情张力：</strong>他和阿青有相似的「失去亲人」驱动力，却走向了截然相反的道路。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="prompt-strip">
+    <div class="prompt-label">🎨 图像AI提示词</div>
+    <div class="prompt-text" id="p-runkar"><span class="kw">A 54-year-old tall imposing man</span>, steel-grey short hair, neatly trimmed beard, straight-backed military posture. <span class="kw">Right eye human dark brown, left eye silver mechanical prosthetic with red scanning ring</span>. Wearing dark grey high-collar commander coat with gold gear emblem on right shoulder. <span class="kw">Left arm is a sophisticated copper-gold mechanical prosthetic</span>. Small crystal stone pendant on chest. Stern expression, cold intelligent eyes. <span class="style">Japanese manga villain design, detailed steampunk armor and coat, morally complex antagonist feel, industrial sci-fi aesthetic</span>. Full body, front view, white background.</div>
+    <button class="copy-btn" onclick="cp('p-runkar',this)">📋 复制提示词</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     CHARACTER 04 · SILVI
+══════════════════════════════════════ -->
+<div class="char-card c-silvi">
+  <div class="hero-strip">
+    <div class="avatar-panel">
+      <div class="avatar-emoji">🌸</div>
+      <div class="char-num">No.004</div>
+      <div class="rarity-stars">★★★★☆</div>
+    </div>
+    <div class="identity-panel">
+      <div class="char-faction-tag">🌸 林灵族 · 源灵治愈师</div>
+      <div class="char-name-zh">叶灵 · 西尔薇</div>
+      <div class="char-name-en">SILVI · Whisper of Leaves</div>
+      <div class="char-title" style="border-color:#c084fc">
+        林灵族源灵治愈师 · 木冠城守护学院教师 · 托罗恩的银甲改造设计者<br>
+        「她用科学改造了神兽，也失去了最后一片纯粹的自然」
+      </div>
+      <div class="quick-tags">
+        <span class="qtag">种族：林灵族</span>
+        <span class="qtag">年龄：312岁（外表25岁）</span>
+        <span class="qtag">身高：172cm</span>
+        <span class="qtag">属性：治愈·植物控制</span>
+        <span class="qtag">阵营：守护联盟</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="body-grid">
+    <div class="section">
+      <div class="sec-title">🎨 外形设定</div>
+      <div class="appear-item"><div class="appear-dot" style="background:#c084fc"></div><div class="appear-text"><strong>整体</strong> — 林灵族特有的纤细高挑，皮肤有淡淡的银绿色光泽，像月光下的叶片</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#86efac"></div><div class="appear-text"><strong>皮肤纹路</strong> — 手臂和颈部有天然生长的浅绿色树脉纹路，会随情绪发光</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#a78bfa"></div><div class="appear-text"><strong>头发</strong> — 银白色长发，发间自然生长着几片小叶子和小花，从不需要刻意装饰</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#c084fc"></div><div class="appear-text"><strong>眼睛</strong> — 紫色调虹膜，瞳孔是纵向椭圆（猫眼），蕴含深邃的生命能量</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#60a5fa"></div><div class="appear-text"><strong>服装</strong> — 半透明的浅绿色长裙，质地像苔藓又像薄雾，搭配源灵结晶制成的发簪和耳环</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#fbbf24"></div><div class="appear-text"><strong>武器</strong> — 一株活的植物权杖，会根据她的情绪开花或枯萎</div></div>
+
+      <br>
+      <div class="sec-title">📊 能力数值</div>
+      <div class="stat-row"><div class="stat-label">生命力</div><div class="stat-bg"><div class="stat-fill" style="width:65%"></div></div><div class="stat-val">65</div></div>
+      <div class="stat-row"><div class="stat-label">攻击力</div><div class="stat-bg"><div class="stat-fill" style="width:45%"></div></div><div class="stat-val">45</div></div>
+      <div class="stat-row"><div class="stat-label">治愈力</div><div class="stat-bg"><div class="stat-fill" style="width:100%"></div></div><div class="stat-val">MAX</div></div>
+      <div class="stat-row"><div class="stat-label">源灵感知</div><div class="stat-bg"><div class="stat-fill" style="width:92%"></div></div><div class="stat-val">92</div></div>
+      <div class="stat-row"><div class="stat-label">智慧</div><div class="stat-bg"><div class="stat-fill" style="width:90%"></div></div><div class="stat-val">90</div></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">⚔️ 核心技能</div>
+      <div class="skill-item">
+        <div class="skill-icon">💚</div>
+        <div><div class="skill-name">生命之歌</div><div class="skill-desc">哼唱源灵古歌，范围内所有友方单位每秒回复8%生命值，持续30秒</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">🌿</div>
+        <div><div class="skill-name">自然之壁</div><div class="skill-desc">瞬间召唤密集荆棘墙，阻挡敌方推进，荆棘会主动抓取并缠绕试图通过的机甲</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">🧬</div>
+        <div><div class="skill-name">源灵共生（终极）</div><div class="skill-desc">与一名战友完全融合生命能量，两人共享生命值，一方致死则另一方自动救援</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">🌺</div>
+        <div><div class="skill-name">森林复苏</div><div class="skill-desc">在被污染的土地上种下种子，3分钟内将整片区域恢复为原始生态</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">💭 性格与故事</div>
+      <div class="prose">
+        <p>西尔薇是整个故事中最复杂的人物之一。她深爱自然，但也是<span class="hi">给托罗恩装上机甲的人</span>——她永远无法原谅自己。</p>
+        <br>
+        <p>她和托罗恩有超过两千年的友谊。她曾在他沉睡的洞穴旁守候了一百年。</p>
+        <br>
+        <blockquote>「我用科学改造了他，让他更强大了。但我也让他再也无法完全回到那个，只会睡觉和放孢子的憨憨龙猫了。」</blockquote>
+        <br>
+        <p>她对阿青有强烈的直觉：<span class="em">「这个孩子身上有古老的源灵印记，他的父母不是失踪了——他们是被召唤去了更深的地方。」</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="prompt-strip">
+    <div class="prompt-label">🎨 图像AI提示词</div>
+    <div class="prompt-text" id="p-silvi"><span class="kw">A tall graceful forest elf woman</span>, silver-white long hair with small leaves and flowers naturally growing in it, skin with faint silver-green luminous tree vein patterns on arms and neck. <span class="kw">Purple cat-eye irises</span>, deep and ancient. Wearing <span class="kw">semi-transparent pale green flowing dress</span> like mist or moss, source crystal hair pin and earrings. Carries a living plant staff that blooms with emotion. Calm gentle expression with centuries of wisdom. <span class="style">Japanese manga elf character design, ethereal forest spirit aesthetic, glowing organic details, detailed botanical elements</span>. Full body, front view, white background.</div>
+    <button class="copy-btn" onclick="cp('p-silvi',this)">📋 复制提示词</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     CHARACTER 05 · AEKA
+══════════════════════════════════════ -->
+<div class="char-card c-aeka">
+  <div class="hero-strip">
+    <div class="avatar-panel">
+      <div class="avatar-emoji">🦅</div>
+      <div class="char-num">No.005</div>
+      <div class="rarity-stars">★★★★☆</div>
+    </div>
+    <div class="identity-panel">
+      <div class="char-faction-tag">🦅 天空独行者 · 神鹰族</div>
+      <div class="char-name-zh">鸣风 · 艾卡</div>
+      <div class="char-name-en">AEKA · The Storm Wing</div>
+      <div class="char-title" style="border-color:#fbbf24">
+        艾洛瑞亚最后一只神鹰 · 天空情报网核心节点 · 阿青的天空伙伴<br>
+        「她飞得比任何人都高，却只在阿青需要的时候降落」
+      </div>
+      <div class="quick-tags">
+        <span class="qtag">种族：神鹰族·灵兽</span>
+        <span class="qtag">年龄：约500岁</span>
+        <span class="qtag">翼展：4.5米</span>
+        <span class="qtag">属性：风·雷·速度</span>
+        <span class="qtag">阵营：中立→守护联盟</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="body-grid">
+    <div class="section">
+      <div class="sec-title">🎨 外形设定</div>
+      <div class="appear-item"><div class="appear-dot" style="background:#fbbf24"></div><div class="appear-text"><strong>整体</strong> — 体型比普通鹰大十倍，展翅4.5米，但飞行时极度安静，几乎无声</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#e8e8f0"></div><div class="appear-text"><strong>羽毛颜色</strong> — 主体银白色，翼尖和尾羽是金色，飞行时在阳光下闪烁，像流星</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#fbbf24"></div><div class="appear-text"><strong>眼睛</strong> — 纯金色，眼神犀利但不凶狠，能看穿一切伪装和谎言</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#60a5fa"></div><div class="appear-text"><strong>特殊标志</strong> — 左翼有一道旧伤疤（被机甲击伤），疤上的羽毛永远无法完全长好，那里常有蓝色电流游动</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#c084fc"></div><div class="appear-text"><strong>人形态（可选）</strong> — 偶尔可化为17岁少女形态，银白短发，金眼，背部有翅膀纹身</div></div>
+      <div class="appear-item"><div class="appear-dot" style="background:#4ade80"></div><div class="appear-text"><strong>气质</strong> — 高傲，不受拘束，轻易不与人亲近，但一旦认定为伙伴绝不背弃</div></div>
+
+      <br>
+      <div class="sec-title">📊 能力数值</div>
+      <div class="stat-row"><div class="stat-label">生命力</div><div class="stat-bg"><div class="stat-fill" style="width:75%"></div></div><div class="stat-val">75</div></div>
+      <div class="stat-row"><div class="stat-label">攻击力</div><div class="stat-bg"><div class="stat-fill" style="width:85%"></div></div><div class="stat-val">85</div></div>
+      <div class="stat-row"><div class="stat-label">速度</div><div class="stat-bg"><div class="stat-fill" style="width:100%"></div></div><div class="stat-val">MAX</div></div>
+      <div class="stat-row"><div class="stat-label">侦察力</div><div class="stat-bg"><div class="stat-fill" style="width:98%"></div></div><div class="stat-val">98</div></div>
+      <div class="stat-row"><div class="stat-label">风雷力</div><div class="stat-bg"><div class="stat-fill" style="width:90%"></div></div><div class="stat-val">90</div></div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">⚔️ 核心技能</div>
+      <div class="skill-item">
+        <div class="skill-icon">⚡</div>
+        <div><div class="skill-name">雷翼俯冲</div><div class="skill-desc">蓄积雷电后高速俯冲，命中目标时释放电磁脉冲，使机甲系统短路瘫痪3秒</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">🌪️</div>
+        <div><div class="skill-name">风眼风暴</div><div class="skill-desc">高速盘旋制造龙卷风，范围内所有飞行器被迫降落，速度单位获得超高机动性</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">👁️</div>
+        <div><div class="skill-name">万里鹰眼（被动）</div><div class="skill-desc">在飞行高度下可同步将视野分享给伙伴，相当于实时卫星侦察，无死角</div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon">🌩️</div>
+        <div><div class="skill-name">天罚一击（终极）</div><div class="skill-desc">从大气层高度俯冲，翼尖集中全身雷电，单点攻击可贯穿最厚的机甲装甲</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-title">💭 性格与故事</div>
+      <div class="prose">
+        <p>艾卡是<span class="hi">整个艾洛瑞亚最后一只神鹰</span>。她的族群在一百年前的第一次工业战争中几乎灭绝，只有她活了下来。</p>
+        <br>
+        <p>她独自在天空流浪了一百年，拒绝任何同盟。直到阿青在千年古树上遇见了受伤的她，<span class="em">不求回报地帮她包扎</span>——那是一百年来第一个不害怕她的人类。</p>
+        <br>
+        <blockquote>「我不需要伙伴。我只是……暂时和你同路。」</blockquote>
+        <p style="font-size:0.8em;color:#6b7280;margin-top:4px">（三话后她开始每天给阿青带食物）</p>
+        <br>
+        <p>她与托罗恩有古老的渊源——在遥远的过去，神鹰族是神兽们的信使，艾卡的祖先曾为托罗恩传递过重要情报。</p>
+        <br>
+        <p><strong>成长弧：</strong>从<span class="em">「我永远不再相信任何人」→「也许这几个傻瓜值得我留下来」</span>。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="prompt-strip">
+    <div class="prompt-label">🎨 图像AI提示词（鸟形态）</div>
+    <div class="prompt-text" id="p-aeka"><span class="kw">A massive silver-white eagle</span> with 4.5 meter wingspan, primary feathers silver, wingtip and tail feathers gold, gleaming in sunlight. <span class="kw">Pure golden piercing eyes</span>, sharp but not cruel. Left wing has an old scar with <span class="kw">blue electric sparks dancing along it</span>. Feathers incredibly detailed, each one sharp and luminous. Powerful talons. Mid-flight pose, wings spread wide. <span class="style">Japanese manga creature design, divine beast aesthetic, detailed feather illustration, dynamic wind motion lines, sky background with clouds</span>. Full illustration, dramatic lighting.</div>
+    <button class="copy-btn" onclick="cp('p-aeka',this)">📋 复制提示词</button>
+  </div>
+</div>
+
+</div><!-- end char-grid -->
+
+<script>
+function cp(id, btn){
+  const el = document.getElementById(id);
+  const text = (el.innerText || el.textContent).trim();
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ 已复制！';
+    btn.classList.add('ok');
+    setTimeout(()=>{btn.innerHTML=orig;btn.classList.remove('ok')},2000);
+  }).catch(()=>{
+    const r=document.createRange();r.selectNodeContents(el);
+    const s=window.getSelection();s.removeAllRanges();s.addRange(r);
+    document.execCommand('copy');s.removeAllRanges();
+    btn.innerHTML='✅ 已复制！';btn.classList.add('ok');
+    setTimeout(()=>{btn.innerHTML='📋 复制提示词';btn.classList.remove('ok')},2000);
+  });
+}
+</script>
+</body>
+</html>

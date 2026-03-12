@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>银甲龙猫 · 漫画脚本 第一话</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#0c0c0f;
+  color:#e8e8f0;
+  font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif;
+  padding:32px 16px 80px;
+}
+
+/* ── TITLE BLOCK ── */
+.title-block{
+  max-width:860px;margin:0 auto 48px;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  padding-bottom:28px;
+}
+.series-label{
+  font-size:0.72em;letter-spacing:0.2em;color:#4ade80;
+  text-transform:uppercase;margin-bottom:8px;
+}
+.manga-title{
+  font-size:2.6em;font-weight:900;line-height:1.1;
+  background:linear-gradient(135deg,#e8e8f0 0%,#9ca3b0 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:6px;
+}
+.chapter-title{
+  font-size:1.1em;color:#6b7280;letter-spacing:0.1em;
+  margin-bottom:18px;
+}
+.meta-row{
+  display:flex;gap:24px;flex-wrap:wrap;
+}
+.meta-item{font-size:0.82em;color:#6b7280}
+.meta-item span{color:#9ca3b0;font-weight:600}
+
+/* ── PANEL CARD ── */
+.script-page{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+
+.panel-card{
+  background:#111118;
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:18px;
+  overflow:hidden;
+  position:relative;
+}
+.panel-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+}
+.panel-card.p1::before{background:linear-gradient(90deg,transparent,#4ade80,transparent)}
+.panel-card.p2::before{background:linear-gradient(90deg,transparent,#60a5fa,transparent)}
+.panel-card.p3::before{background:linear-gradient(90deg,transparent,#f87171,transparent)}
+.panel-card.p4::before{background:linear-gradient(90deg,transparent,#fbbf24,transparent)}
+.panel-card.p5::before{background:linear-gradient(90deg,transparent,#c084fc,transparent)}
+.panel-card.p6::before{background:linear-gradient(90deg,transparent,#4ade80,transparent)}
+
+/* panel header */
+.panel-head{
+  display:flex;align-items:center;gap:14px;
+  padding:18px 24px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.panel-num{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3em;font-weight:900;flex-shrink:0;
+}
+.p1 .panel-num{background:rgba(74,222,128,0.12);color:#4ade80}
+.p2 .panel-num{background:rgba(96,165,250,0.12);color:#60a5fa}
+.p3 .panel-num{background:rgba(248,113,113,0.12);color:#f87171}
+.p4 .panel-num{background:rgba(251,191,36,0.12);color:#fbbf24}
+.p5 .panel-num{background:rgba(192,132,252,0.12);color:#c084fc}
+.p6 .panel-num{background:rgba(74,222,128,0.12);color:#4ade80}
+.panel-head-info{flex:1}
+.panel-name{font-size:1em;font-weight:700;margin-bottom:2px}
+.panel-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px}
+.tag{
+  font-size:0.68em;padding:2px 10px;border-radius:10px;font-weight:600;
+  letter-spacing:0.04em;
+}
+.tag-shot{background:rgba(96,165,250,0.12);color:#93c5fd}
+.tag-mood{background:rgba(192,132,252,0.12);color:#d8b4fe}
+.tag-sfx {background:rgba(248,113,113,0.12);color:#fca5a5}
+.tag-beat{background:rgba(251,191,36,0.12);color:#fde68a}
+
+/* panel body — 3-column grid */
+.panel-body{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:1px;
+  background:rgba(255,255,255,0.04);
+}
+.col{
+  background:#111118;
+  padding:18px 20px;
+}
+.col-title{
+  font-size:0.68em;text-transform:uppercase;letter-spacing:0.12em;
+  color:#4b5563;margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.col-title::before{
+  content:'';display:inline-block;width:3px;height:12px;border-radius:2px;
+}
+.col.scene .col-title::before{background:#4ade80}
+.col.camera .col-title::before{background:#60a5fa}
+.col.dialogue .col-title::before{background:#fbbf24}
+
+/* scene col */
+.scene-text{font-size:0.85em;color:#c4c4d4;line-height:1.8}
+.scene-text .em{color:#4ade80;font-weight:600}
+.scene-text .obj{color:#93c5fd}
+.scene-text .atmo{color:#d8b4fe;font-style:italic}
+
+/* camera col */
+.camera-item{
+  display:flex;gap:8px;align-items:flex-start;
+  margin-bottom:10px;font-size:0.84em;
+}
+.camera-dot{
+  width:6px;height:6px;border-radius:50%;
+  margin-top:6px;flex-shrink:0;background:#60a5fa;
+}
+.camera-text{color:#c4c4d4;line-height:1.6}
+.camera-text .kw{color:#93c5fd;font-weight:600}
+
+/* sketch placeholder */
+.sketch-box{
+  margin:12px 0;
+  background:rgba(255,255,255,0.03);
+  border:1px dashed rgba(255,255,255,0.1);
+  border-radius:10px;
+  padding:18px 12px;
+  text-align:center;
+  font-size:3em;
+  line-height:1;
+}
+.sketch-desc{
+  font-size:0.72em;color:#4b5563;
+  text-align:center;margin-top:6px;
+  line-height:1.5;
+}
+
+/* dialogue col */
+.bubble{
+  background:rgba(255,255,255,0.04);
+  border-radius:12px;
+  padding:10px 14px;
+  margin-bottom:10px;
+  position:relative;
+}
+.bubble-speaker{
+  font-size:0.68em;color:#6b7280;margin-bottom:4px;
+  letter-spacing:0.05em;text-transform:uppercase;
+}
+.bubble-text{font-size:0.88em;color:#e8e8f0;line-height:1.6;font-weight:500}
+.bubble.narration{
+  background:rgba(251,191,36,0.06);
+  border:1px solid rgba(251,191,36,0.15);
+}
+.bubble.narration .bubble-speaker{color:#92400e}
+.bubble.narration .bubble-text{color:#fde68a;font-style:italic}
+.bubble.sfx{
+  background:rgba(248,113,113,0.06);
+  border:1px solid rgba(248,113,113,0.15);
+}
+.bubble.sfx .bubble-text{
+  color:#fca5a5;font-weight:900;font-size:1.1em;letter-spacing:0.1em;
+}
+.bubble.thought{
+  background:rgba(192,132,252,0.06);
+  border:1px solid rgba(192,132,252,0.15);
+}
+.bubble.thought .bubble-text{color:#d8b4fe;font-style:italic}
+
+/* visual notes strip */
+.visual-notes{
+  padding:12px 24px;
+  background:rgba(0,0,0,0.2);
+  border-top:1px solid rgba(255,255,255,0.04);
+  display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;
+}
+.vn-label{
+  font-size:0.7em;color:#4b5563;
+  text-transform:uppercase;letter-spacing:0.1em;
+  padding-top:3px;flex-shrink:0;
+}
+.vn-text{font-size:0.8em;color:#6b7280;line-height:1.7;flex:1}
+.vn-text .hi{color:#9ca3b0}
+
+/* legend key */
+.legend{
+  max-width:860px;margin:0 auto 32px;
+  display:flex;gap:14px;flex-wrap:wrap;
+}
+.legend-item{
+  display:flex;align-items:center;gap:6px;
+  font-size:0.75em;color:#6b7280;
+}
+.legend-swatch{width:10px;height:10px;border-radius:3px}
+
+/* page number */
+.page-footer{
+  text-align:center;margin-top:48px;
+  color:#374151;font-size:0.8em;
+}
+
+@media(max-width:640px){
+  .panel-body{grid-template-columns:1fr}
+  .manga-title{font-size:1.8em}
+}
+</style>
+</head>
+<body>
+
+<!-- TITLE -->
+<div class="title-block">
+  <div class="series-label">📖 漫画脚本 · Comic Script</div>
+  <div class="manga-title">银甲龙猫</div>
+  <div class="chapter-title">第一话 —「觉醒」Awakening</div>
+  <div class="meta-row">
+    <div class="meta-item">作者 <span>阿青 &amp; AI</span></div>
+    <div class="meta-item">格数 <span>6 格</span></div>
+    <div class="meta-item">分镜 <span>横版 · 杂志风</span></div>
+    <div class="meta-item">背景 <span>2847年 · 深绿禁区</span></div>
+    <div class="meta-item">风格参考 <span>《进击的巨人》分镜 × 宫崎骏场景</span></div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-swatch" style="background:#4ade80"></div>场景描述</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#60a5fa"></div>镜头说明</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#fbbf24"></div>对话气泡</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#fca5a5"></div>音效</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#d8b4fe"></div>内心独白</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#fde68a"></div>旁白框</div>
+</div>
+
+<div class="script-page">
+
+  <!-- ══ PANEL 1 ══ -->
+  <div class="panel-card p1">
+    <div class="panel-head">
+      <div class="panel-num">01</div>
+      <div class="panel-head-info">
+        <div class="panel-name">末日前夜 · 机器的洪流</div>
+        <div class="panel-tags">
+          <span class="tag tag-shot">超远景 · 鸟瞰</span>
+          <span class="tag tag-mood">压迫 / 壮观</span>
+          <span class="tag tag-beat">开场震撼</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="col scene">
+        <div class="col-title">🌿 场景描述</div>
+        <div class="scene-text">
+          <p><span class="atmo">黄昏时分</span>，整片深绿禁区从高空俯瞰。</p>
+          <br>
+          <p><span class="em">左侧</span>：原始森林，参天古木密密麻麻，顶部有层薄雾。</p>
+          <br>
+          <p><span class="em">右侧</span>：工业地带的铁灰色机器群，数十台<span class="obj">巨型采矿机甲</span>正缓缓向森林边界逼近，履带压过大地，扬起尘埃。</p>
+          <br>
+          <p><span class="atmo">天空被橙色烟雾染成了不自然的颜色。</span></p>
+          <br>
+          <p>画面正中央：森林与机器之间的一条<span class="obj">细细的绿色光线</span>，从地底透出，几乎看不见。</p>
+        </div>
+      </div>
+      <div class="col camera">
+        <div class="col-title">🎥 镜头说明</div>
+        <div class="sketch-box">🌍</div>
+        <div class="sketch-desc">超远景鸟瞰 · 占整页宽 · 横向满幅</div>
+        <br>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">构图</span>：左绿右灰，对角线分割画面，制造压迫感</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">焦点</span>：镜头微微虚化边缘，将视线引向中央光线</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">光影</span>：右侧机器带逆光强光，左侧森林偏阴暗</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">细节</span>：机器群远处有烟囱，森林近处有鸟群受惊飞起</div></div>
+      </div>
+      <div class="col dialogue">
+        <div class="col-title">💬 对话 / 旁白</div>
+        <div class="bubble narration">
+          <div class="bubble-speaker">📜 旁白</div>
+          <div class="bubble-text">公元 2847 年。人类的钢铁洪流抵达了地球最后的禁区。</div>
+        </div>
+        <div class="bubble narration">
+          <div class="bubble-speaker">📜 旁白</div>
+          <div class="bubble-text">无人知晓，在一千年的沉眠之下，有什么东西——正在苏醒。</div>
+        </div>
+        <div class="bubble sfx">
+          <div class="bubble-speaker">🔊 音效</div>
+          <div class="bubble-text">BOOM BOOM BOOM…</div>
+        </div>
+        <div class="bubble sfx">
+          <div class="bubble-speaker">🔊 环境音</div>
+          <div class="bubble-text">（鸟群惊飞声 · 机器轰鸣声渐强）</div>
+        </div>
+      </div>
+    </div>
+    <div class="visual-notes">
+      <div class="vn-label">🎨 画师注</div>
+      <div class="vn-text">这格要传达<span class="hi">「世界末日感」</span>。机器群密度要够大，像黑色海浪涌向绿色海岸。地底那条绿线画得细而隐约，读者第一眼不一定注意到——那是给细心读者的彩蛋，在第3格回收。</div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 2 ══ -->
+  <div class="panel-card p2">
+    <div class="panel-head">
+      <div class="panel-num">02</div>
+      <div class="panel-head-info">
+        <div class="panel-name">地底 · 千年的沉眠</div>
+        <div class="panel-tags">
+          <span class="tag tag-shot">中景 · 仰角</span>
+          <span class="tag tag-mood">寂静 / 神圣</span>
+          <span class="tag tag-beat">角色登场前置</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="col scene">
+        <div class="col-title">🌿 场景描述</div>
+        <div class="scene-text">
+          <p>场景切换：地底深处，一片<span class="atmo">由千年根系编织而成的巨大洞穴</span>。</p>
+          <br>
+          <p>洞穴中央，<span class="obj">巨大的苔藓土丘</span>盘踞，高约10米。土丘表面有均匀的、缓慢的起伏——那是呼吸。</p>
+          <br>
+          <p>土丘顶部透出<span class="em">微弱的绿色荧光</span>，像余烬，又像将要燃起的火。</p>
+          <br>
+          <p>洞穴四壁有<span class="obj">发光的苔藓</span>，星星点点，营造出深邃的宇宙感。</p>
+          <br>
+          <p><span class="atmo">完全寂静。连空气都凝固了。</span></p>
+        </div>
+      </div>
+      <div class="col camera">
+        <div class="col-title">🎥 镜头说明</div>
+        <div class="sketch-box">🌑</div>
+        <div class="sketch-desc">中景仰角 · 从地面向上看土丘 · 约半页高</div>
+        <br>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">构图</span>：土丘居中偏下，顶部绿光向上延伸出画面</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">光源</span>：唯一光源来自土丘本身的绿光，其余全黑</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">质感</span>：苔藓纹路细腻，有水珠凝结，体现「千年」的感觉</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">气氛线</span>：从土丘向外辐射细密的放射线（表现神圣感）</div></div>
+      </div>
+      <div class="col dialogue">
+        <div class="col-title">💬 对话 / 旁白</div>
+        <div class="bubble narration">
+          <div class="bubble-speaker">📜 旁白</div>
+          <div class="bubble-text">地底三百米。一个任何地图都未曾标注的地方。</div>
+        </div>
+        <div class="bubble narration">
+          <div class="bubble-speaker">📜 旁白</div>
+          <div class="bubble-text">他已经睡了八百年了。</div>
+        </div>
+        <div class="bubble sfx">
+          <div class="bubble-speaker">🔊 音效</div>
+          <div class="bubble-text">ズゥゥ…（低沉鼾声，大地的震动）</div>
+        </div>
+        <div class="bubble thought">
+          <div class="bubble-speaker">💭 无声画面注释</div>
+          <div class="bubble-text">（这一格无台词。纯粹用画面说话。）</div>
+        </div>
+      </div>
+    </div>
+    <div class="visual-notes">
+      <div class="vn-label">🎨 画师注</div>
+      <div class="vn-text">这格节奏要<span class="hi">慢下来</span>，和第1格的壮观形成对比。读者的眼睛需要在这里休息一秒，感受「寂静」。土丘的轮廓要隐约透出龙猫的身形——圆润的肩膀、耳朵尖——但不要画清楚，保持神秘感。</div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 3 ══ -->
+  <div class="panel-card p3">
+    <div class="panel-head">
+      <div class="panel-num">03</div>
+      <div class="panel-head-info">
+        <div class="panel-name">心晶共鸣 · 眼睛睁开</div>
+        <div class="panel-tags">
+          <span class="tag tag-shot">极端特写 · 正面</span>
+          <span class="tag tag-mood">震撼 / 觉醒</span>
+          <span class="tag tag-beat">全话最强画面</span>
+          <span class="tag tag-sfx">大音效</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="col scene">
+        <div class="col-title">🌿 场景描述</div>
+        <div class="scene-text">
+          <p><span class="atmo">极端特写：</span>银甲龙猫的一只眼睛，占据整个画格。</p>
+          <br>
+          <p>眼睛正在<span class="em">缓缓睁开</span>。</p>
+          <br>
+          <p>眼皮覆盖着<span class="obj">银色鳞状甲片</span>，像盔甲一样。甲片上有裂缝，苔藓从裂缝里生长出来——时间的痕迹。</p>
+          <br>
+          <p>瞳孔：从<span class="atmo">灰白色</span>（沉睡状态）开始，逐渐充入<span class="em">蓝白色的荧光</span>，最后燃起<span class="em">金色光环</span>。</p>
+          <br>
+          <p>眼白处有<span class="obj">微细的绿色纹路</span>在流动——森林的脉络。</p>
+        </div>
+      </div>
+      <div class="col camera">
+        <div class="col-title">🎥 镜头说明</div>
+        <div class="sketch-box">👁️</div>
+        <div class="sketch-desc">极端特写 · 单眼占满画格 · 强调细节</div>
+        <br>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">构图</span>：眼睛横向充满页宽，上下留出少量黑边</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">层次</span>：前景眼睫毛（银色甲状）/ 中景瞳孔发光 / 背景虹膜纹路</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">光效</span>：瞳孔中心向外的放射光，用白色飞白线表现</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">动态线</span>：眼睑向两侧撑开的速度线，放射状</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text" style="color:#f87171"><span class="kw">⭐ 重要</span>：这是全话关键画面，可以在格外加白色粗边框强调</div></div>
+      </div>
+      <div class="col dialogue">
+        <div class="col-title">💬 对话 / 旁白</div>
+        <div class="bubble sfx">
+          <div class="bubble-speaker">🔊 主音效（超大字体）</div>
+          <div class="bubble-text" style="font-size:1.4em">バッ！！</div>
+        </div>
+        <div class="bubble sfx">
+          <div class="bubble-speaker">🔊 副音效</div>
+          <div class="bubble-text">（大地震动声 · 根系破裂声）</div>
+        </div>
+        <div class="bubble narration">
+          <div class="bubble-speaker">📜 旁白</div>
+          <div class="bubble-text">……有人，踏入了这片森林。</div>
+        </div>
+        <div class="bubble">
+          <div class="bubble-speaker">🗣 银甲龙猫（初醒，低沉）</div>
+          <div class="bubble-text">「…ん。」<br>（嗯。）</div>
+        </div>
+      </div>
+    </div>
+    <div class="visual-notes">
+      <div class="vn-label">🎨 画师注</div>
+      <div class="vn-text">这格是<span class="hi">本话封面候选</span>。眼睛里要能看出「智慧」和「力量」，不是怪物的眼，是一个守护者的眼。瞳孔变色的过程尽量细腻——灰→蓝白→金，可以用放射状渐变效果。甲片裂缝里的苔藓是「时间感」的关键，不能省。</div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 4 ══ -->
+  <div class="panel-card p4">
+    <div class="panel-head">
+      <div class="panel-num">04</div>
+      <div class="panel-head-info">
+        <div class="panel-name">破土而出 · 银甲展开</div>
+        <div class="panel-tags">
+          <span class="tag tag-shot">远景 · 仰角</span>
+          <span class="tag tag-mood">壮阔 / 力量</span>
+          <span class="tag tag-beat">高潮前置</span>
+          <span class="tag tag-sfx">爆破效果</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="col scene">
+        <div class="col-title">🌿 场景描述</div>
+        <div class="scene-text">
+          <p>镜头拉回到<span class="atmo">地面</span>。</p>
+          <br>
+          <p>圣树林的中央——地面<span class="em">猛然向上爆裂</span>，泥土、石块、根系四散飞出，像火山喷发。</p>
+          <br>
+          <p>从裂缝中，一个<span class="obj">银白色的巨大身躯</span>正在升起。甲胄上的年轮纹路在黑暗中发光。</p>
+          <br>
+          <p>银甲龙猫的双臂<span class="em">向两侧展开</span>，甲胄碎片自动飞回、重组，发出金属与自然能量交融的光芒。</p>
+          <br>
+          <p>周围的<span class="obj">古树向他弯腰</span>——不是被风吹倒，是主动致敬。</p>
+        </div>
+      </div>
+      <div class="col camera">
+        <div class="col-title">🎥 镜头说明</div>
+        <div class="sketch-box">⬆️</div>
+        <div class="sketch-desc">远景仰角 · 从地面向上看 · 龙猫占画面2/3高度</div>
+        <br>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">构图</span>：龙猫居中偏左，右侧留出「未来行进方向」的空间</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">仰角</span>：极低机位，凸显体型压迫感，天空在背景</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">碎片</span>：泥土、岩石碎片用速度线向四周飞散</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">光效</span>：甲胄重组时有金属光泽，核心晶体爆发绿光光晕</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">树木</span>：两侧古树轮廓弯向龙猫，用简笔表现「致敬」的姿态</div></div>
+      </div>
+      <div class="col dialogue">
+        <div class="col-title">💬 对话 / 旁白</div>
+        <div class="bubble sfx">
+          <div class="bubble-speaker">🔊 破土音效</div>
+          <div class="bubble-text" style="font-size:1.2em">ドドドド！！！</div>
+        </div>
+        <div class="bubble sfx">
+          <div class="bubble-speaker">🔊 甲胄重组</div>
+          <div class="bubble-text">カチャカチャカチャ…</div>
+        </div>
+        <div class="bubble">
+          <div class="bubble-speaker">🗣 银甲龙猫（低沉，深呼吸）</div>
+          <div class="bubble-text">「…八百年か。」<br>（……八百年了啊。）</div>
+        </div>
+        <div class="bubble thought">
+          <div class="bubble-speaker">💭 龙猫内心</div>
+          <div class="bubble-text">（扫描森林——鸟群惊散，机器轰鸣，大地哭泣。）</div>
+        </div>
+      </div>
+    </div>
+    <div class="visual-notes">
+      <div class="vn-label">🎨 画师注</div>
+      <div class="vn-text">这格要表现<span class="hi">「力量感」但不是「暴力感」</span>——破土而出不是愤怒，而是自然而然地站起来。龙猫的姿势建议参考「伸懒腰」而不是「战斗姿态」。他的圆润轮廓和银色甲胄的对比是视觉亮点，可以在甲胄边缘加细白边线来突出质感。</div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 5 ══ -->
+  <div class="panel-card p5">
+    <div class="panel-head">
+      <div class="panel-num">05</div>
+      <div class="panel-head-info">
+        <div class="panel-name">对峙 · 钢铁 vs 自然</div>
+        <div class="panel-tags">
+          <span class="tag tag-shot">双人对峙 · 俯角</span>
+          <span class="tag tag-mood">紧张 / 压迫</span>
+          <span class="tag tag-beat">戏剧冲突最高点</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="col scene">
+        <div class="col-title">🌿 场景描述</div>
+        <div class="scene-text">
+          <p>银甲龙猫站在森林边缘，<span class="atmo">与机器群面对面</span>。</p>
+          <br>
+          <p><span class="em">左侧</span>：龙猫从容站立，双臂自然垂落，背后是茂密的绿色森林。他的甲胄完全激活，胸口<span class="obj">核心晶体</span>发出稳定的绿光脉冲。</p>
+          <br>
+          <p><span class="em">右侧</span>：五台<span class="obj">重型采矿机甲</span>，高约三层楼，对准龙猫。机甲的驾驶舱有红色警报灯在闪烁。</p>
+          <br>
+          <p>中间：一片<span class="atmo">被机器碾过的焦土</span>，和龙猫脚下一小片<span class="em">绿草</span>形成对比。</p>
+          <br>
+          <p>画面正中：龙猫12根胡须<span class="em">笔直前指</span>——战斗准备完毕。</p>
+        </div>
+      </div>
+      <div class="col camera">
+        <div class="col-title">🎥 镜头说明</div>
+        <div class="sketch-box">⚖️</div>
+        <div class="sketch-desc">俯角中景 · 两者各占画面左右 · 中轴对称</div>
+        <br>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">构图</span>：严格左右对称，中线是「边界」</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">色调</span>：左侧绿暖色 / 右侧灰冷色，极致对比</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">视线引导</span>：龙猫的胡须像箭头，指向机器方向</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">细节</span>：机甲地上的轮印 vs 龙猫脚下的草地——微细节说明主题</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">紧张感</span>：空气扭曲线（热量/能量）在中间地带</div></div>
+      </div>
+      <div class="col dialogue">
+        <div class="col-title">💬 对话 / 旁白</div>
+        <div class="bubble">
+          <div class="bubble-speaker">🗣 机甲广播（冷漠的机械音）</div>
+          <div class="bubble-text">「区域内生物体警告：立即撤离。否则将被视为资源障碍。」</div>
+        </div>
+        <div class="bubble">
+          <div class="bubble-speaker">🗣 银甲龙猫（平静，不急不缓）</div>
+          <div class="bubble-text">「……」<br>（沉默。但胡须微微颤动。）</div>
+        </div>
+        <div class="bubble narration">
+          <div class="bubble-speaker">📜 旁白</div>
+          <div class="bubble-text">八百年前，他用同样的眼神，见过同样的贪婪。</div>
+        </div>
+        <div class="bubble narration">
+          <div class="bubble-speaker">📜 旁白</div>
+          <div class="bubble-text">结果——都一样。</div>
+        </div>
+      </div>
+    </div>
+    <div class="visual-notes">
+      <div class="vn-label">🎨 画师注</div>
+      <div class="vn-text">这格的<span class="hi">戏剧张力来自龙猫的「不动」</span>。机器那侧充满动态线和警报红光，龙猫这侧绝对安静。用「静」对抗「动」制造压迫感。龙猫的表情——大眼睛半眯，不是愤怒，是「好久不见这种感觉了」的淡然。</div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 6 ══ -->
+  <div class="panel-card p6">
+    <div class="panel-head">
+      <div class="panel-num">06</div>
+      <div class="panel-head-info">
+        <div class="panel-name">龙猫吼 · 森林的回答</div>
+        <div class="panel-tags">
+          <span class="tag tag-shot">超远景 · 冲击波视角</span>
+          <span class="tag tag-mood">震撼 / 壮烈 / 希望</span>
+          <span class="tag tag-beat">本话收尾 · 下话铺垫</span>
+          <span class="tag tag-sfx">全话最大音效</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="col scene">
+        <div class="col-title">🌿 场景描述</div>
+        <div class="scene-text">
+          <p>银甲龙猫<span class="em">张开嘴，发出「龙猫吼」</span>。</p>
+          <br>
+          <p>音波以他为圆心，<span class="obj">同心圆波纹</span>向四方扩散——视觉上像水面涟漪，但是三维立体的。</p>
+          <br>
+          <p>波纹经过之处：机甲被<span class="em">推飞出去</span>，在空中翻滚；地面碎石腾空；橙色烟雾被<span class="em">吹散</span>，露出一片蔚蓝天空。</p>
+          <br>
+          <p>波纹同时向森林蔓延：每棵<span class="obj">古树的叶子</span>被吹动，发出沙沙的声音，像掌声。</p>
+          <br>
+          <p>最远处天空中，一只<span class="em">银白色神鹰</span>展翅飞来。</p>
+        </div>
+      </div>
+      <div class="col camera">
+        <div class="col-title">🎥 镜头说明</div>
+        <div class="sketch-box">💥</div>
+        <div class="sketch-desc">超远景俯角 · 冲击波占满全格 · 本话最大格</div>
+        <br>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">构图</span>：龙猫在正中，冲击波从他身上向四周放射，充满整个画格</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">波纹</span>：同心圆弧线，越外侧越稀疏，用线条粗细变化表现衰减</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">机甲</span>：被冲击波击中的机甲画成小剪影，各种翻滚角度</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">天空</span>：右上角烟雾被吹散，露出蓝天，有明显的蓝白对比</div></div>
+        <div class="camera-item"><div class="camera-dot"></div><div class="camera-text"><span class="kw">收尾亮点</span>：左上角远处神鹰剪影，为下话埋下伏笔</div></div>
+      </div>
+      <div class="col dialogue">
+        <div class="col-title">💬 对话 / 旁白</div>
+        <div class="bubble sfx">
+          <div class="bubble-speaker">🔊 龙猫吼（全话最大音效字体）</div>
+          <div class="bubble-text" style="font-size:1.6em;letter-spacing:0.15em">トトロォォォ！！！</div>
+        </div>
+        <div class="bubble sfx">
+          <div class="bubble-speaker">🔊 机甲倒塌</div>
+          <div class="bubble-text">CRASH！CRASH！CRASH！</div>
+        </div>
+        <div class="bubble narration">
+          <div class="bubble-speaker">📜 旁白</div>
+          <div class="bubble-text">他只用了一声吼。</div>
+        </div>
+        <div class="bubble narration">
+          <div class="bubble-speaker">📜 旁白</div>
+          <div class="bubble-text">然后，他抬头，看向天空中那只飞来的银鹰。</div>
+        </div>
+        <div class="bubble narration" style="border-color:rgba(74,222,128,0.4)">
+          <div class="bubble-speaker" style="color:#065f46">📜 结尾旁白（预告下话）</div>
+          <div class="bubble-text" style="color:#6ee7b7">「有人在路上了。」<br>——第二话·少年守护师，下期敬请期待</div>
+        </div>
+      </div>
+    </div>
+    <div class="visual-notes">
+      <div class="vn-label">🎨 画师注</div>
+      <div class="vn-text">收尾格要给读者<span class="hi">「希望感」</span>，不只是「胜利感」。建议在波纹内侧加入微小的绿色孢子粒子——那是龙猫技能「种子雨」的前兆，也是森林复苏的象征。天空的蓝一定要纯粹，和前五格的阴郁色调形成强烈反差。这一格是读者拍照分享的最佳候选。</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="page-footer">
+  银甲龙猫 · 第一话「觉醒」· 漫画脚本完整版<br>
+  <span style="font-size:0.9em;margin-top:6px;display:block">下一步：用图像AI（DALL·E / Midjourney）按分镜描述生成每格画面</span>
+</div>
+
+</body>
+</html>

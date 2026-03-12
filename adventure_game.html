@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>森之守护者 · 觉醒试炼</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --green:#4ade80;--gold:#fbbf24;--blue:#60a5fa;--red:#f87171;--purple:#c084fc;
+    --bg:#08080f;--card:#111118;--border:rgba(255,255,255,0.08);
+  }
+  body{
+    background:var(--bg);color:#e8e8f0;
+    font-family:'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    padding:20px 16px 60px;
+  }
+
+  /* ── HEADER ── */
+  .game-header{
+    width:100%;max-width:720px;
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:18px;padding:12px 18px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--border);border-radius:14px;
+  }
+  .game-title{font-size:1em;font-weight:700;color:var(--green);letter-spacing:0.05em}
+  .header-stats{display:flex;gap:14px;align-items:center}
+
+  /* HP BAR */
+  .hp-wrap{display:flex;align-items:center;gap:8px}
+  .hp-label{font-size:0.75em;color:#9ca3b0}
+  .hp-bar-bg{width:90px;height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
+  .hp-bar-fill{height:100%;background:linear-gradient(90deg,#7f1d1d,#f87171);border-radius:4px;transition:width .5s ease}
+  .hp-num{font-size:0.78em;color:var(--red);font-weight:700;min-width:36px}
+
+  /* ITEMS */
+  .items-wrap{display:flex;gap:6px;align-items:center}
+  .item-slot{
+    width:28px;height:28px;background:rgba(255,255,255,0.05);
+    border:1px solid var(--border);border-radius:7px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:0.95em;cursor:default;position:relative;
+  }
+  .item-slot:hover .item-tip{display:block}
+  .item-tip{
+    display:none;position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+    background:#1f2937;border:1px solid var(--border);border-radius:8px;
+    padding:5px 10px;font-size:0.72em;color:#d1d5db;white-space:nowrap;z-index:10;
+  }
+
+  /* ── CHAPTER BADGE ── */
+  .chapter-badge{
+    width:100%;max-width:720px;margin-bottom:14px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .chapter-text{font-size:0.75em;color:#6b7280;letter-spacing:0.1em;text-transform:uppercase}
+  .chapter-line{flex:1;height:1px;background:rgba(255,255,255,0.06)}
+
+  /* ── SCENE CARD ── */
+  .scene-card{
+    width:100%;max-width:720px;
+    background:var(--card);border:1px solid var(--border);border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 8px 40px rgba(0,0,0,0.5);
+  }
+
+  /* scene illustration banner */
+  .scene-banner{
+    height:120px;display:flex;align-items:center;justify-content:center;
+    font-size:4em;position:relative;overflow:hidden;
+  }
+  .scene-banner::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(to bottom, transparent 40%, var(--card));
+  }
+
+  /* scene body */
+  .scene-body{padding:24px 28px}
+  .scene-title{font-size:1.25em;font-weight:800;margin-bottom:14px;line-height:1.3}
+  .scene-text{
+    font-size:0.92em;line-height:1.9;color:#c4c4d4;
+    margin-bottom:22px;
+  }
+  .scene-text .em{color:var(--green);font-weight:600}
+  .scene-text .warn{color:var(--red);}
+  .scene-text .gold{color:var(--gold);}
+  .scene-text blockquote{
+    margin:14px 0;padding:10px 16px;
+    background:rgba(74,222,128,0.06);
+    border-left:3px solid var(--green);border-radius:0 8px 8px 0;
+    font-style:italic;color:#a7f3d0;font-size:0.9em;
+  }
+
+  /* ── CHOICES ── */
+  .choices{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+  .choice-btn{
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px;padding:14px 18px;
+    color:#e8e8f0;font-size:0.9em;
+    cursor:pointer;text-align:left;
+    transition:all .2s;line-height:1.5;
+    display:flex;align-items:flex-start;gap:12px;
+  }
+  .choice-btn:hover{
+    background:rgba(74,222,128,0.08);
+    border-color:rgba(74,222,128,0.4);
+    transform:translateX(4px);
+  }
+  .choice-btn:active{transform:translateX(2px) scale(0.99)}
+  .choice-letter{
+    min-width:26px;height:26px;border-radius:8px;
+    background:rgba(74,222,128,0.15);color:var(--green);
+    font-weight:800;font-size:0.85em;
+    display:flex;align-items:center;justify-content:center;
+    margin-top:1px;flex-shrink:0;
+  }
+  .choice-btn.blue-btn .choice-letter{background:rgba(96,165,250,0.15);color:var(--blue)}
+  .choice-btn.gold-btn .choice-letter{background:rgba(251,191,36,0.15);color:var(--gold)}
+  .choice-btn.red-btn .choice-letter{background:rgba(248,113,113,0.15);color:var(--red)}
+  .choice-btn.purple-btn .choice-letter{background:rgba(192,132,252,0.15);color:var(--purple)}
+
+  /* ── DICE SECTION ── */
+  .dice-section{
+    background:rgba(0,0,0,0.3);border:1px solid var(--border);
+    border-radius:14px;padding:20px;margin:16px 0;text-align:center;
+  }
+  .dice-title{font-size:0.82em;color:#9ca3b0;margin-bottom:14px;letter-spacing:0.05em}
+  .dice-display{
+    font-size:4em;margin:10px 0;
+    display:inline-block;
+    transition:transform .1s;
+    cursor:pointer;
+    filter:drop-shadow(0 0 12px rgba(74,222,128,0.3));
+  }
+  .dice-display.rolling{animation:diceRoll 0.6s ease}
+  @keyframes diceRoll{
+    0%{transform:rotate(0deg) scale(1)}
+    25%{transform:rotate(90deg) scale(1.2)}
+    50%{transform:rotate(180deg) scale(0.9)}
+    75%{transform:rotate(270deg) scale(1.1)}
+    100%{transform:rotate(360deg) scale(1)}
+  }
+  .dice-result{font-size:1.3em;font-weight:800;margin:8px 0}
+  .dice-result.success{color:var(--green)}
+  .dice-result.fail{color:var(--red)}
+  .dice-result.neutral{color:var(--gold)}
+  .dice-sub{font-size:0.8em;color:#6b7280;margin-top:4px}
+  .roll-btn{
+    background:linear-gradient(135deg,#065f46,#4ade80);
+    color:#fff;border:none;border-radius:10px;
+    padding:10px 28px;font-size:0.9em;font-weight:700;
+    cursor:pointer;margin-top:12px;
+    transition:all .2s;letter-spacing:0.05em;
+  }
+  .roll-btn:hover{transform:scale(1.04);filter:brightness(1.1)}
+  .roll-btn:disabled{background:#374151;color:#6b7280;cursor:not-allowed;transform:none}
+
+  /* ── LOG ── */
+  .battle-log{
+    background:rgba(0,0,0,0.2);border-radius:10px;
+    padding:12px 16px;margin-top:12px;
+    font-size:0.8em;color:#9ca3b0;line-height:1.7;
+    max-height:100px;overflow-y:auto;
+  }
+  .battle-log .log-hit{color:var(--red)}
+  .battle-log .log-ok{color:var(--green)}
+  .battle-log .log-neutral{color:var(--gold)}
+
+  /* ── ENDING CARD ── */
+  .ending-card{
+    text-align:center;padding:16px 0;
+  }
+  .ending-icon{font-size:4em;margin-bottom:12px}
+  .ending-title{font-size:1.6em;font-weight:900;margin-bottom:8px}
+  .ending-title.best{
+    background:linear-gradient(135deg,#fbbf24,#4ade80);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
+  .ending-title.good{color:var(--green)}
+  .ending-title.neutral{color:var(--blue)}
+  .ending-title.bad{color:var(--red)}
+  .ending-desc{font-size:0.9em;color:#c4c4d4;line-height:1.8;max-width:480px;margin:0 auto 20px}
+  .restart-btn{
+    background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);
+    color:var(--green);border-radius:12px;padding:12px 32px;
+    font-size:0.95em;font-weight:700;cursor:pointer;
+    transition:all .2s;letter-spacing:0.05em;
+  }
+  .restart-btn:hover{background:rgba(74,222,128,0.2);transform:scale(1.03)}
+
+  /* ── NOTIFICATION ── */
+  .notif{
+    position:fixed;top:20px;left:50%;transform:translateX(-50%);
+    background:#1f2937;border:1px solid var(--border);border-radius:12px;
+    padding:12px 24px;font-size:0.88em;color:#e8e8f0;
+    z-index:999;opacity:0;transition:opacity .3s;
+    display:flex;align-items:center;gap:8px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.5);
+  }
+  .notif.show{opacity:1}
+
+  /* fade-in */
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .fade-in{animation:fadeIn .4s ease forwards}
+
+  .hp-loss-anim{animation:hpShake .3s ease}
+  @keyframes hpShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="game-header">
+  <div class="game-title">🌿 森之守护者 · 觉醒试炼</div>
+  <div class="header-stats">
+    <div class="hp-wrap">
+      <div class="hp-label">生命</div>
+      <div class="hp-bar-bg"><div class="hp-bar-fill" id="hpBar" style="width:100%"></div></div>
+      <div class="hp-num" id="hpNum">100/100</div>
+    </div>
+    <div class="items-wrap" id="itemsWrap">
+      <div class="item-slot" id="slot0" title="">—</div>
+      <div class="item-slot" id="slot1" title="">—</div>
+      <div class="item-slot" id="slot2" title="">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAPTER BADGE -->
+<div class="chapter-badge">
+  <div class="chapter-line"></div>
+  <div class="chapter-text" id="chapterBadge">第一章 · 初入禁区</div>
+  <div class="chapter-line"></div>
+</div>
+
+<!-- SCENE CARD -->
+<div class="scene-card" id="sceneCard">
+  <div class="scene-banner" id="sceneBanner" style="background:linear-gradient(135deg,#0a1a12,#0d2d1a)">
+    🌳
+  </div>
+  <div class="scene-body">
+    <div class="scene-title" id="sceneTitle">载入中…</div>
+    <div class="scene-text" id="sceneText"></div>
+    <div id="diceSection"></div>
+    <div class="choices" id="choices"></div>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif"></div>
+
+<script>
+// ═══════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════
+const state = {
+  hp: 100,
+  maxHp: 100,
+  items: [],          // emoji strings
+  flags: {},          // story flags
+  currentScene: 'intro',
+  sceneVer: 0,        // increments on every goToScene call; used to cancel stale async callbacks
+};
+
+const ITEMS = {
+  leaf:   { emoji:'🍃', name:'古树叶' , desc:'恢复20点生命值' },
+  crystal:{ emoji:'💎', name:'心晶碎片', desc:'最终章增强攻击' },
+  feather:{ emoji:'🪶', name:'神鹰羽毛', desc:'解谜时+2骰子' },
+  mushroom:{ emoji:'🍄', name:'荧光蘑菇', desc:'黑暗中照亮道路' },
+  acorn:  { emoji:'🌰', name:'神树橡子', desc:'召唤援军' },
+};
+
+// ═══════════════════════════════════════════
+//  SCENES DATABASE
+// ═══════════════════════════════════════════
+const SCENES = {
+
+  // ── INTRO ──
+  intro:{
+    chapter:'序章 · 使命',
+    banner:{bg:'linear-gradient(135deg,#050d08,#0a1a10)',icon:'🌙'},
+    title:'深绿禁区的边界',
+    text:`<p>公元 <span class="gold">2847年</span>，工业联合军团的采矿机器轰鸣着逼近地球最后一片原始森林——<span class="em">深绿禁区</span>。</p>
+<p>守护这片森林的神兽 <span class="em">银甲龙猫</span> 已经沉睡了800年，若无人唤醒他，整片森林将在 <span class="warn">三天之内</span> 化为废墟。</p>
+<p>你是少年见习守护师 <span class="gold">阿青</span>，禁区入口只剩下三条路。向导狐狸告诉你：「三条路通向同一个地方，但挑战各不相同。<span class="em">选好，别回头。</span>」</p>
+<blockquote>「森林在等你。时间不多了，少年。」 ——向导狐狸</blockquote>`,
+    choices:[
+      {label:'A', text:'沿着荧光蘑菇小径前进（看起来神秘而迷幻）', color:'', next:'pathA_1'},
+      {label:'B', text:'循着流水声走入河谷（隐约传来巨大的水声）', color:'blue-btn', next:'pathB_1'},
+      {label:'C', text:'爬上入口处的千年古树，先观察四周', color:'gold-btn', next:'pathC_1'},
+    ]
+  },
+
+  // ══════════════════════════
+  //  PATH A — MUSHROOM MAZE
+  // ══════════════════════════
+  pathA_1:{
+    chapter:'第一章 · 蘑菇迷径',
+    banner:{bg:'linear-gradient(135deg,#0d0a1a,#1a0d2e)',icon:'🍄'},
+    title:'会说话的蘑菇',
+    text:`<p>荧光蘑菇越来越密集，颜色在蓝、紫、绿之间交替闪烁，美得让人窒息。</p>
+<p>突然，一朵<span class="em">巨型橙色蘑菇</span>拦住去路，用沙哑的声音开口说话：</p>
+<blockquote>「想通过迷径？先解开我的谜题！<br>谜题：我有叶无根，我有声无口，我有年无寿，我在深林中藏身。我是什么？」</blockquote>
+<p>蘑菇眨了眨它那两颗橙色孢子眼，等待你的回答。旁边的荧光蘑菇也好奇地探过来围观。</p>`,
+    choices:[
+      {label:'A', text:'「是风！」（风穿过叶子发声，无根无口，年年如此）', color:'', next:'pathA_2_success'},
+      {label:'B', text:'「是影子！」（影子有形无实，随光而动）', color:'blue-btn', next:'pathA_2_fail'},
+      {label:'C', text:'不想猜谜，用随身的干粮贿赂蘑菇', color:'gold-btn', next:'pathA_2_bribe'},
+    ]
+  },
+
+  pathA_2_success:{
+    chapter:'第一章 · 蘑菇迷径',
+    banner:{bg:'linear-gradient(135deg,#0d0a1a,#1a0d2e)',icon:'✨'},
+    title:'谜题通关！',
+    text:`<p>蘑菇愣了一秒，然后哈哈大笑，震得整片蘑菇林都跟着颤抖，孢子飞溅：</p>
+<blockquote>「哇哈哈！正确！你是第 <span class="gold">37年</span> 来这里答对的第一个人！奖励你！」</blockquote>
+<p>蘑菇的帽子弹开，抛出一片<span class="em">古树叶</span>（可以恢复生命）和一株<span class="em">荧光蘑菇</span>（在黑暗中照路）。</p>
+<p>道路打开了，前方出现一片<span class="em">晶莹的湖泊</span>，水面像镜子一样映出星空。</p>`,
+    onEnter: (s)=>{ addItem('leaf'); addItem('mushroom'); notify('🍃 获得：古树叶 + 荧光蘑菇！') },
+    choices:[
+      {label:'A', text:'走向湖泊，查看湖中央的发光石头', color:'', next:'pathA_3_lake'},
+    ]
+  },
+
+  pathA_2_fail:{
+    chapter:'第一章 · 蘑菇迷径',
+    banner:{bg:'linear-gradient(135deg,#1a0808,#2d1010)',icon:'💀'},
+    title:'答错了！',
+    text:`<p>蘑菇猛地鼓起，发出一声刺耳的高频尖叫——<span class="warn">整片蘑菇林释放毒孢子！</span></p>
+<p>孢子像雨一样洒落在你身上，皮肤传来阵阵刺痛。你拼命奔跑穿越毒雾，<span class="warn">损失了 25 点生命值</span>。</p>
+<p>好不容易冲出来，前方出现一片晶莹湖泊，但你已经筋疲力尽……</p>`,
+    onEnter: (s)=>{ damage(25); },
+    choices:[
+      {label:'A', text:'强撑着走向湖泊继续探索', color:'', next:'pathA_3_lake'},
+    ]
+  },
+
+  pathA_2_bribe:{
+    chapter:'第一章 · 蘑菇迷径',
+    banner:{bg:'linear-gradient(135deg,#1a1008,#2d1f0a)',icon:'🤣'},
+    title:'贿赂成功！（也许）',
+    text:`<p>你把干粮递给蘑菇，蘑菇盯着看了三秒……</p>
+<p>然后把干粮直接吃掉，嘎嘣一声。</p>
+<blockquote>「……还不错。通过吧。但你欠我一个谜底。」</blockquote>
+<p>道路打开了。蘑菇在你背后喊：「我等着你回来告诉我答案！」</p>`,
+    choices:[
+      {label:'A', text:'快步走向湖泊，不回头', color:'', next:'pathA_3_lake'},
+    ]
+  },
+
+  pathA_3_lake:{
+    chapter:'第一章 · 蘑菇迷径',
+    banner:{bg:'linear-gradient(135deg,#080d1a,#0a1426)',icon:'🌊'},
+    title:'星空湖的试炼',
+    text:`<p>湖泊中央漂浮着一块<span class="em">心晶碎片</span>，散发着柔和的绿光——那是唤醒银甲龙猫的关键之物。</p>
+<p>但湖面并不平静。一条<span class="warn">影鳌</span>从水中浮现，八条触手在空中挥舞，发出低沉的嘶鸣：</p>
+<blockquote>「这是守护神的宝物，需要通过战斗来证明你的价值！」</blockquote>
+<p>影鳌 HP：<span class="warn">60</span>  |  你的 HP：<span class="em">${state.hp}</span><br>
+掷骰子对决——每轮骰子点数 <span class="gold">≥4</span> 为命中（造成15伤），<span class="warn">&lt;4</span> 为闪避失败（受10伤）。<br>
+<span class="em">击败影鳌即可获得心晶碎片。</span></p>`,
+    battle:{ enemyName:'影鳌', enemyHp:60, hitThreshold:4, playerDmg:15, enemyDmg:10, winScene:'pathA_win', loseScene:'death' },
+  },
+
+  pathA_win:{
+    chapter:'第一章 · 蘑菇迷径',
+    banner:{bg:'linear-gradient(135deg,#051a0d,#0a3018)',icon:'🎉'},
+    title:'影鳌败退！',
+    text:`<p>影鳌发出一声悲鸣，化作水花消散在湖中。湖面恢复平静，心晶碎片缓缓漂来，落入你的掌心。</p>
+<p>碎片发出温暖的光，你感觉全身的疲惫都消散了一些。<span class="em">（恢复20点生命）</span></p>
+<p>前方，森林深处的方向传来一阵低沉的鼾声……<span class="gold">银甲龙猫正在那里！</span></p>`,
+    onEnter:(s)=>{ addItem('crystal'); healHp(20); notify('💎 获得：心晶碎片！生命+20') },
+    choices:[
+      {label:'A', text:'快步赶往银甲龙猫的所在地', color:'', next:'final_1'},
+    ]
+  },
+
+  // ══════════════════════════
+  //  PATH B — RIVER VALLEY
+  // ══════════════════════════
+  pathB_1:{
+    chapter:'第二章 · 河谷战场',
+    banner:{bg:'linear-gradient(135deg,#080f1a,#0a1526)',icon:'🌊'},
+    title:'河谷里的巨响',
+    text:`<p>河谷的水流越来越急，峡谷两壁高耸，青苔遍布。突然，<span class="warn">工业联合军团的侦察机器人</span>出现了！</p>
+<p>它扫描了你一眼，锁定为入侵者，机械臂高高举起……</p>
+<p>河谷旁边有三个选项可以利用——你必须快速决定：</p>`,
+    choices:[
+      {label:'A', text:'跳入湍流，顺水逃脱！（速度vs机器人）', color:'', next:'pathB_2_swim'},
+      {label:'B', text:'躲入峡谷裂缝，和机器人捉迷藏', color:'blue-btn', next:'pathB_2_hide'},
+      {label:'C', text:'正面迎击！拿起石头攻击机器人的眼睛摄像头', color:'red-btn', next:'pathB_2_fight'},
+    ]
+  },
+
+  pathB_2_swim:{
+    chapter:'第二章 · 河谷战场',
+    banner:{bg:'linear-gradient(135deg,#08101a,#0a1a2e)',icon:'🏊'},
+    title:'激流漂流！',
+    text:`<p>你纵身跳入湍流，急流立刻把你带走，机器人在岸边傻眼，追不上水速。</p>
+<p>但激流比你想象的更急，<span class="warn">撞上了一块大石头，损失15点生命</span>。</p>
+<p>你被冲到了一处<span class="em">宽阔的水潭</span>，水潭边有一棵倒下的古树，古树的树洞里藏着什么……</p>`,
+    onEnter:(s)=>{ damage(15) },
+    choices:[
+      {label:'A', text:'爬进树洞查看里面藏着什么', color:'', next:'pathB_3_hollow'},
+      {label:'B', text:'先不管树洞，继续沿河流前进', color:'blue-btn', next:'pathB_3_continue'},
+    ]
+  },
+
+  pathB_2_hide:{
+    chapter:'第二章 · 河谷战场',
+    banner:{bg:'linear-gradient(135deg,#0d0d0d,#1a1a1a)',icon:'🫣'},
+    title:'捉迷藏！掷骰决定！',
+    text:`<p>你挤进峡谷裂缝，大气都不敢喘。机器人的扫描光在你脸前扫来扫去……</p>
+<p>能否成功躲过？<span class="em">掷骰子！≥4 = 成功藏身，&lt;4 = 被发现！</span></p>`,
+    dice:{ type:'check', threshold:4, successScene:'pathB_2_hide_ok', failScene:'pathB_2_hide_fail', desc:'隐藏检定', successBonus:null, failPenalty:20 },
+  },
+
+  pathB_2_hide_ok:{
+    chapter:'第二章 · 河谷战场',
+    banner:{bg:'linear-gradient(135deg,#0a1a0a,#0d2e0d)',icon:'😮‍💨'},
+    title:'成功躲过！',
+    text:`<p>机器人扫描了三圈，最终判定「目标消失」，沿着河流转移走了。</p>
+<p>你悄悄从裂缝爬出，发现裂缝深处有一根<span class="em">神鹰的羽毛</span>，是上古守护者留下的宝物。</p>`,
+    onEnter:(s)=>{ addItem('feather'); notify('🪶 获得：神鹰羽毛！') },
+    choices:[
+      {label:'A', text:'继续沿河谷向森林深处前进', color:'', next:'pathB_3_continue'},
+    ]
+  },
+
+  pathB_2_hide_fail:{
+    chapter:'第二章 · 河谷战场',
+    banner:{bg:'linear-gradient(135deg,#1a0808,#2d1010)',icon:'😱'},
+    title:'被发现了！',
+    text:`<p>机器人的红外线扫描锁定了你，机械臂一击扫来！<span class="warn">损失20点生命值。</span></p>
+<p>你挣脱后拼命奔跑，一路跌跌撞撞地冲进了更深的河谷……</p>`,
+    onEnter:(s)=>{ damage(20) },
+    choices:[
+      {label:'A', text:'喘口气，继续向前', color:'', next:'pathB_3_continue'},
+    ]
+  },
+
+  pathB_2_fight:{
+    chapter:'第二章 · 河谷战场',
+    banner:{bg:'linear-gradient(135deg,#1a0808,#2a0d0d)',icon:'⚔️'},
+    title:'正面对决！',
+    text:`<p>你捡起一块尖锐的河石，精准地砸向机器人的摄像头！</p>
+<p>机器人的视觉系统受损，开始随机乱转，你趁乱猛冲，把它推进了河里！</p>
+<p><span class="em">没有受伤！</span> 机器人在水流中短路沉没，还留下了一颗<span class="em">能源核</span>浮在水面。</p>
+<p>（能源核可以在后面当武器用）</p>`,
+    choices:[
+      {label:'A', text:'继续前进，进入河谷深处', color:'', next:'pathB_3_continue'},
+    ]
+  },
+
+  pathB_3_hollow:{
+    chapter:'第二章 · 河谷战场',
+    banner:{bg:'linear-gradient(135deg,#1a1408,#2e220a)',icon:'🌰'},
+    title:'树洞里的宝藏',
+    text:`<p>树洞里藏着一颗<span class="em">神树橡子</span>，是银甲龙猫在很多年前亲手埋在这里的，作为给未来守护者的礼物。</p>
+<p>橡子上刻着字：<span class="gold">「在你最需要的时候，把我种下。」</span></p>`,
+    onEnter:(s)=>{ addItem('acorn'); notify('🌰 获得：神树橡子！') },
+    choices:[
+      {label:'A', text:'收好橡子，继续前进', color:'', next:'pathB_3_continue'},
+    ]
+  },
+
+  pathB_3_continue:{
+    chapter:'第二章 · 河谷战场',
+    banner:{bg:'linear-gradient(135deg,#080d1a,#0a1422)',icon:'🏔️'},
+    title:'河谷尽头的石门',
+    text:`<p>河谷越走越窄，最终出现了一扇<span class="em">巨大的石门</span>，上面刻满了古老的森林文字。</p>
+<p>石门两侧各有一个石台，上面放着两颗球形宝石——<span class="gold">一颗金色，一颗银色</span>。</p>
+<p>门上的文字翻译过来是：<br>
+<span class="em">「选对颜色，门将打开；选错颜色，受到惩罚。<br>提示：守护者的心与森林同色。」</span></p>`,
+    choices:[
+      {label:'A', text:'选择金色宝石（金色象征太阳与力量）', color:'gold-btn', next:'pathB_door_gold'},
+      {label:'B', text:'选择银色宝石（银色是银甲龙猫的颜色）', color:'', next:'pathB_door_silver'},
+    ]
+  },
+
+  pathB_door_gold:{
+    chapter:'第二章 · 河谷战场',
+    banner:{bg:'linear-gradient(135deg,#1a1008,#2e1f0a)',icon:'⚡'},
+    title:'选错了！',
+    text:`<p>金色宝石发出刺眼的闪光，石台弹射出一道电流！<span class="warn">你损失20点生命值。</span></p>
+<p>但是……门还是打开了，只是给你一个小小的惩戒。</p>
+<p>石门后传来一阵微风，带着泥土和青草的气息——<span class="em">森林的气息</span>。</p>`,
+    onEnter:(s)=>{ damage(20) },
+    choices:[
+      {label:'A', text:'咬牙冲进石门', color:'', next:'final_1'},
+    ]
+  },
+
+  pathB_door_silver:{
+    chapter:'第二章 · 河谷战场',
+    banner:{bg:'linear-gradient(135deg,#0a1a0a,#0d2d12)',icon:'🌿'},
+    title:'正确！',
+    text:`<p>银色宝石发出柔和的白光，整扇石门缓缓打开，没有任何惩罚。</p>
+<p>更神奇的是——宝石自己飞了起来，钻进了你的衣袋，变成了一颗<span class="em">心晶碎片</span>。</p>
+<p>石门后传来一阵微风，带着泥土和青草的气息。</p>`,
+    onEnter:(s)=>{ addItem('crystal'); notify('💎 获得：心晶碎片！') },
+    choices:[
+      {label:'A', text:'大步走进石门', color:'', next:'final_1'},
+    ]
+  },
+
+  // ══════════════════════════
+  //  PATH C — ANCIENT TREE
+  // ══════════════════════════
+  pathC_1:{
+    chapter:'第三章 · 天空之眼',
+    banner:{bg:'linear-gradient(135deg,#1a1408,#2e220a)',icon:'🦅'},
+    title:'千年古树之巅',
+    text:`<p>你爬上了<span class="em">千年古树</span>，离地三十米的树顶，整片禁区尽收眼底。</p>
+<p>不远处，工业联合军团的机器轰鸣；更远处，有一道<span class="em">绿色光柱</span>直冲云霄——那应该是银甲龙猫的位置。</p>
+<p>突然，一只<span class="gold">银白色的神鹰</span>落在你的肩膀旁，用金色的眼睛盯着你。它的羽毛上有一道伤口，正在缓慢流血……</p>`,
+    choices:[
+      {label:'A', text:'撕下衣角，帮神鹰包扎伤口', color:'', next:'pathC_2_help'},
+      {label:'B', text:'问神鹰是否愿意带你飞往绿光所在地', color:'blue-btn', next:'pathC_2_ask'},
+      {label:'C', text:'不打扰神鹰，自己沿树顶观察出最佳路线', color:'gold-btn', next:'pathC_2_observe'},
+    ]
+  },
+
+  pathC_2_help:{
+    chapter:'第三章 · 天空之眼',
+    banner:{bg:'linear-gradient(135deg,#0a1a0a,#0d2d0f)',icon:'🩺'},
+    title:'救助神鹰',
+    text:`<p>你轻轻托住神鹰的翅膀，用撕下的布条仔细包扎伤口。神鹰一动不动，似乎信任你。</p>
+<p>包扎完成后，神鹰抬头，把一根最长的<span class="em">主翼羽毛</span>叼出，轻轻放在你手里。</p>
+<blockquote>「守护者的心，不分大小生灵。这根羽毛会在你最需要的时候指引你。」</blockquote>
+<p>说完，神鹰展翅，化作一道银光消失在云间。</p>`,
+    onEnter:(s)=>{ addItem('feather'); state.flags.helpedEagle=true; notify('🪶 获得：神鹰羽毛！（标记：得到神鹰信任）') },
+    choices:[
+      {label:'A', text:'小心下树，按神鹰指引的方向前进', color:'', next:'pathC_3'},
+    ]
+  },
+
+  pathC_2_ask:{
+    chapter:'第三章 · 天空之眼',
+    banner:{bg:'linear-gradient(135deg,#1a1a08,#2e2e0a)',icon:'🤔'},
+    title:'神鹰的条件',
+    text:`<p>神鹰歪着头想了想，开口说：</p>
+<blockquote>「带我飞？可以——但先帮我解决一件事。树下有一个猎人设的<span class="warn">捕兽夹</span>，我的同伴被困住了。」</blockquote>
+<p>你向下看去，果然有一只小鹰被铁夹困住，发出细弱的叫声。</p>
+<p>下去解救需要掷骰子检定手速（捕兽夹会弹回来）——<span class="em">≥3 成功</span></p>`,
+    dice:{ type:'check', threshold:3, successScene:'pathC_2_ask_ok', failScene:'pathC_2_ask_fail', desc:'手速检定', successBonus:null, failPenalty:15 },
+  },
+
+  pathC_2_ask_ok:{
+    chapter:'第三章 · 天空之眼',
+    banner:{bg:'linear-gradient(135deg,#0a1a0a,#0d2d0f)',icon:'🦅'},
+    title:'救出小鹰！',
+    text:`<p>你一把按住弹簧，另一只手迅速拉出小鹰，毫发无伤！</p>
+<p>神鹰高兴地鸣叫，俯冲下来：「上来！我带你飞！」</p>
+<p>你骑上神鹰，<span class="em">直接从空中飞过所有障碍</span>，比其他路节省了大量时间，而且途中没有受任何伤。</p>`,
+    onEnter:(s)=>{ state.flags.birdRide=true; healHp(10); notify('🦅 神鹰带你飞过！生命+10') },
+    choices:[
+      {label:'A', text:'从空中俯瞰，直接飞向绿色光柱', color:'', next:'final_1'},
+    ]
+  },
+
+  pathC_2_ask_fail:{
+    chapter:'第三章 · 天空之眼',
+    banner:{bg:'linear-gradient(135deg,#1a0808,#2d1010)',icon:'😬'},
+    title:'捕兽夹弹回来了！',
+    text:`<p>捕兽夹的弹簧突然回弹，夹到了你的手指，<span class="warn">损失15点生命值</span>，但你还是救出了小鹰。</p>
+<p>神鹰感激地低鸣，同意带你飞，但飞行过程中你因为疼痛差点滑落，有些狼狈。</p>`,
+    onEnter:(s)=>{ damage(15); state.flags.birdRide=true; },
+    choices:[
+      {label:'A', text:'咬牙抓紧神鹰，向绿色光柱飞去', color:'', next:'final_1'},
+    ]
+  },
+
+  pathC_2_observe:{
+    chapter:'第三章 · 天空之眼',
+    banner:{bg:'linear-gradient(135deg,#08101a,#0a1824)',icon:'🔭'},
+    title:'俯瞰全局',
+    text:`<p>你认真观察了十分钟，<span class="em">绘制出了一幅脑内地图</span>：</p>
+<p>· 西侧有一条机器人巡逻盲区<br>
+· 南侧的河流最短但危险<br>
+· 东侧有一条<span class="em">古老隐秘的地下通道</span>，机器人完全检测不到</p>
+<p>你选择了东侧地下通道，一路安全无阻，还在通道里发现了前人留下的<span class="em">神树橡子</span>。</p>`,
+    onEnter:(s)=>{ addItem('acorn'); notify('🌰 获得：神树橡子！') },
+    choices:[
+      {label:'A', text:'沿地下通道快速前进，直达核心', color:'', next:'pathC_3'},
+    ]
+  },
+
+  pathC_3:{
+    chapter:'第三章 · 天空之眼',
+    banner:{bg:'linear-gradient(135deg,#050d08,#0a1a10)',icon:'🌿'},
+    title:'通往觉醒之地',
+    text:`<p>无论选择哪条路，你最终都来到了<span class="em">禁区深处的圣树林</span>。</p>
+<p>古老的橡树围成一个圆圈，中央有一个巨大的土丘，土丘上覆盖着厚厚的苔藓……那里面传来均匀的、沉重的呼吸声。</p>
+<p><span class="gold">银甲龙猫就在里面沉睡。</span></p>`,
+    choices:[
+      {label:'A', text:'继续前进，准备唤醒仪式', color:'', next:'final_1'},
+    ]
+  },
+
+  // ══════════════════════════
+  //  FINAL CHAPTER
+  // ══════════════════════════
+  final_1:{
+    chapter:'终章 · 觉醒仪式',
+    banner:{bg:'linear-gradient(135deg,#050d08,#0d2018)',icon:'🌀'},
+    title:'觉醒仪式开始',
+    text:`<p>圣树林中央，<span class="em">银甲龙猫</span>的身躯庞大如山，沉睡在苔藓之下，甲胄已经锈迹斑斑，但胸口的<span class="em">绿色核心晶体</span>依然微微发光。</p>
+<p>觉醒需要三个步骤：<br>
+① 将心晶碎片放入核心槽<br>
+② 在龙猫耳边发出「召唤吼」<br>
+③ <span class="warn">抵挡工业军团最后的突击</span></p>
+<p>就在你靠近的时候，地面震动——<span class="warn">三台重型机甲从树林外冲了进来！</span></p>
+<p>你身上的道具决定了你能做什么……</p>`,
+    choices:[
+      {label:'A', text:'先放入心晶碎片再应对机甲（如果有心晶的话）', color:'', next:'final_check_crystal'},
+      {label:'B', text:'种下神树橡子召唤援军！（如果有橡子的话）', color:'gold-btn', next:'final_check_acorn'},
+      {label:'C', text:'没有道具——只能正面掷骰子硬拼！', color:'red-btn', next:'final_battle'},
+    ]
+  },
+
+  final_check_crystal:{
+    chapter:'终章 · 觉醒仪式',
+    banner:{bg:'linear-gradient(135deg,#050d08,#0d2018)',icon:'💎'},
+    title:'心晶碎片的力量',
+    text:'',
+    onEnter:(s)=>{
+      // Use setTimeout to avoid calling goToScene recursively inside goToScene→onEnter
+      setTimeout(()=>{
+        goToScene(state.items.includes('💎') ? 'final_crystal_ok' : 'final_no_crystal');
+      }, 0);
+    },
+    choices:[]
+  },
+
+  final_no_crystal:{
+    chapter:'终章 · 觉醒仪式',
+    banner:{bg:'linear-gradient(135deg,#1a1408,#2e220a)',icon:'😰'},
+    title:'没有心晶！',
+    text:`<p><span class="warn">你没有心晶碎片……</span>核心槽是空的，无法激活。</p>
+<p>你只能选择其他方式——</p>`,
+    choices:[
+      {label:'B', text:'种下神树橡子召唤援军！（如果有橡子的话）', color:'gold-btn', next:'final_check_acorn'},
+      {label:'C', text:'没有道具——正面硬拼！', color:'red-btn', next:'final_battle'},
+    ]
+  },
+
+  final_crystal_ok:{
+    chapter:'终章 · 觉醒仪式',
+    banner:{bg:'linear-gradient(135deg,#051a0d,#0a3018)',icon:'✨'},
+    title:'核心激活！',
+    text:`<p>心晶碎片插入核心槽的瞬间——整个圣树林爆发出<span class="em">绿色光柱</span>！</p>
+<p>银甲龙猫的胸口开始剧烈发光，四肢的甲胄自动展开、清洁、重组……</p>
+<p>机甲依然逼近——但这次你有了新的底气：<span class="em">掷骰子对决，≥3 即可命中（龙猫觉醒能量加持）</span></p>`,
+    battle:{ enemyName:'重型机甲×3', enemyHp:45, hitThreshold:3, playerDmg:20, enemyDmg:8, winScene:'ending_best', loseScene:'death', hasCrystal:true },
+  },
+
+  final_check_acorn:{
+    chapter:'终章 · 觉醒仪式',
+    banner:{bg:'linear-gradient(135deg,#1a1408,#2e220a)',icon:'🌰'},
+    title:'召唤援军！',
+    text:'',
+    onEnter:(s)=>{
+      // Use setTimeout to avoid calling goToScene recursively inside goToScene→onEnter
+      setTimeout(()=>{
+        goToScene(state.items.includes('🌰') ? 'final_acorn_ok' : 'final_battle');
+      }, 0);
+    },
+    choices:[]
+  },
+
+  final_acorn_ok:{
+    chapter:'终章 · 觉醒仪式',
+    banner:{bg:'linear-gradient(135deg,#0a1a0a,#0d2d0f)',icon:'🌳'},
+    title:'橡子的奇迹！',
+    text:`<p>你把神树橡子用力砸入地面——</p>
+<p>三秒钟内，一棵<span class="em">百米高的神树</span>从地面暴发而出！根系扫开两台机甲，枝叶如网罩住第三台。</p>
+<p>机甲被困住了，你有时间完成觉醒仪式！<br>
+<span class="em">发出召唤吼——掷骰子，≥2 即可（已被援军协助）</span></p>`,
+    dice:{ type:'check', threshold:2, successScene:'ending_good', failScene:'ending_neutral', desc:'召唤吼检定', successBonus:null, failPenalty:0 },
+  },
+
+  final_battle:{
+    chapter:'终章 · 觉醒仪式',
+    banner:{bg:'linear-gradient(135deg,#1a0808,#2a0d0d)',icon:'⚔️'},
+    title:'最后的决战！',
+    text:`<p>没有任何助力，你只能独自面对三台重型机甲！</p>
+<p>机甲 HP：<span class="warn">80</span>  |  命中阈值：<span class="warn">≥5</span>（机甲装甲厚，很难打穿）<br>
+每次命中造成15伤，每次被击中损失18。</p>
+<p>胜利后获得<span class="em">普通结局</span>，失败则……</p>`,
+    battle:{ enemyName:'重型机甲×3', enemyHp:80, hitThreshold:5, playerDmg:15, enemyDmg:18, winScene:'ending_neutral', loseScene:'death' },
+  },
+
+  // ══════════════════════════
+  //  ENDINGS
+  // ══════════════════════════
+  ending_best:{
+    chapter:'✨ 最佳结局',
+    banner:{bg:'linear-gradient(135deg,#0d1a08,#1a3010)',icon:'🌟'},
+    isEnding:true,
+    endingType:'best',
+    endingTitle:'银甲觉醒！森林永续！',
+    text:`<p>在心晶的力量加持下，银甲龙猫<span class="em">轰然站起</span>——甲胄全亮，核心晶体爆发绿光！</p>
+<p>他向空中发出一声「<span class="gold">龙猫吼</span>」，震波把方圆百里的机器全部拍飞。</p>
+<p>工业联合军团的指挥中心接收到震波信号，屏幕上所有机器同时显示「<span class="warn">系统失联</span>」，然后熄灭。</p>
+<p>银甲龙猫低头看向你，金色的眼睛里映出你的身影，然后他做了一件出乎所有人意料的事——</p>
+<p><span class="em">俯身，把你轻轻放到他的肩膀上，站起来，环顾这片他守护了数千年的森林。</span></p>
+<blockquote>「谢谢你，小守护者。森林——不会消失。」</blockquote>`,
+  },
+
+  ending_good:{
+    chapter:'🎉 好结局',
+    banner:{bg:'linear-gradient(135deg,#080f1a,#0d1e2e)',icon:'🌿'},
+    isEnding:true,
+    endingType:'good',
+    endingTitle:'森林得救，守护者诞生！',
+    text:`<p>神树援军牵制了机甲，你完成了觉醒仪式。</p>
+<p>银甲龙猫缓缓睁开双眼，看了一眼满目疮痍的森林，又看了一眼你，微微点了点头。</p>
+<p>他没有多说话，只是站起来，一步一步走向工业军团的方向。</p>
+<p>机器的轰鸣声渐渐停了。</p>
+<blockquote>「孩子，你走了一条不容易的路，但你走完了。这片森林记住了你的脚印。」</blockquote>`,
+  },
+
+  ending_neutral:{
+    chapter:'⚖️ 普通结局',
+    banner:{bg:'linear-gradient(135deg,#081018,#0d1826)',icon:'🌙'},
+    isEnding:true,
+    endingType:'neutral',
+    endingTitle:'浴血唤醒，守护者重生',
+    text:`<p>你独自一人打败了三台机甲，但代价沉重——全身伤痕累累，几乎倒下。</p>
+<p>最后一口气，你靠近银甲龙猫，用仅剩的力气发出召唤吼。</p>
+<p>龙猫睁开了眼睛。</p>
+<p>他看着满身是伤的你，没有说话，只是用巨大的毛茸茸的爪子，轻轻盖在你身上，传来温热的治愈能量。</p>
+<blockquote>「傻孩子……下次记得带好伙伴一起来。」</blockquote>
+<p>森林保住了，但这场战斗让你明白：真正的守护者，从来不是孤身一人。</p>`,
+  },
+
+  death:{
+    chapter:'💀 战败',
+    banner:{bg:'linear-gradient(135deg,#1a0808,#2a0808)',icon:'💀'},
+    isEnding:true,
+    endingType:'bad',
+    endingTitle:'倒下了……',
+    text:`<p><span class="warn">生命值归零。</span></p>
+<p>你倒在了深绿禁区的泥土上，意识慢慢模糊。远处机器的轰鸣声越来越近……</p>
+<p>就在最后一刻，一只温热的大爪子托住了你。</p>
+<p>银甲龙猫——不知道是被你的气息唤醒，还是仅仅凭本能，从土丘中站了起来，用庞大的身躯护住了你。</p>
+<blockquote>「……好久没有人来叫醒我了。你来了，就够了。」</blockquote>
+<p>森林的故事还没有结束。</p>`,
+    canRestart:true,
+  },
+
+};
+
+// ═══════════════════════════════════════════
+//  ENGINE
+// ═══════════════════════════════════════════
+
+const DICE_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+
+function rollDice(){
+  return Math.floor(Math.random()*6)+1;
+}
+
+let battleState = null;
+
+function addItem(key){
+  if(state.items.length >= 3) return;
+  const item = ITEMS[key];
+  if(!item) return;
+  if(!state.items.includes(item.emoji)){
+    state.items.push(item.emoji);
+    renderItems();
+  }
+}
+
+function damage(amt){
+  state.hp = Math.max(0, state.hp - amt);
+  renderHp();
+  document.getElementById('hpBar').classList.add('hp-loss-anim');
+  setTimeout(()=>document.getElementById('hpBar').classList.remove('hp-loss-anim'),400);
+  if(state.hp <= 0) setTimeout(()=>goToScene('death'), 800);
+}
+
+function healHp(amt){
+  state.hp = Math.min(state.maxHp, state.hp + amt);
+  renderHp();
+}
+
+function renderHp(){
+  const pct = (state.hp/state.maxHp)*100;
+  document.getElementById('hpBar').style.width = pct+'%';
+  document.getElementById('hpNum').textContent = state.hp+'/'+state.maxHp;
+}
+
+function renderItems(){
+  for(let i=0;i<3;i++){
+    const slot = document.getElementById('slot'+i);
+    const item = state.items[i];
+    if(item){
+      // Find item key
+      const entry = Object.values(ITEMS).find(v=>v.emoji===item);
+      slot.textContent = item;
+      slot.title = entry ? entry.name+': '+entry.desc : item;
+      const tip = slot.querySelector('.item-tip');
+      if(tip) tip.textContent = entry ? entry.name : '';
+    } else {
+      slot.textContent = '—';
+      slot.title = '';
+    }
+  }
+}
+
+function notify(msg){
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2500);
+}
+
+function goToScene(id){
+  const scene = SCENES[id];
+  if(!scene){ console.warn('Missing scene:', id); return; }
+  state.currentScene = id;
+  state.sceneVer++;           // invalidate any running animation callbacks
+
+  // Update chapter badge
+  if(scene.chapter) document.getElementById('chapterBadge').textContent = scene.chapter;
+
+  // Banner
+  const banner = document.getElementById('sceneBanner');
+  if(scene.banner){
+    banner.style.background = scene.banner.bg;
+    banner.innerHTML = `<span style="position:relative;z-index:2;filter:drop-shadow(0 0 20px rgba(255,255,255,0.2))">${scene.banner.icon}</span>`;
+  }
+
+  // Title
+  document.getElementById('sceneTitle').textContent = scene.title || '';
+
+  // Text
+  document.getElementById('sceneText').innerHTML = scene.text || '';
+
+  // Dice section
+  const diceEl = document.getElementById('diceSection');
+  diceEl.innerHTML = '';
+
+  // Choices
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+
+  // Scroll up
+  window.scrollTo({top:0, behavior:'smooth'});
+
+  // Run onEnter
+  if(scene.onEnter) scene.onEnter(state);
+
+  // Ending?
+  if(scene.isEnding){
+    renderEnding(scene);
+    return;
+  }
+
+  // Battle?
+  if(scene.battle){
+    renderBattle(scene.battle);
+    return;
+  }
+
+  // Dice check?
+  if(scene.dice){
+    renderDiceCheck(scene.dice);
+    return;
+  }
+
+  // Choices
+  if(scene.choices && scene.choices.length > 0){
+    scene.choices.forEach(c=>{
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn '+(c.color||'');
+      btn.innerHTML = `<div class="choice-letter">${c.label}</div><div>${c.text}</div>`;
+      btn.onclick = ()=>goToScene(c.next);
+      choicesEl.appendChild(btn);
+    });
+  }
+
+  // fade in
+  document.getElementById('sceneCard').classList.remove('fade-in');
+  void document.getElementById('sceneCard').offsetWidth;
+  document.getElementById('sceneCard').classList.add('fade-in');
+}
+
+function renderDiceCheck(diceConf){
+  const diceEl = document.getElementById('diceSection');
+  let rolled = false;
+  const myVer = state.sceneVer;   // snapshot — used to cancel stale callbacks
+
+  diceEl.innerHTML = `
+    <div class="dice-section">
+      <div class="dice-title">🎲 ${diceConf.desc}  ·  目标值 ≥ ${diceConf.threshold}</div>
+      <div class="dice-display" id="diceAnim">🎲</div>
+      <div class="dice-result neutral" id="diceResultText">点击骰子或按下按钮投掷</div>
+      <div class="dice-sub" id="diceSubText">六面骰 1~6</div>
+      <br>
+      <button class="roll-btn" id="rollBtnCheck">🎲 投掷骰子！</button>
+    </div>
+    <div class="battle-log" id="battleLog" style="display:none"></div>
+  `;
+
+  const rollBtn = document.getElementById('rollBtnCheck');
+  const diceAnim = document.getElementById('diceAnim');
+
+  function safe(id){ return document.getElementById(id); }   // null-safe helper
+
+  function doRoll(){
+    if(rolled) return;
+    rolled = true;
+    if(rollBtn) rollBtn.disabled = true;
+
+    let ticks = 0;
+    const interval = setInterval(()=>{
+      // If scene changed while animating, stop immediately
+      if(state.sceneVer !== myVer){ clearInterval(interval); return; }
+      const da = safe('diceAnim');
+      if(da) da.textContent = DICE_FACES[Math.floor(Math.random()*6)];
+      ticks++;
+      if(ticks > 10){
+        clearInterval(interval);
+        if(state.sceneVer !== myVer) return;   // scene changed — abort
+
+        const result = rollDice();
+        const da2 = safe('diceAnim');
+        if(da2){
+          da2.textContent = DICE_FACES[result-1];
+          da2.classList.add('rolling');
+          setTimeout(()=>{ if(da2) da2.classList.remove('rolling'); }, 700);
+        }
+
+        const success = result >= diceConf.threshold;
+        const resultEl = safe('diceResultText');
+        const subEl    = safe('diceSubText');
+
+        if(resultEl){
+          resultEl.textContent = success ? `🎉 投出 ${result}！成功！` : `😱 投出 ${result}！失败…`;
+          resultEl.className = success ? 'dice-result success' : 'dice-result fail';
+        }
+        if(subEl){
+          if(success){
+            subEl.textContent = '通过检定！';
+          } else {
+            if(diceConf.failPenalty > 0){
+              subEl.textContent = `损失 ${diceConf.failPenalty} 点生命值`;
+              damage(diceConf.failPenalty);
+            } else {
+              subEl.textContent = '检定失败';
+            }
+          }
+        }
+
+        setTimeout(()=>{
+          if(state.sceneVer !== myVer) return;   // scene changed while waiting — abort
+          goToScene(success ? diceConf.successScene : diceConf.failScene);
+        }, 1400);
+      }
+    }, 80);
+  }
+
+  if(rollBtn) rollBtn.addEventListener('click', doRoll);
+  if(diceAnim) diceAnim.addEventListener('click', doRoll);
+}
+
+function renderBattle(bConf){
+  let enemyHp = bConf.enemyHp;
+  let round = 0;
+  let finished = false;
+  const logs = [];
+  const myVer = state.sceneVer;   // snapshot for stale-callback detection
+
+  const diceEl = document.getElementById('diceSection');
+
+  function updateBattleUI(){
+    const pct = Math.max(0, (enemyHp / bConf.enemyHp) * 100);
+    const el = document.getElementById('enemyHpFill');
+    if(el) el.style.width = pct+'%';
+    const en = document.getElementById('enemyHpNum');
+    if(en) en.textContent = enemyHp;
+    const ph = document.getElementById('playerHpDisp');
+    if(ph) ph.textContent = state.hp;
+
+    const logEl = document.getElementById('battleLog');
+    if(logEl){
+      logEl.innerHTML = logs.slice(-4).join('<br>');
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+  }
+
+  diceEl.innerHTML = `
+    <div class="dice-section">
+      <div class="dice-title">⚔️ 战斗！ · 命中阈值 ≥ ${bConf.hitThreshold}</div>
+
+      <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:120px">
+          <div style="font-size:0.75em;color:#9ca3b0;margin-bottom:4px">${bConf.enemyName}</div>
+          <div style="background:rgba(255,255,255,0.06);border-radius:6px;height:8px;overflow:hidden">
+            <div id="enemyHpFill" style="width:100%;height:100%;background:linear-gradient(90deg,#7f1d1d,#f87171);border-radius:6px;transition:width .5s"></div>
+          </div>
+          <div style="font-size:0.78em;color:#f87171;margin-top:3px">HP: <span id="enemyHpNum">${enemyHp}</span></div>
+        </div>
+        <div style="flex:1;min-width:120px">
+          <div style="font-size:0.75em;color:#9ca3b0;margin-bottom:4px">阿青（你）</div>
+          <div style="background:rgba(255,255,255,0.06);border-radius:6px;height:8px;overflow:hidden">
+            <div style="width:100%;height:100%;background:linear-gradient(90deg,#166534,#4ade80);border-radius:6px"></div>
+          </div>
+          <div style="font-size:0.78em;color:#4ade80;margin-top:3px">HP: <span id="playerHpDisp">${state.hp}</span></div>
+        </div>
+      </div>
+
+      <div class="dice-display" id="battleDice">🎲</div>
+      <div class="dice-result neutral" id="battleResultText">准备好了吗？</div>
+      <div class="dice-sub" id="battleSubText">第 <span id="roundNum">0</span> 回合</div>
+      <br>
+      <button class="roll-btn" id="rollBtnBattle">⚔️ 攻击！</button>
+    </div>
+    <div class="battle-log" id="battleLog"></div>
+  `;
+
+  const rollBtn = document.getElementById('rollBtnBattle');
+  const diceAnim = document.getElementById('battleDice');
+
+  function safeGet(id){ return document.getElementById(id); }
+
+  rollBtn.addEventListener('click', ()=>{
+    if(finished) return;
+    rollBtn.disabled = true;
+    round++;
+    const rn = safeGet('roundNum');
+    if(rn) rn.textContent = round;
+
+    let ticks = 0;
+    const interval = setInterval(()=>{
+      // Abort if scene changed while animating
+      if(state.sceneVer !== myVer){ clearInterval(interval); return; }
+      if(diceAnim) diceAnim.textContent = DICE_FACES[Math.floor(Math.random()*6)];
+      ticks++;
+      if(ticks > 8){
+        clearInterval(interval);
+        if(state.sceneVer !== myVer) return;   // scene changed — abort
+
+        const result = rollDice();
+        if(diceAnim) diceAnim.textContent = DICE_FACES[result-1];
+
+        const hit = result >= bConf.hitThreshold;
+        const resultEl = safeGet('battleResultText');
+        const subEl    = safeGet('battleSubText');
+
+        if(hit){
+          enemyHp = Math.max(0, enemyHp - bConf.playerDmg);
+          if(resultEl){ resultEl.textContent = `💥 投出 ${result}！命中！造成 ${bConf.playerDmg} 伤害`; resultEl.className = 'dice-result success'; }
+          logs.push(`<span class="log-ok">第${round}回合：你命中！造成 ${bConf.playerDmg} 伤。敌方剩余 ${enemyHp} HP</span>`);
+        } else {
+          const dmg = bConf.enemyDmg;
+          damage(dmg);
+          if(resultEl){ resultEl.textContent = `😬 投出 ${result}！被攻击！损失 ${dmg} HP`; resultEl.className = 'dice-result fail'; }
+          logs.push(`<span class="log-hit">第${round}回合：被攻击！损失 ${dmg}。你剩余 ${state.hp} HP</span>`);
+        }
+
+        if(subEl) subEl.textContent = `第 ${round} 回合结束`;
+        updateBattleUI();
+
+        setTimeout(()=>{
+          if(state.sceneVer !== myVer) return;   // scene changed while waiting — abort
+          if(enemyHp <= 0){
+            finished = true;
+            const re2 = safeGet('battleResultText');
+            if(re2){ re2.textContent = '🎉 敌人被击败！'; re2.className = 'dice-result success'; }
+            rollBtn.textContent = '继续...';
+            rollBtn.disabled = false;
+            rollBtn.onclick = ()=>goToScene(bConf.winScene);
+          } else if(state.hp <= 0){
+            finished = true;
+            goToScene(bConf.loseScene || 'death');
+          } else {
+            rollBtn.disabled = false;
+          }
+        }, 600);
+      }
+    }, 70);
+  });
+}
+
+function renderEnding(scene){
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+
+  const div = document.createElement('div');
+  div.className = 'ending-card fade-in';
+
+  const icons = {best:'🌟',good:'🎉',neutral:'🌙',bad:'💔'};
+  div.innerHTML = `
+    <div class="ending-icon">${icons[scene.endingType]||'⭐'}</div>
+    <div class="ending-title ${scene.endingType}">${scene.endingTitle}</div>
+    <div style="margin:16px 0;height:1px;background:rgba(255,255,255,0.07)"></div>
+    <div class="ending-desc">${scene.text}</div>
+    <button class="restart-btn" onclick="restartGame()">🔄 重新开始探险</button>
+    <div style="margin-top:10px;font-size:0.78em;color:#6b7280">最终生命值：${state.hp}  / 收集道具：${state.items.join(' ')||'无'}</div>
+  `;
+  choicesEl.appendChild(div);
+}
+
+function restartGame(){
+  state.hp = 100;
+  state.maxHp = 100;
+  state.items = [];
+  state.flags = {};
+  renderHp();
+  renderItems();
+  goToScene('intro');
+}
+
+// ═══════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════
+renderHp();
+renderItems();
+goToScene('intro');
+</script>
+</body>
+</html>

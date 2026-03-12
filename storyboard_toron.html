@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>银甲龙猫·托罗恩觉醒 — 动画分镜脚本</title>
+<style>
+  :root {
+    --green:  #4caf78;
+    --gold:   #e8b84b;
+    --blue:   #5ba3c9;
+    --red:    #d9534f;
+    --silver: #b8c8d8;
+    --dark:   #0d1a14;
+    --panel:  #111e18;
+    --border: #2a3d30;
+    --text:   #d4e8d4;
+    --muted:  #7a9c82;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: linear-gradient(135deg, #0d2018 0%, #162c1e 60%, #1a3322 100%);
+    border-bottom: 2px solid var(--green);
+    padding: 28px 40px 22px;
+    display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+  }
+  .title-block h1 { font-size: 1.9rem; color: var(--gold); letter-spacing: 2px; }
+  .title-block h2 { font-size: 1.05rem; color: var(--green); margin-top: 4px; font-weight: 400; letter-spacing: 1px; }
+  .title-block .subtitle { margin-top: 8px; font-size: 0.82rem; color: var(--muted); }
+  .meta-block {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+    font-size: 0.8rem; color: var(--muted);
+  }
+  .meta-block .badge {
+    background: var(--green); color: #051008;
+    padding: 3px 12px; border-radius: 20px; font-weight: 700; font-size: 0.85rem;
+  }
+
+  /* ── TIMING OVERVIEW BAR ── */
+  .timing-bar-wrap {
+    background: #0a1610; border-bottom: 1px solid var(--border);
+    padding: 14px 40px;
+  }
+  .timing-bar-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 8px; letter-spacing: 1px; }
+  .timing-bar {
+    display: flex; height: 28px; border-radius: 6px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .timing-seg {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 700; color: rgba(0,0,0,0.7);
+    cursor: default; transition: filter 0.2s;
+    white-space: nowrap; overflow: hidden;
+  }
+  .timing-seg:hover { filter: brightness(1.2); }
+  .ts-s1  { background: #3a6644; }
+  .ts-s2  { background: #2e5538; }
+  .ts-s3  { background: #38704a; }
+  .ts-s4  { background: #4a8060; }
+  .ts-s5  { background: #56926e; }
+  .ts-s6  { background: #62a47c; }
+  .ts-s7  { background: #6eb88a; }
+  .ts-s8  { background: #7acc98; }
+  .ts-s9  { background: #86dea6; }
+  .ts-s10 { background: #92f0b4; }
+  .timing-ticks {
+    display: flex; justify-content: space-between;
+    padding: 4px 0 0;
+    font-size: 0.68rem; color: var(--muted);
+  }
+
+  /* ── SECTION DIVIDERS ── */
+  .act-divider {
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 40px 10px;
+  }
+  .act-divider .act-label {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 2px;
+    padding: 3px 14px; border-radius: 20px; white-space: nowrap;
+  }
+  .act-divider hr { flex: 1; border: none; border-top: 1px solid var(--border); }
+  .act-intro  .act-label { background: #1e3a28; color: var(--green); border: 1px solid var(--green); }
+  .act-rise   .act-label { background: #2e2a14; color: var(--gold);  border: 1px solid var(--gold);  }
+  .act-burst  .act-label { background: #2e1414; color: #f07070;      border: 1px solid var(--red);   }
+
+  /* ── SHOT GRID ── */
+  .shots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+    padding: 10px 40px 30px;
+  }
+
+  /* ── SHOT CARD ── */
+  .shot-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .shot-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+
+  .shot-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .shot-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
+  }
+  .shot-title-block { flex: 1; }
+  .shot-title-block .sname { font-size: 0.9rem; font-weight: 700; color: #fff; }
+  .shot-title-block .stype { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
+  .shot-duration {
+    font-size: 0.75rem; font-weight: 700;
+    padding: 2px 9px; border-radius: 12px;
+    white-space: nowrap;
+  }
+
+  /* sketch area */
+  .shot-sketch {
+    position: relative;
+    background: #080f0a;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sketch-ascii {
+    font-family: 'Courier New', monospace;
+    font-size: 0.68rem;
+    line-height: 1.3;
+    color: #2a4a32;
+    white-space: pre;
+    pointer-events: none;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .sketch-overlay {
+    position: relative; z-index: 2;
+    text-align: center; padding: 10px;
+  }
+  .sketch-overlay .frame-icon { font-size: 2.6rem; display: block; }
+  .sketch-overlay .frame-note { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+  .shot-sketch .cam-badge {
+    position: absolute; bottom: 8px; right: 10px; z-index: 3;
+    background: rgba(0,0,0,0.7); border: 1px solid var(--border);
+    border-radius: 4px; padding: 2px 8px;
+    font-size: 0.65rem; color: var(--silver); letter-spacing: 0.5px;
+  }
+  .shot-sketch .timing-badge {
+    position: absolute; top: 8px; left: 10px; z-index: 3;
+    background: rgba(0,0,0,0.7); border-radius: 4px; padding: 2px 8px;
+    font-size: 0.62rem; color: var(--gold); font-weight: 700;
+  }
+
+  /* body rows */
+  .shot-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+
+  .info-row { display: flex; gap: 8px; }
+  .info-tag {
+    font-size: 0.62rem; font-weight: 700; letter-spacing: 1px;
+    padding: 2px 8px; border-radius: 4px; white-space: nowrap; flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .tag-scene { background: #152a1e; color: var(--green); border: 1px solid #2a4a32; }
+  .tag-cam   { background: #1e1e2e; color: var(--blue);  border: 1px solid #2a2a4e; }
+  .tag-action{ background: #2a2010; color: var(--gold);  border: 1px solid #4a3a18; }
+  .tag-audio { background: #1e0e0e; color: #e07070;      border: 1px solid #3e1e1e; }
+
+  .info-text { font-size: 0.8rem; color: var(--text); line-height: 1.5; }
+
+  /* dialogue bubble */
+  .dialogue-block {
+    background: #0a1a10; border-left: 3px solid var(--green);
+    border-radius: 0 6px 6px 0; padding: 7px 10px;
+  }
+  .dialogue-block .dlabel { font-size: 0.62rem; color: var(--muted); margin-bottom: 3px; letter-spacing: 1px; }
+  .dialogue-block .dtext  { font-size: 0.82rem; color: #e8f8e8; line-height: 1.5; font-style: italic; }
+  .dialogue-block.sfx     { border-left-color: var(--gold); background: #1a1400; }
+  .dialogue-block.sfx .dtext { color: var(--gold); font-style: normal; font-family: 'Courier New', monospace; letter-spacing: 1px; }
+
+  /* ── LEGEND / NOTES ── */
+  .footer-notes {
+    margin: 0 40px 40px;
+    background: #0a1610; border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px 24px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+  .note-section h3 { font-size: 0.8rem; color: var(--gold); letter-spacing: 1px; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .note-section ul { list-style: none; padding: 0; }
+  .note-section li { font-size: 0.78rem; color: var(--muted); padding: 3px 0; display: flex; gap: 8px; }
+  .note-section li .dot { color: var(--green); }
+  .music-row { display: flex; flex-direction: column; gap: 6px; }
+  .music-beat {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.78rem;
+  }
+  .music-beat .beat-time { color: var(--gold); font-family: monospace; font-size: 0.72rem; width: 50px; flex-shrink: 0; }
+  .music-beat .beat-bar {
+    flex: 1; height: 8px; border-radius: 4px; overflow: hidden;
+    background: #1a2a1e;
+  }
+  .music-beat .beat-fill { height: 100%; border-radius: 4px; }
+  .music-beat .beat-label { font-size: 0.72rem; color: var(--muted); width: 100px; }
+
+  /* colors per act */
+  .act-green .shot-num { background: #1e4030; color: var(--green); border: 2px solid var(--green); }
+  .act-green .shot-duration { background: #1e3028; color: var(--green); }
+  .act-gold  .shot-num { background: #3a2e10; color: var(--gold);  border: 2px solid var(--gold); }
+  .act-gold  .shot-duration { background: #2e2410; color: var(--gold); }
+  .act-burst-color .shot-num { background: #3a1010; color: #f07070; border: 2px solid var(--red); }
+  .act-burst-color .shot-duration { background: #2e1010; color: #f09090; }
+
+  @media (max-width: 760px) {
+    .shots-grid { grid-template-columns: 1fr; padding: 10px 16px 30px; }
+    .page-header { padding: 20px 16px; }
+    .timing-bar-wrap { padding: 14px 16px; }
+    .act-divider { padding: 18px 16px 10px; }
+    .footer-notes { margin: 0 16px 30px; grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════ HEADER ══════════════════════════════ -->
+<header class="page-header">
+  <div class="title-block">
+    <h1>银甲龙猫·托罗恩觉醒</h1>
+    <h2>TORON AWAKENS — 30-Second Animation Storyboard</h2>
+    <p class="subtitle">艾洛瑞亚世界 · 第零话 · 片头动画分镜脚本 · 导演版 v1.0</p>
+  </div>
+  <div class="meta-block">
+    <span class="badge">⏱ 总时长 30 秒</span>
+    <span>10 个镜头</span>
+    <span>3 个叙事段落</span>
+    <span>帧率建议：24fps</span>
+  </div>
+</header>
+
+<!-- ══════════════════════════════ TIMING BAR ══════════════════════════════ -->
+<div class="timing-bar-wrap">
+  <div class="timing-bar-label">▶ 时间轴总览（每格≈1秒）</div>
+  <div class="timing-bar">
+    <div class="timing-seg ts-s1"  style="width:10%">S01·3s</div>
+    <div class="timing-seg ts-s2"  style="width:10%">S02·3s</div>
+    <div class="timing-seg ts-s3"  style="width:10%">S03·3s</div>
+    <div class="timing-seg ts-s4"  style="width:6.7%">S04·2s</div>
+    <div class="timing-seg ts-s5"  style="width:6.7%">S05·2s</div>
+    <div class="timing-seg ts-s6"  style="width:10%">S06·3s</div>
+    <div class="timing-seg ts-s7"  style="width:6.7%">S07·2s</div>
+    <div class="timing-seg ts-s8"  style="width:10%">S08·3s</div>
+    <div class="timing-seg ts-s9"  style="width:13.3%">S09·4s</div>
+    <div class="timing-seg ts-s10" style="width:13.3%">S10·4s</div>
+  </div>
+  <div class="timing-ticks">
+    <span>0s</span><span>3s</span><span>6s</span><span>9s</span>
+    <span>12s</span><span>15s</span><span>18s</span><span>21s</span>
+    <span>24s</span><span>27s</span><span>30s</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ ACT ONE: 沉睡 ══════════════════════════════ -->
+<div class="act-divider act-intro">
+  <hr>
+  <span class="act-label">第一幕 · 沉睡 &nbsp;00:00 – 09:00</span>
+  <hr>
+</div>
+<div class="shots-grid">
+
+  <!-- S01 -->
+  <div class="shot-card act-green">
+    <div class="shot-header">
+      <div class="shot-num">01</div>
+      <div class="shot-title-block">
+        <div class="sname">宏观航拍 · 灵森域黎明</div>
+        <div class="stype">建立镜 · 极宽景</div>
+      </div>
+      <span class="shot-duration">3 秒</span>
+    </div>
+    <div class="shot-sketch">
+      <pre class="sketch-ascii">
+    ~~~*~~~*~~~*~~~*~~~*~~~
+   /   古木森林 · 晨雾   \
+  /  .  .  .  .  .  .  . \
+ /____古______树______群____\
+|          ·  ·  ·         |
+|    …… 远方隐约有光 ……    |
+      </pre>
+      <div class="sketch-overlay">
+        <span class="frame-icon">🌄</span>
+        <div class="frame-note">[ 空镜 · 朝雾漫林 ]</div>
+      </div>
+      <span class="cam-badge">DRONE ↓ 俯冲推入</span>
+      <span class="timing-badge">00:00 – 00:03</span>
+    </div>
+    <div class="shot-body">
+      <div class="info-row">
+        <span class="info-tag tag-scene">场景</span>
+        <span class="info-text">黎明前的灵森域。成千上万棵发光古树沐浴在薄雾中，远处山峦轮廓浮现。画面色调：深蓝→墨绿，光线极弱。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-cam">镜头</span>
+        <span class="info-text">无人机视角，从500米高空缓缓俯冲向森林中心地带。镜头速度：0→加速，配合音乐节拍。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-audio">音效</span>
+        <span class="info-text">远处风声 + 虫鸣切入。音乐：单一低沉的大提琴长音，如心跳前的静默。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- S02 -->
+  <div class="shot-card act-green">
+    <div class="shot-header">
+      <div class="shot-num">02</div>
+      <div class="shot-title-block">
+        <div class="sname">地下封印 · 全身俯视</div>
+        <div class="stype">情境镜 · 中景俯角</div>
+      </div>
+      <span class="shot-duration">3 秒</span>
+    </div>
+    <div class="shot-sketch">
+      <pre class="sketch-ascii">
+  ╔═══════════════════════╗
+  ║  ████  [盘根古树]  ████ ║
+  ║   \  银甲轮廓·沉睡  /  ║
+  ║    \_______________/   ║
+  ║   ·· 封印符文闪烁 ··   ║
+  ╚═══════════════════════╝</pre>
+      <div class="sketch-overlay">
+        <span class="frame-icon">💤</span>
+        <div class="frame-note">[ 托罗恩沉睡·封印中 ]</div>
+      </div>
+      <span class="cam-badge">TOP-DOWN 垂直俯拍</span>
+      <span class="timing-badge">00:03 – 00:06</span>
+    </div>
+    <div class="shot-body">
+      <div class="info-row">
+        <span class="info-tag tag-scene">场景</span>
+        <span class="info-text">镜头穿透土层，来到地下空腔。托罗恩以蜷曲姿态被盘根包裹，银甲暗淡无光，符文封印在甲片上缓慢流动，如余烬将熄。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-cam">镜头</span>
+        <span class="info-text">正上方垂直俯视，慢慢拉近至中景。画面中央托罗恩占1/3，周围是对称分布的封印符文光圈。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-audio">音效</span>
+        <span class="info-text">低频嗡鸣（封印能量）+ 极轻的呼吸声。音乐持续低音，加入钢片琴极轻碎音。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- S03 -->
+  <div class="shot-card act-green">
+    <div class="shot-header">
+      <div class="shot-num">03</div>
+      <div class="shot-title-block">
+        <div class="sname">眼睛特写 · 意识觉醒</div>
+        <div class="stype">情感镜 · 极端特写</div>
+      </div>
+      <span class="shot-duration">3 秒</span>
+    </div>
+    <div class="shot-sketch">
+      <pre class="sketch-ascii">
+
+    ════════════════════
+        ●  ──→  ◉
+      (暗)  渐亮  (金)
+    ════════════════════
+        瞳孔缓缓收缩
+      </pre>
+      <div class="sketch-overlay">
+        <span class="frame-icon">👁️</span>
+        <div class="frame-note">[ 眼神觉醒特写 ]</div>
+      </div>
+      <span class="cam-badge">MACRO 极端特写·微推</span>
+      <span class="timing-badge">00:06 – 00:09</span>
+    </div>
+    <div class="shot-body">
+      <div class="info-row">
+        <span class="info-tag tag-scene">场景</span>
+        <span class="info-text">托罗恩眼睛极端特写。眼睑轻微颤动，瞳孔从一片漆黑中缓慢亮起——先是细微的绿光，随后变为耀眼的金色。瞳孔中映出整片森林。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-cam">镜头</span>
+        <span class="info-text">固定极特写，仅拍单眼占满画幅。镜头以0.3x慢速推近1厘米，营造凝视感。色调转变：蓝黑 → 绿金。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-audio">音效</span>
+        <span class="info-text">心跳声开始出现（单次，低沉）。音乐：低音弦乐突然切断一拍，制造"停顿感"。</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════ ACT TWO: 崛起 ══════════════════════════════ -->
+<div class="act-divider act-rise">
+  <hr>
+  <span class="act-label">第二幕 · 崛起 &nbsp;00:09 – 00:21</span>
+  <hr>
+</div>
+<div class="shots-grid">
+
+  <!-- S04 -->
+  <div class="shot-card act-gold">
+    <div class="shot-header">
+      <div class="shot-num">04</div>
+      <div class="shot-title-block">
+        <div class="sname">银甲激活 · 符文燃起</div>
+        <div class="stype">动作镜 · 中景固定</div>
+      </div>
+      <span class="shot-duration">2 秒</span>
+    </div>
+    <div class="shot-sketch">
+      <pre class="sketch-ascii">
+  ╔═══════════════════════╗
+  ║ ✦ → ✦ → ✦ → ✦ → ✦  ║
+  ║  甲片符文连锁点亮     ║
+  ║  [胸甲] [肩甲] [爪]  ║
+  ╚═══════════════════════╝</pre>
+      <div class="sketch-overlay">
+        <span class="frame-icon">⚡</span>
+        <div class="frame-note">[ 符文连锁激活 ]</div>
+      </div>
+      <span class="cam-badge">FIXED 固定·略仰角</span>
+      <span class="timing-badge">00:09 – 00:11</span>
+    </div>
+    <div class="shot-body">
+      <div class="info-row">
+        <span class="info-tag tag-action">动作</span>
+        <span class="info-text">银甲上的封印符文从心口处开始，以连锁反应方式向四肢蔓延——胸→肩→臂→爪，每片甲依次亮起金绿色光芒。速度越来越快，像多米诺骨牌。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-cam">镜头</span>
+        <span class="info-text">固定中景，从正面略仰拍托罗恩蜷缩的身体。画面构图：身体居中，四肢延伸至画框边缘。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-audio">音效</span>
+        <span class="info-text">金属共鸣连锁声（"叮——叮叮——叮叮叮"递进加速）。音乐节奏突然提速，鼓点入场。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- S05 -->
+  <div class="shot-card act-gold">
+    <div class="shot-header">
+      <div class="shot-num">05</div>
+      <div class="shot-title-block">
+        <div class="sname">破土而出 · 正面仰拍</div>
+        <div class="stype">冲击镜 · 广角仰拍</div>
+      </div>
+      <span class="shot-duration">2 秒</span>
+    </div>
+    <div class="shot-sketch">
+      <pre class="sketch-ascii">
+        ↑ ↑ ↑ ↑ ↑ ↑ ↑
+   /‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\
+  / [托罗恩跃出地面] \
+ /___________________\
+ 土石碎块向四方飞溅</pre>
+      <div class="sketch-overlay">
+        <span class="frame-icon">🌱</span>
+        <div class="frame-note">[ 破土冲击镜 ]</div>
+      </div>
+      <span class="cam-badge">LOW-ANGLE 极低仰·广角</span>
+      <span class="timing-badge">00:11 – 00:13</span>
+    </div>
+    <div class="shot-body">
+      <div class="info-row">
+        <span class="info-tag tag-action">动作</span>
+        <span class="info-text">托罗恩猛力撑起，双爪击碎封印根网，从地底喷涌而出！土石、泥块、树根碎片向四方飞溅。银甲在破土瞬间全面发光，如日出。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-cam">镜头</span>
+        <span class="info-text">极低仰角广角镜（鱼眼感），摄像机置于破土点正下方，托罗恩从镜头正中冲出，遮住整个天空。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-audio">音效</span>
+        <span class="info-text">爆破轰鸣 + 金属共鸣混合。音乐：打击乐全力爆发，铜管齐奏主题第一句。</span>
+      </div>
+      <div class="dialogue-block sfx">
+        <div class="dlabel">音效文字</div>
+        <div class="dtext">KA-BOOM !! &nbsp;&nbsp; 轰——！！</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S06 -->
+  <div class="shot-card act-gold">
+    <div class="shot-header">
+      <div class="shot-num">06</div>
+      <div class="shot-title-block">
+        <div class="sname">银甲特写连切 · 细节爆发</div>
+        <div class="stype">蒙太奇镜 · 快切三连</div>
+      </div>
+      <span class="shot-duration">3 秒</span>
+    </div>
+    <div class="shot-sketch">
+      <pre class="sketch-ascii">
+  [0.8s] 爪拍地·冲击波
+  [0.8s] 胸甲·符文环转
+  [0.8s] 眼·金光射出
+  ─────────────────────
+  三个镜头快速剪切</pre>
+      <div class="sketch-overlay">
+        <span class="frame-icon">🎬</span>
+        <div class="frame-note">[ 快切蒙太奇 ]</div>
+      </div>
+      <span class="cam-badge">MONTAGE 快切·各1秒</span>
+      <span class="timing-badge">00:13 – 00:16</span>
+    </div>
+    <div class="shot-body">
+      <div class="info-row">
+        <span class="info-tag tag-scene">三连切</span>
+        <span class="info-text">① 巨爪重击地面，地裂纹向外扩散（特写，仰角）。② 胸甲中央符文旋转加速，形成光环（正面极特写）。③ 双眼同时爆出金色光束，照亮整片树冠（面部特写）。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-cam">节奏</span>
+        <span class="info-text">每切对齐音乐鼓点，剪辑点卡在重音上。每个镜头约0.8秒，最后一个镜头（眼睛）稍长（1.4秒）做情感留白。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-audio">音效</span>
+        <span class="info-text">每切一次配合一次金属"铛"声。主题旋律进行到高潮前最后一句。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- S07 -->
+  <div class="shot-card act-gold">
+    <div class="shot-header">
+      <div class="shot-num">07</div>
+      <div class="shot-title-block">
+        <div class="sname">侧面仰拍 · 静止对峙</div>
+        <div class="stype">力量镜 · 侧面全身</div>
+      </div>
+      <span class="shot-duration">2 秒</span>
+    </div>
+    <div class="shot-sketch">
+      <pre class="sketch-ascii">
+  ←—— 逆光方向 ——→
+
+    |  [托罗恩剪影]  |
+    |  侧面·站立姿  |
+    |               |
+    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓</pre>
+      <div class="sketch-overlay">
+        <span class="frame-icon">🦁</span>
+        <div class="frame-note">[ 剪影·战斗姿态 ]</div>
+      </div>
+      <span class="cam-badge">SIDE 侧面·低机位·逆光</span>
+      <span class="timing-badge">00:16 – 00:18</span>
+    </div>
+    <div class="shot-body">
+      <div class="info-row">
+        <span class="info-tag tag-action">动作</span>
+        <span class="info-text">动作骤停——托罗恩完全站立，侧面对镜。银甲在逆光中形成壮丽剪影，四肢甲片上的符文隐隐发光轮廓。风吹树叶，他纹丝不动。一种压迫性的静默。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-cam">镜头</span>
+        <span class="info-text">低机位（齐腰高），侧面全身，逆光构图。太阳/晨光在背后形成光晕。构图：黄金比例，托罗恩头部在画面上1/3处。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-audio">音效</span>
+        <span class="info-text">音乐突然减弱至零——只剩风声和落叶声。这2秒的静默是整段音乐的"留白"，为终幕爆发蓄力。</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════ ACT THREE: 宣言 ══════════════════════════════ -->
+<div class="act-divider act-burst">
+  <hr>
+  <span class="act-label">第三幕 · 宣言 &nbsp;00:21 – 00:30</span>
+  <hr>
+</div>
+<div class="shots-grid">
+
+  <!-- S08 -->
+  <div class="shot-card act-burst-color">
+    <div class="shot-header">
+      <div class="shot-num">08</div>
+      <div class="shot-title-block">
+        <div class="sname">正面特写 · 深呼吸</div>
+        <div class="stype">情感镜 · 中近景</div>
+      </div>
+      <span class="shot-duration">3 秒</span>
+    </div>
+    <div class="shot-sketch">
+      <pre class="sketch-ascii">
+  ╔═════════════════════╗
+  ║  [托罗恩面部 · 正面] ║
+  ║  耳朵微微颤动        ║
+  ║  胸甲缓缓起伏        ║
+  ║  眼中闪烁金色碎光   ║
+  ╚═════════════════════╝</pre>
+      <div class="sketch-overlay">
+        <span class="frame-icon">🐾</span>
+        <div class="frame-note">[ 情感特写·深吸气 ]</div>
+      </div>
+      <span class="cam-badge">FRONT-MED 正面中近景·微升</span>
+      <span class="timing-badge">00:21 – 00:24</span>
+    </div>
+    <div class="shot-body">
+      <div class="info-row">
+        <span class="info-tag tag-action">动作</span>
+        <span class="info-text">托罗恩深深吸气——胸甲起伏，耳朵竖立，胡须微微颤动。眼神从迷茫转为清醒，金色瞳孔聚焦。这是他沉睡百年后第一次真正感受到世界。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-cam">镜头</span>
+        <span class="info-text">正面中近景，镜头极缓慢上升（配合吸气动作）。景深：背景虚化，只有托罗恩面部清晰。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-audio">音效</span>
+        <span class="info-text">听得见他的呼吸声——像风过林间，粗犷却有温度。远处开始有鸟鸣，森林在回应他的觉醒。</span>
+      </div>
+      <div class="dialogue-block">
+        <div class="dlabel">旁白（心声·无声字幕）</div>
+        <div class="dtext">「……树的气息……还在……」</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S09 -->
+  <div class="shot-card act-burst-color">
+    <div class="shot-header">
+      <div class="shot-num">09</div>
+      <div class="shot-title-block">
+        <div class="sname">仰天长啸 · 冲击波扩散</div>
+        <div class="stype">高潮镜 · 超广角仰拍</div>
+      </div>
+      <span class="shot-duration">4 秒</span>
+    </div>
+    <div class="shot-sketch">
+      <pre class="sketch-ascii">
+   ☁  ☁  ☁  ☁  ☁  ☁
+  ← ← ← 冲击波 → → →
+
+    ↑ 托罗恩仰天大吼 ↑
+
+  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓</pre>
+      <div class="sketch-overlay">
+        <span class="frame-icon">🌊</span>
+        <div class="frame-note">[ 长啸·冲击波爆发 ]</div>
+      </div>
+      <span class="cam-badge">ULTRA-WIDE 超广·旋转仰拍</span>
+      <span class="timing-badge">00:24 – 00:28</span>
+    </div>
+    <div class="shot-body">
+      <div class="info-row">
+        <span class="info-tag tag-action">动作</span>
+        <span class="info-text">托罗恩仰天，口中发出震天长啸！音波以实体化冲击波向四面八方扩散——树木弯折，落叶飞旋，云层被推开，鸟群惊飞。银甲在啸声中达到最亮光值，金绿光芒冲天而起。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-cam">镜头</span>
+        <span class="info-text">超广角仰拍，镜头从托罗恩脚下开始快速旋转上升，最终停在正上方俯视全景——冲击波在镜头中形成完美同心圆。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-audio">音效</span>
+        <span class="info-text">托罗恩的低频长啸（持续3秒，震撼感）与管弦乐主题高潮完全融合。冲击波经过的瞬间伴随次低音"嗡"声。</span>
+      </div>
+      <div class="dialogue-block sfx">
+        <div class="dlabel">音效文字（画面出现）</div>
+        <div class="dtext">ROOOOAAAR !!&nbsp;&nbsp; 嗡——轰！！！</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S10 -->
+  <div class="shot-card act-burst-color">
+    <div class="shot-header">
+      <div class="shot-num">10</div>
+      <div class="shot-title-block">
+        <div class="sname">片名压画 · 标题定格</div>
+        <div class="stype">结尾镜 · 全景+字幕</div>
+      </div>
+      <span class="shot-duration">4 秒</span>
+    </div>
+    <div class="shot-sketch">
+      <pre class="sketch-ascii">
+  ╔═══════════════════════╗
+  ║                       ║
+  ║  [托罗恩全景·立于山巅] ║
+  ║                       ║
+  ║  银甲龙猫·托罗恩       ║
+  ║  TORON AWAKENS        ║
+  ╚═══════════════════════╝</pre>
+      <div class="sketch-overlay">
+        <span class="frame-icon">✨</span>
+        <div class="frame-note">[ 片名定格 ]</div>
+      </div>
+      <span class="cam-badge">PULL-BACK 镜头拉远·全景</span>
+      <span class="timing-badge">00:28 – 00:30</span>
+    </div>
+    <div class="shot-body">
+      <div class="info-row">
+        <span class="info-tag tag-scene">场景</span>
+        <span class="info-text">晨光中，托罗恩伫立于古树顶端（或山丘制高点），俯视整片灵森域。银甲反射金色晨光，他的背影宏伟而孤独。画面静止，字幕渐入。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-cam">镜头</span>
+        <span class="info-text">镜头从近景快速拉远（配合长啸余震），直到托罗恩变成画面中心的一个发光剪影。最后2秒完全静止——如同一幅画。</span>
+      </div>
+      <div class="info-row">
+        <span class="info-tag tag-audio">音效</span>
+        <span class="info-text">管弦乐收尾，最后一个和弦持续淡出。保留远处鸟鸣和风声，回到片头的自然声。</span>
+      </div>
+      <div class="dialogue-block">
+        <div class="dlabel">字幕出现（渐入）</div>
+        <div class="dtext">银甲龙猫 · 托罗恩 &nbsp;｜&nbsp; TORON AWAKENS<br>「艾洛瑞亚大陆 · 守护者归来」</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════ FOOTER NOTES ══════════════════════════════ -->
+<div class="footer-notes">
+  <div class="note-section">
+    <h3>🎵 音乐节奏蓝图</h3>
+    <div class="music-row">
+      <div class="music-beat">
+        <span class="beat-time">00:00</span>
+        <div class="beat-bar"><div class="beat-fill" style="width:15%;background:#3a6644;"></div></div>
+        <span class="beat-label">静默 · 大提琴</span>
+      </div>
+      <div class="music-beat">
+        <span class="beat-time">00:09</span>
+        <div class="beat-bar"><div class="beat-fill" style="width:45%;background:#62a47c;"></div></div>
+        <span class="beat-label">鼓点入场 · 节奏加速</span>
+      </div>
+      <div class="music-beat">
+        <span class="beat-time">00:16</span>
+        <div class="beat-bar"><div class="beat-fill" style="width:5%;background:#2e5538;"></div></div>
+        <span class="beat-label">静默留白 2秒</span>
+      </div>
+      <div class="music-beat">
+        <span class="beat-time">00:18</span>
+        <div class="beat-bar"><div class="beat-fill" style="width:90%;background:#92f0b4;"></div></div>
+        <span class="beat-label">全乐队高潮 · 主题旋律</span>
+      </div>
+      <div class="music-beat">
+        <span class="beat-time">00:28</span>
+        <div class="beat-bar"><div class="beat-fill" style="width:20%;background:#38704a;"></div></div>
+        <span class="beat-label">尾声淡出 · 鸟鸣</span>
+      </div>
+    </div>
+  </div>
+  <div class="note-section">
+    <h3>🎨 视觉色彩笔记</h3>
+    <ul>
+      <li><span class="dot">▶</span>第一幕主色：深蓝 #1a2440 · 墨绿 #1a3020（沉睡·封印）</li>
+      <li><span class="dot">▶</span>第二幕主色：金绿渐变 #4a8060→#e8b84b（激活·崛起）</li>
+      <li><span class="dot">▶</span>第三幕主色：金白爆发 #e8b84b→#ffffff（宣言·高光）</li>
+      <li><span class="dot">▶</span>银甲：底色 #b8c8d8，激活后 #e8f0f8 + 金色符文光晕</li>
+      <li><span class="dot">▶</span>眼睛：沉睡时 #0a0a0a，觉醒 #4caf78，高潮 #e8b84b</li>
+      <li><span class="dot">▶</span>冲击波：纯白 #ffffff 外圈渐变为 #4caf78</li>
+    </ul>
+    <h3 style="margin-top:14px">⚙️ 制作建议</h3>
+    <ul>
+      <li><span class="dot">▶</span>每个镜头可单独交给 AI 图像工具生成静帧</li>
+      <li><span class="dot">▶</span>快切段（S06）可用6张静帧在视频工具中手动剪辑</li>
+      <li><span class="dot">▶</span>S05破土冲击推荐用 Runway / Pika 做动态效果</li>
+      <li><span class="dot">▶</span>字幕建议字体：思源黑体 Bold / 方正标雅宋</li>
+    </ul>
+  </div>
+</div>
+
+</body>
+</html>

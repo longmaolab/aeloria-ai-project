@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>银甲龙猫 · 图像AI提示词卡片</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#0c0c0f;color:#e8e8f0;
+  font-family:'PingFang SC','Microsoft YaHei',sans-serif;
+  padding:28px 16px 80px;
+}
+.header{max-width:820px;margin:0 auto 36px;text-align:center}
+.header h1{font-size:1.9em;font-weight:900;margin-bottom:6px;
+  background:linear-gradient(135deg,#4ade80,#60a5fa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header p{color:#6b7280;font-size:0.9em;line-height:1.7}
+
+.how-to{
+  max-width:820px;margin:0 auto 32px;
+  background:rgba(74,222,128,0.06);
+  border:1px solid rgba(74,222,128,0.2);
+  border-radius:14px;padding:18px 22px;
+}
+.how-to h3{color:#4ade80;font-size:0.85em;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px}
+.steps{display:flex;gap:18px;flex-wrap:wrap}
+.step{flex:1;min-width:160px;display:flex;gap:10px;align-items:flex-start}
+.step-num{
+  width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  background:rgba(74,222,128,0.15);color:#4ade80;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.8em;font-weight:800;
+}
+.step-text{font-size:0.83em;color:#9ca3b0;line-height:1.6}
+.step-text strong{color:#e8e8f0}
+
+.cards{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+
+.card{
+  background:#111118;border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px;overflow:hidden;
+}
+.card-head{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 20px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.panel-badge{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1em;font-weight:900;flex-shrink:0;
+}
+.head-text{flex:1}
+.panel-name{font-size:0.95em;font-weight:700}
+.panel-meta{font-size:0.75em;color:#6b7280;margin-top:2px}
+
+/* prompt tabs */
+.tabs{display:flex;gap:1px;background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.05)}
+.tab{
+  flex:1;padding:9px 12px;text-align:center;
+  font-size:0.75em;color:#6b7280;cursor:pointer;
+  transition:all .15s;
+}
+.tab.active{background:#111118;color:#e8e8f0;font-weight:600}
+.tab:hover:not(.active){background:rgba(255,255,255,0.03);color:#9ca3b0}
+
+.prompt-area{padding:16px 20px}
+.prompt-label{
+  font-size:0.68em;text-transform:uppercase;letter-spacing:0.1em;
+  color:#4b5563;margin-bottom:8px;
+}
+
+.prompt-box{
+  background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px;padding:14px 16px;
+  font-size:0.86em;line-height:1.75;color:#d1d5db;
+  position:relative;cursor:text;
+  user-select:text;
+}
+.prompt-box .kw{color:#4ade80;font-weight:600}
+.prompt-box .style{color:#93c5fd}
+.prompt-box .shot{color:#fde68a}
+
+.copy-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;margin-top:10px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:9px;padding:9px;
+  color:#9ca3b0;font-size:0.82em;cursor:pointer;
+  transition:all .2s;
+}
+.copy-btn:hover{background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.3);color:#4ade80}
+.copy-btn.copied{background:rgba(74,222,128,0.1);border-color:rgba(74,222,128,0.4);color:#4ade80}
+
+.tips-row{
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;
+}
+.tip-chip{
+  font-size:0.72em;padding:3px 10px;border-radius:8px;
+  background:rgba(255,255,255,0.04);color:#6b7280;
+}
+.tip-chip.green{background:rgba(74,222,128,0.08);color:#6ee7b7}
+.tip-chip.blue{background:rgba(96,165,250,0.08);color:#93c5fd}
+.tip-chip.gold{background:rgba(251,191,36,0.08);color:#fde68a}
+
+/* char block at bottom */
+.char-block{
+  max-width:820px;margin:32px auto 0;
+  background:#111118;border:1px solid rgba(255,255,255,0.07);
+  border-radius:14px;padding:20px 22px;
+}
+.char-block h3{font-size:0.8em;text-transform:uppercase;letter-spacing:0.1em;color:#fbbf24;margin-bottom:12px}
+.char-desc{font-size:0.85em;color:#9ca3b0;line-height:1.8;
+  background:rgba(0,0,0,0.3);border-radius:10px;padding:14px 16px;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.char-desc .em{color:#4ade80;font-weight:600}
+
+.footer{text-align:center;margin-top:40px;color:#374151;font-size:0.78em}
+
+/* colors per panel */
+.c1 .panel-badge{background:rgba(74,222,128,0.12);color:#4ade80}
+.c2 .panel-badge{background:rgba(96,165,250,0.12);color:#60a5fa}
+.c3 .panel-badge{background:rgba(248,113,113,0.12);color:#f87171}
+.c4 .panel-badge{background:rgba(251,191,36,0.12);color:#fbbf24}
+.c5 .panel-badge{background:rgba(192,132,252,0.12);color:#c084fc}
+.c6 .panel-badge{background:rgba(74,222,128,0.12);color:#4ade80}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎨 图像AI · 提示词卡片</h1>
+  <p>银甲龙猫漫画第一话 · 6格分镜 · 可直接复制粘贴到 ChatGPT / DALL·E / Midjourney</p>
+</div>
+
+<!-- HOW TO USE -->
+<div class="how-to">
+  <h3>📖 使用方法</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text"><strong>一格一格来</strong><br>每次只复制一格的提示词，每张图单独生成</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text"><strong>选好平台</strong><br>ChatGPT用中文提示词，Midjourney用英文提示词</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text"><strong>不满意就重生成</strong><br>同一个提示词可以多生成几次，挑最好的</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text"><strong>保持风格统一</strong><br>每次提示词都要带「银甲龙猫」角色描述段落</div>
+    </div>
+  </div>
+</div>
+
+<div class="cards">
+
+  <!-- ══ PANEL 1 ══ -->
+  <div class="card c1">
+    <div class="card-head">
+      <div class="panel-badge">01</div>
+      <div class="head-text">
+        <div class="panel-name">末日前夜 · 机器的洪流</div>
+        <div class="panel-meta">超远景鸟瞰 · 开场震撼</div>
+      </div>
+    </div>
+    <div class="prompt-area">
+      <div class="prompt-label">🇨🇳 中文提示词（适用 ChatGPT / DALL·E）</div>
+      <div class="prompt-box" id="cn1">
+        一幅宽屏漫画格，<span class="shot">超远景鸟瞰视角</span>，黄昏时分。画面左侧是<span class="kw">茂密的原始森林</span>，参天古木，顶部有薄雾，色调深绿。画面右侧是<span class="kw">大批工业机器人军团</span>，数十台灰色金属采矿机甲正缓缓向森林逼近，地面被压出车辙，烟雾弥漫。天空被橙色污染染成不自然的颜色。正中央地底透出一道极细的绿色荧光。<span class="style">日本漫画风格，黑白为主，背景细腻，有宫崎骏电影的宏大感</span>。
+      </div>
+      <button class="copy-btn" onclick="copyText('cn1',this)">📋 复制中文提示词</button>
+      <div class="prompt-label" style="margin-top:16px">🇺🇸 英文提示词（适用 Midjourney）</div>
+      <div class="prompt-box" id="en1">
+        <span class="shot">Ultra-wide aerial bird's-eye view</span>, manga panel. Dusk. <span class="kw">Left side: dense ancient forest</span>, towering trees, misty canopy, deep green tones. <span class="kw">Right side: massive army of industrial mining mechs</span>, dozens of grey metal machines slowly advancing toward forest edge, crushing earth, smoke rising. Sky polluted orange-grey. Center: one faint green light ray emerging from underground. <span class="style">Japanese manga style, black and white ink, detailed background, epic scale like Studio Ghibli film</span>. --ar 16:9 --style manga
+      </div>
+      <button class="copy-btn" onclick="copyText('en1',this)">📋 复制英文提示词</button>
+      <div class="tips-row">
+        <span class="tip-chip green">✓ 满幅横版构图</span>
+        <span class="tip-chip blue">✓ 对角线分割画面</span>
+        <span class="tip-chip gold">⚠ 地底绿光要细小，不要太明显</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 2 ══ -->
+  <div class="card c2">
+    <div class="card-head">
+      <div class="panel-badge">02</div>
+      <div class="head-text">
+        <div class="panel-name">地底 · 千年的沉眠</div>
+        <div class="panel-meta">中景仰角 · 神圣寂静</div>
+      </div>
+    </div>
+    <div class="prompt-area">
+      <div class="prompt-label">🇨🇳 中文提示词</div>
+      <div class="prompt-box" id="cn2">
+        漫画格，<span class="shot">中景仰角镜头</span>，地底深处的巨大洞穴。洞穴中央有一个<span class="kw">高约十米的苔藓土丘</span>，表面覆盖厚厚青苔，有微弱的绿色荧光从顶部透出。土丘隐约透出一个<span class="kw">圆润巨大的生物轮廓</span>（耳朵尖，圆肩膀），但不要画清楚。洞穴四壁有发光的苔藓星点，营造宇宙感。整体极度安静，无人物活动。<span class="style">日本黑白漫画风，光源只有土丘的绿光，精细点描阴影技法，神圣寂静的氛围</span>。
+      </div>
+      <button class="copy-btn" onclick="copyText('cn2',this)">📋 复制中文提示词</button>
+      <div class="prompt-label" style="margin-top:16px">🇺🇸 英文提示词</div>
+      <div class="prompt-box" id="en2">
+        Manga panel, <span class="shot">medium shot low angle looking up</span>, underground cavern deep below earth. Center: <span class="kw">massive moss-covered mound 10 meters tall</span>, slow rhythmic rise and fall (breathing), faint green glow from top. Mound silhouette vaguely resembles a <span class="kw">large round creature with pointed ears</span> but indistinct. Cave walls dotted with bioluminescent moss. Complete silence, no movement. <span class="style">Black and white Japanese manga, stipple shading technique, single green light source, sacred and ancient atmosphere</span>. --ar 3:4
+      </div>
+      <button class="copy-btn" onclick="copyText('en2',this)">📋 复制英文提示词</button>
+      <div class="tips-row">
+        <span class="tip-chip green">✓ 轮廓模糊保持神秘</span>
+        <span class="tip-chip blue">✓ 绿光是唯一光源</span>
+        <span class="tip-chip gold">⚠ 这格节奏要慢，不要加速度线</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 3 ══ -->
+  <div class="card c3">
+    <div class="card-head">
+      <div class="panel-badge">03</div>
+      <div class="head-text">
+        <div class="panel-name">眼睛睁开 · 觉醒</div>
+        <div class="panel-meta">极端特写 · 全话关键画面</div>
+      </div>
+    </div>
+    <div class="prompt-area">
+      <div class="prompt-label">🇨🇳 中文提示词</div>
+      <div class="prompt-box" id="cn3">
+        漫画格，<span class="shot">极端特写，单眼占满整个画格</span>。一只巨大生物的眼睛正在缓缓睁开。<span class="kw">眼皮覆盖着银色鳞状甲片</span>，甲片有裂缝，苔藓从裂缝生长——象征千年时间。<span class="kw">瞳孔发出蓝白色荧光</span>，外围有金色光环，眼白处有绿色树脉纹路流动。眼睑向两侧展开有放射状速度线。整体有震撼的「觉醒」感。<span class="style">日本漫画风格，黑白为主，瞳孔用白色飞白线表现发光，充满力量感</span>。
+      </div>
+      <button class="copy-btn" onclick="copyText('cn3',this)">📋 复制中文提示词</button>
+      <div class="prompt-label" style="margin-top:16px">🇺🇸 英文提示词</div>
+      <div class="prompt-box" id="en3">
+        Manga panel, <span class="shot">extreme close-up, single giant eye fills entire frame</span>. A massive creature's eye slowly opening. <span class="kw">Eyelid covered with silver scale-like armor plates</span>, cracked with moss growing through — showing thousand years of age. <span class="kw">Pupil blazing with blue-white luminescence</span>, gold ring around iris, faint green tree-vein patterns in sclera. Radial speed lines from eyelid spreading outward. Awakening power. <span class="style">Black and white Japanese manga, white speed lines for glow effect, dramatic impact, full bleed composition</span>. --ar 16:9
+      </div>
+      <button class="copy-btn" onclick="copyText('en3',this)">📋 复制英文提示词</button>
+      <div class="tips-row">
+        <span class="tip-chip green">✓ 这是全话最重要的一格</span>
+        <span class="tip-chip blue">✓ 眼神要有「智慧」不是「怪物」</span>
+        <span class="tip-chip gold">⭐ 适合用彩色生成，效果更震撼</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 4 ══ -->
+  <div class="card c4">
+    <div class="card-head">
+      <div class="panel-badge">04</div>
+      <div class="head-text">
+        <div class="panel-name">破土而出 · 银甲展开</div>
+        <div class="panel-meta">远景仰角 · 力量登场</div>
+      </div>
+    </div>
+    <div class="prompt-area">
+      <div class="prompt-label">🇨🇳 中文提示词</div>
+      <div class="prompt-box" id="cn4">
+        漫画格，<span class="shot">远景极低仰角</span>，从地面向上看。<span class="kw">一个圆润巨大的龙猫形生物</span>（体型像熊，有尖耳、大眼、圆肚、胡须）从地面爆裂的土壤中升起，泥土碎石四散飞溅。全身覆盖<span class="kw">银白色年轮纹甲胄</span>，胸口有<span class="kw">绿色核心晶体</span>发光。双臂张开，甲胄碎片自动重组闪光。两侧古树轮廓向他弯曲致意。背景天空。<span class="style">日本漫画风格，大量速度线和爆炸效果线，仰角让角色显得非常高大威猛，宫崎骏式圆润造型</span>。
+      </div>
+      <button class="copy-btn" onclick="copyText('cn4',this)">📋 复制中文提示词</button>
+      <div class="prompt-label" style="margin-top:16px">🇺🇸 英文提示词</div>
+      <div class="prompt-box" id="en4">
+        Manga panel, <span class="shot">extreme low angle worm's-eye view</span>, looking up from ground. <span class="kw">Massive round Totoro-like creature</span> (bear-sized, pointed ears, huge round eyes, whiskers, chubby belly) rising from exploding earth, dirt and rocks flying outward. Covered in <span class="kw">silver armor with tree-ring patterns</span>, glowing <span class="kw">green crystal core on chest</span>. Arms spread wide, armor fragments reassembling with light burst. Ancient trees on both sides bowing toward creature. Sky in background. <span class="style">Japanese manga, dynamic speed lines and explosion effects, low angle makes figure look massive and powerful, rounded Miyazaki-style character design</span>. --ar 9:16
+      </div>
+      <button class="copy-btn" onclick="copyText('en4',this)">📋 复制英文提示词</button>
+      <div class="tips-row">
+        <span class="tip-chip green">✓ 破土动作像「伸懒腰」不是「战斗」</span>
+        <span class="tip-chip blue">✓ 仰角凸显体型</span>
+        <span class="tip-chip gold">⚠ 甲胄边缘加白色高光</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 5 ══ -->
+  <div class="card c5">
+    <div class="card-head">
+      <div class="panel-badge">05</div>
+      <div class="head-text">
+        <div class="panel-name">对峙 · 自然 vs 钢铁</div>
+        <div class="panel-meta">双人对峙 · 左右对称</div>
+      </div>
+    </div>
+    <div class="prompt-area">
+      <div class="prompt-label">🇨🇳 中文提示词</div>
+      <div class="prompt-box" id="cn5">
+        漫画格，<span class="shot">俯角中景，左右严格对称构图</span>。<span class="kw">左侧：银甲龙猫</span>（圆润巨大，银色甲胄，胸口绿色晶体，12根发光胡须笔直前指），背后是茂密绿色森林，姿态<span class="kw">从容安静</span>，双臂自然垂落。<span class="kw">右侧：五台重型采矿机甲</span>（高约三层楼，全身铁灰色，驾驶舱红色警报灯闪烁），充满动态线和警报效果。中间是焦土地带，龙猫脚下有一小块绿草。<span class="style">日本漫画风格，左侧安静无速度线，右侧充满紧张线条，色调对比：左绿右灰</span>。
+      </div>
+      <button class="copy-btn" onclick="copyText('cn5',this)">📋 复制中文提示词</button>
+      <div class="prompt-label" style="margin-top:16px">🇺🇸 英文提示词</div>
+      <div class="prompt-box" id="en5">
+        Manga panel, <span class="shot">slightly overhead medium shot, strict left-right symmetric composition</span>. <span class="kw">Left: Silver Armor Totoro</span> (massive round creature, silver tree-ring armor, glowing green chest crystal, 12 glowing whiskers pointing forward), standing calmly before dense green forest, arms relaxed. <span class="kw">Right: five heavy mining mechs</span> (3-story tall, iron grey, red alert lights flashing in cockpits), dynamic tension lines. Center: scorched earth between them, small patch of green grass beneath Totoro's feet. <span class="style">Japanese manga, left side calm no motion lines, right side full of tension lines, strong contrast green vs grey</span>. --ar 16:9
+      </div>
+      <button class="copy-btn" onclick="copyText('en5',this)">📋 复制英文提示词</button>
+      <div class="tips-row">
+        <span class="tip-chip green">✓ 龙猫表情：淡然，不是愤怒</span>
+        <span class="tip-chip blue">✓ 用「静」对抗「动」是关键</span>
+        <span class="tip-chip gold">⚠ 脚下那块绿草是视觉焦点，不能省</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 6 ══ -->
+  <div class="card c6">
+    <div class="card-head">
+      <div class="panel-badge">06</div>
+      <div class="head-text">
+        <div class="panel-name">龙猫吼 · 冲击波</div>
+        <div class="panel-meta">超远景爆发 · 收尾画面</div>
+      </div>
+    </div>
+    <div class="prompt-area">
+      <div class="prompt-label">🇨🇳 中文提示词</div>
+      <div class="prompt-box" id="cn6">
+        漫画格，<span class="shot">超远景俯角，满版冲击波画面</span>。画面正中央是<span class="kw">银甲龙猫</span>（圆润巨大，银甲，张嘴大吼），以他为圆心向四方扩散<span class="kw">同心圆冲击波</span>，波纹充满整个画格。冲击波经过处：五台<span class="kw">机甲被掀飞</span>，各种翻滚姿势变成小剪影。右上角<span class="kw">橙色烟雾被吹散</span>，露出一片蓝天。左上角远处有<span class="kw">一只银白色神鹰</span>展翅飞来。地面古树叶子全部被吹动。<span class="style">日本漫画风格，同心圆线条密集，爆发感十足，右上蓝天是整格唯一亮色，充满希望感</span>。
+      </div>
+      <button class="copy-btn" onclick="copyText('cn6',this)">📋 复制中文提示词</button>
+      <div class="prompt-label" style="margin-top:16px">🇺🇸 英文提示词</div>
+      <div class="prompt-box" id="en6">
+        Manga panel, <span class="shot">wide aerial view, full bleed shockwave composition</span>. Center: <span class="kw">Silver Armor Totoro</span> (round giant creature, silver armor, mouth open roaring), <span class="kw">concentric circle shockwaves</span> radiating outward filling entire frame. Shockwave hits five <span class="kw">mechs flying away</span> as small silhouettes tumbling in various angles. Top-right: <span class="kw">orange smog blown away</span> revealing clear blue sky. Top-left: <span class="kw">silver eagle silhouette</span> flying toward scene in distance. Forest trees below all swaying. <span class="style">Japanese manga style, dense concentric line work, maximum impact energy, blue sky top-right is only light area, hopeful ending feel</span>. --ar 16:9 --style dramatic
+      </div>
+      <button class="copy-btn" onclick="copyText('en6',this)">📋 复制英文提示词</button>
+      <div class="tips-row">
+        <span class="tip-chip green">⭐ 最适合彩色版，蓝天对比最震撼</span>
+        <span class="tip-chip blue">✓ 神鹰要小，是彩蛋不是主角</span>
+        <span class="tip-chip gold">✓ 机甲用剪影处理，细节不重要</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CHARACTER REFERENCE BLOCK -->
+<div class="char-block">
+  <h3>📌 角色固定描述（每次都要加在提示词里）</h3>
+  <p style="font-size:0.8em;color:#6b7280;margin-bottom:10px">如果图像AI生成的角色样子不一致，把下面这段加到你的提示词末尾：</p>
+  <div class="char-desc" id="charRef">
+    <span class="em">角色描述：</span>银甲龙猫是一个体型庞大的龙猫形神兽，圆润肥胖的身体（类似宫崎骏《龙猫》原型），全身覆盖银白色年轮纹路的甲胄，胸口有绿色发光晶体核心，12根发光胡须，尖耳，大圆眼，战斗时眼睛发蓝白光。甲胄风格是有机自然的，不是科幻机械风，更像树皮/骨骼的造型。整体圆润可爱但气势威猛。
+  </div>
+  <button class="copy-btn" style="margin-top:10px" onclick="copyText('charRef',this)">📋 复制角色描述</button>
+</div>
+
+<div class="footer">提示词卡片 · 银甲龙猫漫画第一话 · 直接复制使用</div>
+
+<script>
+function copyText(id, btn) {
+  const el = document.getElementById(id);
+  // Get plain text (strip HTML tags)
+  const text = el.innerText || el.textContent;
+  navigator.clipboard.writeText(text.trim()).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ 已复制！';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    // Fallback
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    document.execCommand('copy');
+    sel.removeAllRanges();
+    btn.innerHTML = '✅ 已复制！';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = '📋 复制提示词'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>

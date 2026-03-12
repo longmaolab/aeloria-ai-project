@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>可灵 Omni · 一次生成</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0e18;
+    color: #c8d0e8;
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px 16px;
+  }
+
+  .wrap { max-width: 680px; width: 100%; }
+
+  /* title */
+  .title { text-align: center; margin-bottom: 32px; }
+  .title h1 { font-size: 1.3rem; color: #7ab0ff; letter-spacing: 1px; }
+  .title p  { font-size: 0.8rem; color: #445070; margin-top: 6px; }
+
+  /* limit note */
+  .limit-note {
+    background: #0e1428; border: 1px solid #1e2d50;
+    border-radius: 10px; padding: 12px 16px;
+    margin-bottom: 24px;
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 0.8rem; color: #6070a0; line-height: 1.6;
+  }
+  .limit-note .icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+  .limit-note strong { color: #7ab0ff; }
+
+  /* main prompt card */
+  .card {
+    background: #0e1428;
+    border: 1px solid #2a3a6a;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .card-top {
+    background: #0a1030;
+    padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #1a2448;
+  }
+  .card-top .label { font-size: 0.72rem; color: #4a60a0; font-weight: 700; letter-spacing: 1.5px; }
+  .char-count { font-size: 0.72rem; color: #3a4870; }
+
+  .prompt-text {
+    padding: 20px;
+    font-size: 0.92rem;
+    line-height: 1.9;
+    color: #c8d8f8;
+    min-height: 160px;
+  }
+
+  /* settings row */
+  .settings {
+    padding: 12px 20px;
+    border-top: 1px solid #1a2448;
+    border-bottom: 1px solid #1a2448;
+    display: flex; gap: 8px; flex-wrap: wrap;
+    background: #0a1028;
+  }
+  .s-label { font-size: 0.65rem; color: #3a4870; font-weight: 700; letter-spacing: 1px; width: 100%; }
+  .chip {
+    font-size: 0.72rem; padding: 3px 12px; border-radius: 20px;
+    background: #101828; border: 1px solid #1e2848; color: #6878b0;
+  }
+  .chip.hi { background: #0e1e40; border-color: #2a4a90; color: #7ab0ff; font-weight: 700; }
+
+  /* copy button */
+  .copy-area {
+    padding: 16px 20px;
+    background: #0a0e20;
+    text-align: center;
+  }
+  .copy-btn {
+    background: #1a3060;
+    border: 1px solid #3060c0;
+    color: #7ab0ff;
+    border-radius: 10px;
+    padding: 12px 40px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.5px;
+    width: 100%;
+    max-width: 320px;
+  }
+  .copy-btn:hover  { background: #203870; border-color: #5088e0; color: #a8d0ff; }
+  .copy-btn.copied { background: #0e2818; border-color: #30a060; color: #60e0a0; }
+
+  /* want more */
+  .more {
+    margin-top: 24px;
+    background: #0c1020; border: 1px solid #1a2038;
+    border-radius: 10px; padding: 14px 18px;
+    font-size: 0.78rem; color: #4a5880; line-height: 1.7;
+    text-align: center;
+  }
+  .more strong { color: #6080b0; }
+  .more a { color: #5070a0; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="title">
+    <h1>⚡ 可灵 Omni · 一次生成</h1>
+    <p>银甲龙猫·托罗恩觉醒 · 10秒精华版</p>
+  </div>
+
+  <div class="limit-note">
+    <span class="icon">ℹ️</span>
+    <span>可灵 Omni 单次最长 <strong>10秒</strong>，无法一次生成30秒。这条提示词把最精华的觉醒瞬间压缩进10秒——从黑暗中的银甲到破土长啸，一气呵成。想要完整30秒，用另一份「3段版」即可。</span>
+  </div>
+
+  <div class="card">
+    <div class="card-top">
+      <span class="label">OMNI 提示词 · 10秒精华版</span>
+      <span class="char-count" id="cnt"></span>
+    </div>
+    <div class="prompt-text" id="prompt">穿着银色铠甲的巨型龙猫战士在地下封印中沉睡，铠甲上蓝绿色符文缓缓流动，随后金绿色光芒从胸口连锁点亮蔓延至全身，它猛力破土而出，土石四溅，银甲爆发耀眼金光，仰天发出震天长啸，音波冲击波向四方扩散，树木弯折鸟群惊飞，最终镜头拉远，它孤独伫立于古树之巅俯视奇幻森林，史诗奇幻电影风格，震撼</div>
+    <div class="settings">
+      <span class="s-label">界面设置</span>
+      <span class="chip hi">引擎：Omni</span>
+      <span class="chip hi">时长：10秒</span>
+      <span class="chip">比例：16:9</span>
+      <span class="chip">画质：高清</span>
+      <span class="chip">运镜：自由</span>
+    </div>
+    <div class="copy-area">
+      <button class="copy-btn" id="btn" onclick="copy()">复制提示词</button>
+    </div>
+  </div>
+
+  <div class="more">
+    想要完整 <strong>30秒</strong> 版本？用「<strong>3段版提示词</strong>」，每段10秒生成3次，剪映拼合即可。
+  </div>
+
+</div>
+<script>
+  const el = document.getElementById('prompt');
+  document.getElementById('cnt').textContent = el.textContent.trim().length + ' 字';
+
+  function copy() {
+    const text = el.textContent.trim();
+    const btn = document.getElementById('btn');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => flash(btn));
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      flash(btn);
+    }
+  }
+  function flash(btn) {
+    btn.textContent = '✓ 已复制！'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '复制提示词'; btn.classList.remove('copied'); }, 2000);
+  }
+</script>
+</body>
+</html>

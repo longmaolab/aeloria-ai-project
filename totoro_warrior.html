@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>银甲龙猫 · 未来战士角色设定</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #08080f;
+      color: #e8e8f0;
+      font-family: 'Noto Serif SC', 'PingFang SC', 'Microsoft YaHei', serif;
+      min-height: 100vh;
+    }
+
+    /* ===== HERO BANNER ===== */
+    .hero {
+      position: relative;
+      background: linear-gradient(160deg, #0a0a1a 0%, #0d1a2e 40%, #0a1a12 100%);
+      border-bottom: 1px solid rgba(100,200,150,0.2);
+      padding: 60px 40px 40px;
+      overflow: hidden;
+      text-align: center;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(80,200,120,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-jp {
+      font-size: 0.9em;
+      letter-spacing: 0.3em;
+      color: #4ade80;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .hero-name {
+      font-size: 3.6em;
+      font-weight: 900;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #4ade80 0%, #86efac 40%, #a3e635 80%, #fbbf24 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+    .hero-sub {
+      font-size: 1.05em;
+      color: #6b7280;
+      letter-spacing: 0.15em;
+      margin-bottom: 24px;
+    }
+    .hero-tags {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .hero-tag {
+      background: rgba(74,222,128,0.1);
+      border: 1px solid rgba(74,222,128,0.3);
+      color: #4ade80;
+      border-radius: 20px;
+      padding: 4px 16px;
+      font-size: 0.8em;
+      letter-spacing: 0.05em;
+    }
+    .hero-tag.gold {
+      background: rgba(251,191,36,0.1);
+      border-color: rgba(251,191,36,0.3);
+      color: #fbbf24;
+    }
+    .hero-tag.blue {
+      background: rgba(96,165,250,0.1);
+      border-color: rgba(96,165,250,0.3);
+      color: #60a5fa;
+    }
+
+    /* ===== AVATAR ASCII ART ===== */
+    .avatar-box {
+      max-width: 320px;
+      margin: 32px auto 0;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(74,222,128,0.2);
+      border-radius: 16px;
+      padding: 24px;
+      font-family: monospace;
+      font-size: 0.72em;
+      line-height: 1.35;
+      color: #4ade80;
+      text-align: center;
+      white-space: pre;
+      letter-spacing: 0.05em;
+    }
+
+    /* ===== MAIN LAYOUT ===== */
+    .main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .full-width { grid-column: 1 / -1; }
+
+    /* ===== SECTION CARDS ===== */
+    .card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .card.green::before { background: linear-gradient(90deg, transparent, #4ade80, transparent); }
+    .card.gold::before { background: linear-gradient(90deg, transparent, #fbbf24, transparent); }
+    .card.blue::before { background: linear-gradient(90deg, transparent, #60a5fa, transparent); }
+    .card.red::before { background: linear-gradient(90deg, transparent, #f87171, transparent); }
+    .card.purple::before { background: linear-gradient(90deg, transparent, #c084fc, transparent); }
+
+    .card-title {
+      font-size: 0.75em;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title.green { color: #4ade80; }
+    .card-title.gold { color: #fbbf24; }
+    .card-title.blue { color: #60a5fa; }
+    .card-title.red { color: #f87171; }
+    .card-title.purple { color: #c084fc; }
+    .card-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+    }
+
+    /* ===== STAT BARS ===== */
+    .stat-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .stat-label {
+      font-size: 0.82em;
+      color: #9ca3b0;
+      width: 72px;
+      flex-shrink: 0;
+    }
+    .stat-bar-bg {
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .stat-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      position: relative;
+    }
+    .stat-bar-fill::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 4px; height: 100%;
+      background: rgba(255,255,255,0.6);
+      border-radius: 2px;
+    }
+    .stat-val {
+      font-size: 0.82em;
+      font-weight: 700;
+      width: 36px;
+      text-align: right;
+    }
+    .bar-green { background: linear-gradient(90deg, #166534, #4ade80); }
+    .bar-gold  { background: linear-gradient(90deg, #78350f, #fbbf24); }
+    .bar-blue  { background: linear-gradient(90deg, #1e3a5f, #60a5fa); }
+    .bar-red   { background: linear-gradient(90deg, #7f1d1d, #f87171); }
+    .bar-purple{ background: linear-gradient(90deg, #4c1d95, #c084fc); }
+
+    /* ===== INFO GRID ===== */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .info-item {
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px;
+      padding: 10px 14px;
+    }
+    .info-key {
+      font-size: 0.72em;
+      color: #6b7280;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    .info-val {
+      font-size: 0.92em;
+      color: #e8e8f0;
+      font-weight: 600;
+    }
+
+    /* ===== SKILL CARDS ===== */
+    .skill {
+      background: rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      border-left: 3px solid;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: start;
+    }
+    .skill-icon { font-size: 1.4em; margin-top: 2px; }
+    .skill-name { font-size: 0.95em; font-weight: 700; margin-bottom: 4px; }
+    .skill-desc { font-size: 0.82em; color: #9ca3b0; line-height: 1.5; }
+    .skill-type {
+      font-size: 0.68em;
+      padding: 2px 8px;
+      border-radius: 10px;
+      white-space: nowrap;
+      align-self: center;
+      font-weight: 600;
+    }
+
+    /* ===== APPEARANCE ===== */
+    .appear-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: flex-start;
+    }
+    .appear-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .appear-text { font-size: 0.88em; color: #d1d5db; line-height: 1.6; }
+    .appear-text strong { color: #e8e8f0; }
+
+    /* ===== STORY ===== */
+    .story-text {
+      font-size: 0.9em;
+      line-height: 1.9;
+      color: #c4c4d4;
+    }
+    .story-text .highlight {
+      color: #4ade80;
+      font-weight: 700;
+    }
+    blockquote {
+      margin: 16px 0;
+      padding: 12px 20px;
+      background: rgba(74,222,128,0.06);
+      border-left: 3px solid #4ade80;
+      border-radius: 0 10px 10px 0;
+      font-size: 0.92em;
+      color: #a7f3d0;
+      font-style: italic;
+      line-height: 1.7;
+    }
+
+    /* ===== COMPANION ===== */
+    .companion {
+      display: flex;
+      gap: 14px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .companion-icon { font-size: 2em; }
+    .companion-name { font-size: 0.95em; font-weight: 700; margin-bottom: 3px; }
+    .companion-desc { font-size: 0.82em; color: #9ca3b0; line-height: 1.5; }
+
+    /* ===== MANGA PANELS ===== */
+    .manga-panels {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 16px 12px;
+      text-align: center;
+    }
+    .panel-icon { font-size: 2em; margin-bottom: 8px; }
+    .panel-title { font-size: 0.78em; color: #9ca3b0; margin-bottom: 4px; }
+    .panel-text { font-size: 0.82em; color: #e8e8f0; font-weight: 600; }
+
+    /* ===== FOOTER ===== */
+    .page-footer {
+      text-align: center;
+      padding: 30px;
+      color: #374151;
+      font-size: 0.8em;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    @media (max-width: 640px) {
+      .main { grid-template-columns: 1fr; }
+      .full-width { grid-column: 1; }
+      .hero-name { font-size: 2.4em; }
+      .manga-panels { grid-template-columns: 1fr 1fr; }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-jp">MIRAÏ SENSHI · 未来戦士</div>
+  <div class="hero-name">银甲龙猫</div>
+  <div class="hero-sub">ギン・トトロ — Gintotoro · 森之守护神 第七代</div>
+  <div class="hero-tags">
+    <span class="hero-tag">🌿 自然系</span>
+    <span class="hero-tag gold">⚔️ 战士型</span>
+    <span class="hero-tag blue">🤖 机甲强化</span>
+    <span class="hero-tag">稀有度 ★★★★★</span>
+    <span class="hero-tag gold">守护者阵营</span>
+  </div>
+
+  <!-- ASCII-style character art -->
+  <div class="avatar-box">
+     ╔══════════════════════╗
+     ║   ◈  银  甲  龙  猫  ◈   ║
+     ╠══════════════════════╣
+     ║      ∧___∧           ║
+     ║   ◤ ( ●  ● ) ◥       ║
+     ║  ▓▓ (  ▽▽▽  ) ▓▓    ║
+     ║  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓    ║
+     ║  ▓▓ [═══▲═══] ▓▓    ║
+     ║  ▓▓  ║ 核 ║  ▓▓    ║
+     ║   ◣▓▓▓▓▓▓▓▓▓◢       ║
+     ║      ╱╲   ╱╲         ║
+     ║    ▓▓▓▓   ▓▓▓▓       ║
+     ║  「森の守り神・改」      ║
+     ╚══════════════════════╝</div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main">
+
+  <!-- 基本情报 -->
+  <div class="card green full-width">
+    <div class="card-title green">📋 基本情报</div>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-key">角色全名</div>
+        <div class="info-val">银甲龙猫 · 森护七代</div>
+      </div>
+      <div class="info-item">
+        <div class="info-key">日文名</div>
+        <div class="info-val">銀甲トトロ（ギントトロ）</div>
+      </div>
+      <div class="info-item">
+        <div class="info-key">年龄</div>
+        <div class="info-val">2847 岁（外表永恒青年）</div>
+      </div>
+      <div class="info-item">
+        <div class="info-key">身高 / 体重</div>
+        <div class="info-val">2.1m / 340kg（含甲胄）</div>
+      </div>
+      <div class="info-item">
+        <div class="info-key">种族</div>
+        <div class="info-val">神兽 · 改造强化型</div>
+      </div>
+      <div class="info-item">
+        <div class="info-key">阵营</div>
+        <div class="info-val">森之守护联盟</div>
+      </div>
+      <div class="info-item">
+        <div class="info-key">武器</div>
+        <div class="info-val">翠影巨镰 / 种子炮台</div>
+      </div>
+      <div class="info-item">
+        <div class="info-key">战斗风格</div>
+        <div class="info-val">自然魔法 × 纳米机甲融合</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 能力数值 -->
+  <div class="card gold">
+    <div class="card-title gold">📊 战斗能力数值</div>
+
+    <div class="stat-row">
+      <div class="stat-label">生命力</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill bar-green" style="width:98%"></div></div>
+      <div class="stat-val" style="color:#4ade80">98</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-label">攻击力</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill bar-red" style="width:82%"></div></div>
+      <div class="stat-val" style="color:#f87171">82</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-label">防御力</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill bar-blue" style="width:95%"></div></div>
+      <div class="stat-val" style="color:#60a5fa">95</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-label">速度</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill bar-gold" style="width:70%"></div></div>
+      <div class="stat-val" style="color:#fbbf24">70</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-label">魔法力</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill bar-purple" style="width:100%"></div></div>
+      <div class="stat-val" style="color:#c084fc">MAX</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-label">智慧</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill bar-blue" style="width:88%"></div></div>
+      <div class="stat-val" style="color:#60a5fa">88</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-label">友情值</div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill bar-green" style="width:100%"></div></div>
+      <div class="stat-val" style="color:#4ade80">MAX</div>
+    </div>
+  </div>
+
+  <!-- 外形设定 -->
+  <div class="card blue">
+    <div class="card-title blue">🎨 外形设定</div>
+
+    <div class="appear-item">
+      <div class="appear-dot" style="background:#4ade80"></div>
+      <div class="appear-text"><strong>体型</strong> — 保留原始龙猫的圆润庞大体型，腹部有发光的<strong>绿色核心晶体</strong>，是自然能量的储存核</div>
+    </div>
+    <div class="appear-item">
+      <div class="appear-dot" style="background:#c0c0c0"></div>
+      <div class="appear-text"><strong>银甲覆盖</strong> — 背部、肩部、四肢覆盖由<strong>古树年轮结晶</strong>打造的银白色甲胄，纹路是树木的年轮图案</div>
+    </div>
+    <div class="appear-item">
+      <div class="appear-dot" style="background:#60a5fa"></div>
+      <div class="appear-text"><strong>眼睛</strong> — 圆形大眼，平时呈<strong>琥珀金色</strong>，战斗时瞳孔变为发光的蓝白色光圈</div>
+    </div>
+    <div class="appear-item">
+      <div class="appear-dot" style="background:#fbbf24"></div>
+      <div class="appear-text"><strong>胡须</strong> — 12根发光胡须，兼作传感器，可探测半径500米内的生命气息</div>
+    </div>
+    <div class="appear-item">
+      <div class="appear-dot" style="background:#f87171"></div>
+      <div class="appear-text"><strong>耳朵</strong> — 尖耳顶部安装<strong>纳米天线</strong>，可接收森林生态网络的信号，平时看起来像普通耳尖</div>
+    </div>
+    <div class="appear-item">
+      <div class="appear-dot" style="background:#c084fc"></div>
+      <div class="appear-text"><strong>伞 · 改</strong> — 经典的叶形大伞变形为<strong>能量盾牌</strong>，展开时直径3米，可阻挡任何物理攻击</div>
+    </div>
+  </div>
+
+  <!-- 招牌技能 -->
+  <div class="card red full-width">
+    <div class="card-title red">⚔️ 招牌技能 · 必杀技</div>
+
+    <div class="skill" style="border-color:#4ade80">
+      <div class="skill-icon">🌱</div>
+      <div>
+        <div class="skill-name">「千年根压」 · Sennen Konzatsu</div>
+        <div class="skill-desc">召唤地下沉眠千年的古树根系，从地面爆发穿透敌人，根须末端附着腐蚀性孢子，被缠绕者将逐渐石化。范围：半径200米。冷却时间：3分钟。</div>
+      </div>
+      <div class="skill-type" style="background:rgba(74,222,128,0.15);color:#4ade80">自然系</div>
+    </div>
+
+    <div class="skill" style="border-color:#60a5fa">
+      <div class="skill-icon">⚡</div>
+      <div>
+        <div class="skill-name">「银甲爆散」 · Ginkou Bakusan</div>
+        <div class="skill-desc">将身上甲胄化为数百枚高速弹片同时射出，每片弹片会追踪目标的生命热源。发射后甲胄会在15秒内自动重组回原位。</div>
+      </div>
+      <div class="skill-type" style="background:rgba(96,165,250,0.15);color:#60a5fa">机甲系</div>
+    </div>
+
+    <div class="skill" style="border-color:#fbbf24">
+      <div class="skill-icon">🍃</div>
+      <div>
+        <div class="skill-name">「种子雨」 · Tane no Ame</div>
+        <div class="skill-desc">腹部核心晶体超载释放，向空中发射数千颗种子炸弹，种子落地后瞬间长成缠绕型森林，将整个战场变成己方主场。持续时间：30分钟。</div>
+      </div>
+      <div class="skill-type" style="background:rgba(251,191,36,0.15);color:#fbbf24">范围控制</div>
+    </div>
+
+    <div class="skill" style="border-color:#f87171">
+      <div class="skill-icon">🌪️</div>
+      <div>
+        <div class="skill-name">「龙猫吼」 · Totoro Gōhō ★★★ 终极</div>
+        <div class="skill-desc">深吸一口气，释放储存了千年的自然能量，发出震动天地的怒吼。声波携带植物孢子、电磁脉冲和精神震荡三重效果，200公里内的敌人同时受到三种伤害。使用后需睡眠48小时恢复。</div>
+      </div>
+      <div class="skill-type" style="background:rgba(248,113,113,0.15);color:#f87171">终极技</div>
+    </div>
+
+    <div class="skill" style="border-color:#c084fc">
+      <div class="skill-icon">🛡️</div>
+      <div>
+        <div class="skill-name">「伞盾·圣域」 · Kasa no Seiki</div>
+        <div class="skill-desc">被动技能 + 主动激活：银甲龙猫张开叶形能量伞，形成球形结界，盾内的所有生命体进入加速愈合状态，每秒恢复5%生命值，并且对任何伤害免疫。</div>
+      </div>
+      <div class="skill-type" style="background:rgba(192,132,252,0.15);color:#c084fc">守护系</div>
+    </div>
+  </div>
+
+  <!-- 性格 -->
+  <div class="card purple">
+    <div class="card-title purple">💭 性格与内心</div>
+    <div class="story-text">
+      银甲龙猫的外表威猛，内心却保留着<span class="highlight">原始龙猫的温柔与憨厚</span>。他不主动发起战斗，但一旦有生灵受到威胁，会以最快速度赶到，誓死保护。<br><br>
+      他<strong style="color:#e8e8f0">极度爱睡觉</strong>，甲胄的能量晶体会在他睡眠期间自动吸收月光充能。他在橡树洞穴里有一张用千年苔藓铺成的巨床，每次睡觉的时候，小动物们会爬上他的肚子一起睡。<br><br>
+      <strong style="color:#e8e8f0">弱点：</strong>对孩子的笑声完全没有抵抗力，会立刻变成一只大型陪玩玩具。
+    </div>
+    <blockquote>
+      「森の声を聞け——<br>
+      听听森林的声音——<br>
+      当大地颤抖，当星辰哭泣，<br>
+      我就会醒来。」<br>
+      ——银甲龙猫 · 觉醒时口白
+    </blockquote>
+  </div>
+
+  <!-- 伙伴 -->
+  <div class="card green">
+    <div class="card-title green">👥 战斗伙伴</div>
+
+    <div class="companion">
+      <div class="companion-icon">🐾</div>
+      <div>
+        <div class="companion-name">煤灰哨兵 · Susuwatari MK-II</div>
+        <div class="companion-desc">普通煤灰精灵进化版，身体改造成纳米机器人集群，可渗透任何缝隙进行侦察，将情报直接传输给银甲龙猫的感知网络。</div>
+      </div>
+    </div>
+
+    <div class="companion">
+      <div class="companion-icon">🐈</div>
+      <div>
+        <div class="companion-name">白猫巴士 · Nekobasu Hyper</div>
+        <div class="companion-desc">经典猫咪巴士的超级版本，12条腿可高速奔跑，车身搭载隐形系统，能在1分钟内到达世界任何角落运送战斗人员。</div>
+      </div>
+    </div>
+
+    <div class="companion">
+      <div class="companion-icon">🌱</div>
+      <div>
+        <div class="companion-name">小龙猫 · Chibi Squad（×7）</div>
+        <div class="companion-desc">7只小龙猫，各自掌握一种元素魔法（火/水/土/风/雷/冰/光），组合攻击时可释放"七彩虹轰"终极连携技。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 背景故事 -->
+  <div class="card blue full-width">
+    <div class="card-title blue">📜 背景故事</div>
+    <div class="story-text">
+      公元2847年。<span class="highlight">人类的工业扩张终于侵入了最后一片原始森林</span>——"深绿禁区"。这里封印着地球上所有自然神兽的力量之源。<br><br>
+
+      当第一台采矿机器轰鸣着深入禁区时，沉睡了800年的<strong style="color:#e8e8f0">第七代森之守护神</strong>从橡树根系中苏醒。他睁开双眼，看见了蔚蓝天空已变为污浊橙色，古老的杉树已所剩无几。<br><br>
+
+      守护神发出一声低沉的叹息。这一声叹气，让整片土地震动了3秒钟。<br><br>
+
+      他找到了人类历史上最伟大的生态科学家——<strong style="color:#e8e8f0">Dr. 阿部みどり博士</strong>。两者达成协议：<span class="highlight">龙猫允许人类将纳米机甲技术融入他的身体</span>，以换取更强大的战斗能力来保护最后的森林。代价是：他将从此无法完全回到过去那只单纯的、爱睡觉的神兽。<br><br>
+
+      改造手术持续了777天。当银甲龙猫重新站在森林里的时候，他仰天长啸，千里之内的树木都向他弯腰致意。
+
+      <blockquote>「我并没有变。我只是多了一层盔甲，保护的心——从未改变。」</blockquote>
+
+      现在，他既是古老自然的最后守护者，也是对抗生态破坏者的<span class="highlight">银色战神</span>。白天他在橡树洞睡觉，让小动物们爬满他的肚皮；一旦警报响起，他会在30秒内全副武装出现在任何需要他的地方。
+    </div>
+  </div>
+
+  <!-- 漫画分格参考 -->
+  <div class="card gold full-width">
+    <div class="card-title gold">🎌 漫画创作参考 · 经典场景设定</div>
+    <div class="manga-panels">
+      <div class="panel">
+        <div class="panel-icon">🌙</div>
+        <div class="panel-title">场景 01 · 觉醒篇</div>
+        <div class="panel-text">月光下，银色甲胄从橡树中破壳而出，落叶如雨</div>
+      </div>
+      <div class="panel">
+        <div class="panel-icon">⚡</div>
+        <div class="panel-title">场景 02 · 对峙篇</div>
+        <div class="panel-text">巨型采矿机 vs 银甲龙猫，俯视构图，气势碾压</div>
+      </div>
+      <div class="panel">
+        <div class="panel-icon">🌱</div>
+        <div class="panel-title">场景 03 · 种子雨</div>
+        <div class="panel-text">核心晶体爆发，万颗种子化为绿色流星雨</div>
+      </div>
+      <div class="panel">
+        <div class="panel-icon">😴</div>
+        <div class="panel-title">场景 04 · 日常篇</div>
+        <div class="panel-text">盔甲解除，小动物们爬满肚皮，憨然入睡</div>
+      </div>
+      <div class="panel">
+        <div class="panel-icon">🐾</div>
+        <div class="panel-title">场景 05 · 伙伴</div>
+        <div class="panel-text">白猫巴士飞驰而来，七只小龙猫跳下排成战阵</div>
+      </div>
+      <div class="panel">
+        <div class="panel-icon">🌈</div>
+        <div class="panel-title">场景 06 · 结局</div>
+        <div class="panel-text">战后，银甲龙猫站在新生森林顶端，背对朝阳</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="page-footer">
+  银甲龙猫 · 未来战士角色设定书 · 原创角色设定 · 灵感来源：宫崎骏《龙猫》
+</div>
+
+</body>
+</html>

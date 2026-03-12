@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>宝可梦贪吃蛇 🐍⚡</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #1a1a2e;
+  background-image:
+    radial-gradient(circle at 15% 40%, rgba(61,125,202,0.18) 0%, transparent 45%),
+    radial-gradient(circle at 85% 60%, rgba(204,0,0,0.12) 0%, transparent 45%);
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-family: 'PingFang SC','Microsoft YaHei',Arial,sans-serif;
+  user-select: none;
+}
+
+/* ── TOP BAR ── */
+#topbar {
+  display: flex; gap: 18px; align-items: center;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,203,5,0.25);
+  border-radius: 20px;
+  padding: 7px 22px;
+  margin-bottom: 12px;
+  color: #fff; font-size: 0.88rem;
+}
+#topbar .ti { color: #ffcb05; font-weight: 800; margin-right: 4px; }
+
+/* ── CANVAS ── */
+#cv {
+  display: block;
+  border: 3px solid #ffcb05;
+  border-radius: 14px;
+  box-shadow: 0 0 0 1px rgba(255,203,5,0.2), 0 0 40px rgba(255,203,5,0.25);
+  image-rendering: pixelated;
+  cursor: none;
+}
+
+/* ── D-PAD ── */
+#dpad {
+  display: none;
+  margin-top: 14px;
+  grid-template-columns: repeat(3, 56px);
+  grid-template-rows: repeat(3, 56px);
+  gap: 5px;
+}
+.dp {
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  color: #fff; font-size: 1.5rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.dp:active { background: rgba(255,203,5,0.35); }
+#hint { color: rgba(255,255,255,0.3); font-size: 0.72rem; margin-top: 8px; text-align: center; }
+
+/* ── OVERLAYS ── */
+.ov {
+  position: fixed; inset: 0;
+  background: rgba(5,5,20,0.82);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 300;
+  backdrop-filter: blur(5px);
+}
+.ov.off { display: none; }
+
+.card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 30px 28px 26px;
+  max-width: 450px; width: 92%;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55);
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 7px;
+  background: linear-gradient(90deg,#cc0000 50%,#fff 50%,#fff 52%,#3d7dca 52%);
+}
+.card .ico { font-size: 3.2rem; display: block; margin-bottom: 10px; }
+.card h2 { font-size: 1.4rem; color: #1a1a2e; margin-bottom: 8px; }
+.card p  { color: #555; font-size: 0.86rem; line-height: 1.65; margin-bottom: 18px; }
+.stars   { color: #ffcb05; letter-spacing: 5px; font-size: 0.8rem; margin-bottom: 6px; }
+
+.btn {
+  background: #ffcb05;
+  border: none; border-radius: 12px;
+  padding: 13px 40px;
+  font-size: 1rem; font-weight: 800; color: #1a1a2e;
+  cursor: pointer; transition: all 0.15s;
+  box-shadow: 0 4px 0 #b89200;
+  display: inline-block;
+}
+.btn:hover  { background: #ffd633; transform: translateY(-2px); box-shadow: 0 6px 0 #b89200; }
+.btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #b89200; }
+.btn.gray   { background: #eee; color: #555; box-shadow: 0 4px 0 #bbb; }
+.btn.gray:hover { background: #ddd; }
+
+/* ── QUIZ ── */
+#q-q {
+  font-size: 1rem; font-weight: 700; color: #1a1a2e;
+  margin: 14px 0 18px; line-height: 1.55;
+  min-height: 48px;
+}
+#q-opts {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px;
+  margin-bottom: 14px;
+}
+.ob {
+  background: #f5f5f5; border: 2px solid #e0e0e0;
+  border-radius: 12px; padding: 11px 8px;
+  font-size: 0.84rem; font-weight: 600; color: #333;
+  cursor: pointer; transition: all 0.15s; line-height: 1.35;
+}
+.ob:hover:not(:disabled) { background: #e8f0ff; border-color: #3d7dca; color: #3d7dca; transform: scale(1.02); }
+.ob.ok  { background: #e8fce8; border-color: #22c55e; color: #16a34a; }
+.ob.bad { background: #fee8e8; border-color: #ef4444; color: #dc2626; }
+.ob:disabled { cursor: default; }
+.ol {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #3d7dca; color: #fff;
+  width: 20px; height: 20px; border-radius: 50%;
+  font-size: 0.68rem; font-weight: 800;
+  margin-right: 5px; flex-shrink: 0; vertical-align: middle;
+}
+#q-fb { font-size: 0.88rem; font-weight: 700; min-height: 22px; margin-bottom: 6px; }
+.fb-ok  { color: #16a34a; }
+.fb-bad { color: #dc2626; }
+
+/* ── GAME OVER ── */
+.big-score {
+  font-size: 2.2rem; font-weight: 900; color: #ffcb05;
+  background: #1a1a2e; border-radius: 14px;
+  padding: 12px 28px; display: inline-block;
+  margin: 12px 0 20px;
+  box-shadow: 0 0 20px rgba(255,203,5,0.3);
+}
+
+@keyframes pop { 0%{transform:scale(0.7);opacity:0} 80%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
+.pop { animation: pop 0.35s ease-out; }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+.pulse { animation: pulse 1.2s infinite; }
+
+@media (max-width: 520px) {
+  #cv { width: 300px !important; height: 300px !important; }
+  #dpad { display: grid; }
+  #hint { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div><span class="ti">⚡ 得分</span><span id="sv">0</span></div>
+  <div><span class="ti">🏆 最高</span><span id="hv">0</span></div>
+  <div><span class="ti">🎯 连续</span><span id="stv">0</span></div>
+</div>
+
+<!-- CANVAS -->
+<canvas id="cv" width="440" height="440"></canvas>
+
+<!-- D-PAD -->
+<div id="dpad">
+  <div></div>
+  <div class="dp" ontouchstart="dp('U')" onclick="dp('U')">▲</div>
+  <div></div>
+  <div class="dp" ontouchstart="dp('L')" onclick="dp('L')">◀</div>
+  <div></div>
+  <div class="dp" ontouchstart="dp('R')" onclick="dp('R')">▶</div>
+  <div></div>
+  <div class="dp" ontouchstart="dp('D')" onclick="dp('D')">▼</div>
+  <div></div>
+</div>
+<div id="hint">方向键 / WASD 控制 · 吃精灵球得分</div>
+
+<!-- START SCREEN -->
+<div class="ov" id="o-start">
+  <div class="card pop">
+    <div class="stars">★ ★ ★ ★ ★</div>
+    <span class="ico">🐍⚡</span>
+    <h2>宝可梦贪吃蛇</h2>
+    <p>操控小蛇吃掉精灵球得分！<br>
+    撞墙或撞自己会触发宝可梦问答：<br>
+    <strong>答对 → 继续游戏 &nbsp;|&nbsp; 答错 → 游戏结束</strong></p>
+    <button class="btn pulse" onclick="startGame()">开始游戏！</button>
+    <div style="margin-top:12px;font-size:0.72rem;color:#aaa;">方向键 / WASD 移动</div>
+  </div>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div class="ov off" id="o-quiz">
+  <div class="card pop">
+    <div class="stars">★ 宝可梦问答 ★</div>
+    <span class="ico" id="q-ico">🎮</span>
+    <div style="font-size:0.72rem;color:#999;margin-top:-4px;margin-bottom:4px;">答对继续 · 答错结束</div>
+    <div id="q-q">加载中…</div>
+    <div id="q-opts"></div>
+    <div id="q-fb"></div>
+  </div>
+</div>
+
+<!-- GAME OVER -->
+<div class="ov off" id="o-over">
+  <div class="card pop">
+    <span class="ico">😭</span>
+    <h2>游戏结束！</h2>
+    <p>宝可梦问题答错了，小蛇回家了～</p>
+    <div class="big-score" id="fs">0 分</div>
+    <br>
+    <button class="btn" onclick="restart()">再来一次</button>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────
+//  CONFIG
+// ─────────────────────────────────────────────────
+const COLS = 20, ROWS = 20;
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const CELL = cv.width / COLS; // 22
+
+// ─────────────────────────────────────────────────
+//  POKÉMON QUESTIONS  (a = correct index 0-3)
+// ─────────────────────────────────────────────────
+const QS = [
+  { e:'⚡', q:'皮卡丘是什么属性的宝可梦？',            opts:['火系','电系','水系','草系'],          a:1 },
+  { e:'🔥', q:'小火龙最终会进化成什么？',              opts:['火恐龙','水箭龟','喷火龙','快龙'],      a:2 },
+  { e:'🐭', q:'皮卡丘是全国图鉴第几号宝可梦？',        opts:['001号','007号','025号','150号'],       a:2 },
+  { e:'🐢', q:'杰尼龟进化后叫什么？',                  opts:['水箭龟','卡咪龟','甲壳兽','快龙'],      a:1 },
+  { e:'⚪', q:'宝可梦球的外观是什么颜色？',            opts:['蓝白色','黄黑色','红白色','绿白色'],    a:2 },
+  { e:'🎵', q:'哪只宝可梦会唱催眠曲令人睡着？',        opts:['皮卡丘','超梦','胖丁','卡比兽'],        a:2 },
+  { e:'⚡', q:'皮卡丘进化后叫什么名字？',              opts:['闪电鼠','来电汪','超级皮卡丘','雷丘'],  a:3 },
+  { e:'📚', q:'第一代宝可梦一共有多少只？',            opts:['100只','150只','151只','200只'],       a:2 },
+  { e:'😴', q:'卡比兽是什么属性的宝可梦？',            opts:['格斗系','超能力系','普通系','恶系'],    a:2 },
+  { e:'🌿', q:'以下哪只宝可梦是草系？',               opts:['皮卡丘','杰尼龟','小火龙','妙蛙种子'],  a:3 },
+  { e:'🧬', q:'超梦是用哪只宝可梦的基因制造的？',      opts:['皮卡丘','百变怪','梦幻','耿鬼'],        a:2 },
+  { e:'🦊', q:'伊布最多可以进化成多少种形态？',        opts:['3种','5种','7种','8种'],               a:3 },
+  { e:'🏡', q:'小智的家乡叫什么名字？',               opts:['浅葱市','常磐市','真新镇','银河市'],    a:2 },
+  { e:'⚡', q:'皮卡丘的招牌技能叫什么？',             opts:['火花','电磁炮','闪电','十万伏特'],      a:3 },
+  { e:'✨', q:'以下哪只是幻之宝可梦？',               opts:['超梦','快龙','卡比兽','梦幻'],          a:3 },
+  { e:'👻', q:'耿鬼是什么属性的宝可梦？',             opts:['恶/幽灵系','毒/幽灵系','超能力系','普通系'], a:1 },
+  { e:'🐉', q:'快龙属于什么属性？',                   opts:['飞行系','水系','龙系','冰系'],          a:2 },
+  { e:'🏆', q:'以下哪只不是关都地区御三家？',          opts:['妙蛙种子','小火龙','皮卡丘','杰尼龟'],  a:2 },
+  { e:'🌱', q:'妙蛙种子是全国图鉴第几号？',           opts:['001号','004号','007号','025号'],       a:0 },
+  { e:'💧', q:'水系宝可梦的弱点属性是？',             opts:['火系','冰系','草系/电系','水系'],       a:2 },
+  { e:'👻', q:'英文名"Gengar"对应哪只宝可梦？',       opts:['超梦','百变怪','梦幻','耿鬼'],          a:3 },
+  { e:'🔥', q:'小火龙第一次进化叫什么？',             opts:['喷火龙','火焰鸡','龙火怪','火恐龙'],    a:3 },
+  { e:'🏅', q:'击败道馆馆主可以获得什么？',           opts:['精灵球','道馆徽章','进化石','技能机'],  a:1 },
+  { e:'🔮', q:'哪只宝可梦最擅长使用"影子球"？',       opts:['皮卡丘','耿鬼','卡比兽','快龙'],        a:1 },
+  { e:'💦', q:'伊布用什么道具进化成水精灵？',         opts:['雷之石','火之石','水之石','月之石'],    a:2 },
+  { e:'👑', q:'击败四天王后最终对手是？',             opts:['馆主','研究员','冠军','火箭队老大'],    a:2 },
+  { e:'💤', q:'卡比兽最喜欢做什么？',                 opts:['打架','飞行','游泳','睡觉和吃东西'],    a:3 },
+  { e:'🌊', q:'杰尼龟最终进化成什么？',               opts:['卡咪龟','水箭龟','快龙','海星星'],      a:1 },
+  { e:'🎯', q:'宝可梦游戏中用来投掷的道具叫什么？',   opts:['精灵球','进化石','技能机','道馆徽章'],  a:0 },
+  { e:'⭐', q:'以下哪只宝可梦可以变成任何形态？',     opts:['皮卡丘','超梦','百变怪','耿鬼'],        a:2 },
+];
+
+// ─────────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────────
+let snake, dir, ndir, food, score, hiScore = 0, streak;
+let loopId = null, speed = 155;
+let phase = 'start'; // start | play | quiz | over
+let usedQ = new Set(), curQ = null, qAnswered = false;
+
+// ─────────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────────
+function initGame() {
+  snake = [{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+  dir   = {x:1,y:0};
+  ndir  = {x:1,y:0};
+  score = 0; streak = 0; speed = 155;
+  spawnFood();
+  refreshUI();
+}
+
+function resetSnake() {
+  snake = [{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+  dir  = {x:1,y:0};
+  ndir = {x:1,y:0};
+  spawnFood();
+}
+
+function spawnFood() {
+  let p;
+  do { p = {x:rnd(COLS), y:rnd(ROWS)}; }
+  while (snake.some(s=>s.x===p.x&&s.y===p.y));
+  food = p;
+}
+
+function rnd(n) { return Math.floor(Math.random()*n); }
+
+function refreshUI() {
+  document.getElementById('sv').textContent  = score;
+  document.getElementById('hv').textContent  = hiScore;
+  document.getElementById('stv').textContent = streak;
+}
+
+// ─────────────────────────────────────────────────
+//  LOOP
+// ─────────────────────────────────────────────────
+function startLoop() {
+  if (loopId) clearInterval(loopId);
+  loopId = setInterval(tick, speed);
+}
+function stopLoop() {
+  if (loopId) { clearInterval(loopId); loopId = null; }
+}
+
+function tick() {
+  dir = {...ndir};
+  const h = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+
+  if (h.x<0||h.x>=COLS||h.y<0||h.y>=ROWS) { onDie(); return; }
+  if (snake.some(s=>s.x===h.x&&s.y===h.y)) { onDie(); return; }
+
+  snake.unshift(h);
+
+  if (h.x===food.x && h.y===food.y) {
+    score += 10; streak++;
+    if (score > hiScore) hiScore = score;
+    if (score % 60 === 0 && speed > 75) { speed = Math.max(75, speed-12); startLoop(); }
+    spawnFood();
+    refreshUI();
+  } else {
+    snake.pop();
+  }
+  draw();
+}
+
+function onDie() {
+  stopLoop();
+  phase = 'quiz';
+  draw();
+  setTimeout(showQuiz, 280);
+}
+
+// ─────────────────────────────────────────────────
+//  DRAW
+// ─────────────────────────────────────────────────
+const C = {
+  bg:    '#12192e',
+  dot:   'rgba(255,255,255,0.04)',
+  hHead: '#4ade80',
+  hBody: '#22c55e',
+  hLine: '#14532d',
+  eye:   '#fff',
+  pup:   '#111',
+  rTop:  '#ef4444',
+  rBot:  '#fff',
+  rLine: '#111',
+};
+
+function draw() {
+  if (!food||!snake) return;
+  ctx.clearRect(0,0,cv.width,cv.height);
+  drawBg();
+  drawFood();
+  drawSnake();
+}
+
+function drawBg() {
+  ctx.fillStyle = C.bg;
+  ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.fillStyle = C.dot;
+  for (let c=0;c<COLS;c++)
+    for (let r=0;r<ROWS;r++)
+      ctx.fillRect(c*CELL+CELL/2-1, r*CELL+CELL/2-1, 2, 2);
+}
+
+function drawSnake() {
+  for (let i=snake.length-1; i>=0; i--) {
+    const s=snake[i], x=s.x*CELL, y=s.y*CELL;
+    const isHead = i===0;
+    const pd = isHead?1:2, rd = isHead?6:5;
+
+    // shadow
+    ctx.fillStyle='rgba(0,0,0,0.28)';
+    rr(ctx,x+pd+2,y+pd+2,CELL-pd*2,CELL-pd*2,rd); ctx.fill();
+
+    // fill
+    const g = ctx.createRadialGradient(x+CELL/2-2,y+CELL/2-2,1,x+CELL/2,y+CELL/2,CELL/2);
+    if (isHead) {
+      g.addColorStop(0,'#86efac'); g.addColorStop(1,'#15803d');
+    } else {
+      const t = i/snake.length;
+      const v = Math.round(160+50*(1-t));
+      g.addColorStop(0,`rgb(60,${v},60)`); g.addColorStop(1,`rgb(20,${v-40},20)`);
+    }
+    ctx.fillStyle=g;
+    rr(ctx,x+pd,y+pd,CELL-pd*2,CELL-pd*2,rd); ctx.fill();
+
+    // outline
+    ctx.strokeStyle=C.hLine; ctx.lineWidth=1;
+    rr(ctx,x+pd,y+pd,CELL-pd*2,CELL-pd*2,rd); ctx.stroke();
+
+    // eyes
+    if (isHead) {
+      let e1,e2;
+      const m=CELL;
+      if      (dir.x===1)  { e1={x:x+m-5,y:y+5};   e2={x:x+m-5,y:y+m-8}; }
+      else if (dir.x===-1) { e1={x:x+4,  y:y+5};   e2={x:x+4,  y:y+m-8}; }
+      else if (dir.y===-1) { e1={x:x+4,  y:y+4};   e2={x:x+m-8,y:y+4};   }
+      else                 { e1={x:x+4,  y:y+m-5};  e2={x:x+m-8,y:y+m-5}; }
+      eye(e1.x,e1.y); eye(e2.x,e2.y);
+    }
+  }
+}
+
+function eye(ex,ey) {
+  ctx.beginPath(); ctx.arc(ex,ey,3,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+  ctx.beginPath(); ctx.arc(ex+.5,ey+.5,1.5,0,Math.PI*2); ctx.fillStyle='#111'; ctx.fill();
+}
+
+function drawFood() {
+  const fx=food.x*CELL+CELL/2, fy=food.y*CELL+CELL/2, r=CELL/2-2;
+  // glow
+  ctx.beginPath(); ctx.arc(fx,fy,r+4,0,Math.PI*2);
+  ctx.fillStyle='rgba(239,68,68,0.18)'; ctx.fill();
+  // top red
+  ctx.beginPath(); ctx.arc(fx,fy,r,Math.PI,0);
+  ctx.fillStyle='#ef4444'; ctx.fill();
+  // bottom white
+  ctx.beginPath(); ctx.arc(fx,fy,r,0,Math.PI);
+  ctx.fillStyle='#fff'; ctx.fill();
+  // divider
+  ctx.beginPath(); ctx.moveTo(fx-r,fy); ctx.lineTo(fx+r,fy);
+  ctx.strokeStyle='#111'; ctx.lineWidth=1.5; ctx.stroke();
+  // outer ring
+  ctx.beginPath(); ctx.arc(fx,fy,r,0,Math.PI*2);
+  ctx.strokeStyle='#111'; ctx.lineWidth=1.5; ctx.stroke();
+  // center btn
+  ctx.beginPath(); ctx.arc(fx,fy,3,0,Math.PI*2);
+  ctx.fillStyle='#fff'; ctx.fill();
+  ctx.strokeStyle='#111'; ctx.lineWidth=1; ctx.stroke();
+}
+
+function rr(ctx,x,y,w,h,r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+// ─────────────────────────────────────────────────
+//  QUIZ
+// ─────────────────────────────────────────────────
+function pickQ() {
+  if (usedQ.size >= QS.length) usedQ.clear();
+  let i; do { i=rnd(QS.length); } while (usedQ.has(i));
+  usedQ.add(i); return QS[i];
+}
+
+function showQuiz() {
+  curQ = pickQ(); qAnswered = false;
+  document.getElementById('q-ico').textContent = curQ.e;
+  document.getElementById('q-q').textContent   = curQ.q;
+  document.getElementById('q-fb').textContent  = '';
+  document.getElementById('q-fb').className    = '';
+
+  const L=['A','B','C','D'], el=document.getElementById('q-opts');
+  el.innerHTML='';
+  curQ.opts.forEach((o,i)=>{
+    const b=document.createElement('button'); b.className='ob';
+    b.innerHTML=`<span class="ol">${L[i]}</span>${o}`;
+    b.onclick=()=>checkQ(i,b);
+    el.appendChild(b);
+  });
+
+  document.getElementById('o-quiz').classList.remove('off');
+  document.querySelector('#o-quiz .card').classList.add('pop');
+}
+
+function checkQ(idx, btn) {
+  if (qAnswered) return;
+  qAnswered = true;
+  document.querySelectorAll('.ob').forEach(b=>b.disabled=true);
+  const fb = document.getElementById('q-fb');
+
+  if (idx === curQ.a) {
+    btn.classList.add('ok');
+    fb.textContent='✅ 答对啦！继续加油！'; fb.className='fb-ok';
+    setTimeout(()=>{
+      document.getElementById('o-quiz').classList.add('off');
+      phase='play'; resetSnake(); refreshUI(); draw(); startLoop();
+    }, 1100);
+  } else {
+    btn.classList.add('bad');
+    document.querySelectorAll('.ob')[curQ.a].classList.add('ok');
+    fb.textContent=`❌ 答错了！正确答案：${curQ.opts[curQ.a]}`; fb.className='fb-bad';
+    setTimeout(()=>{
+      document.getElementById('o-quiz').classList.add('off');
+      showOver();
+    }, 2200);
+  }
+}
+
+// ─────────────────────────────────────────────────
+//  SCREENS
+// ─────────────────────────────────────────────────
+function showOver() {
+  phase='over';
+  if (score>hiScore) hiScore=score;
+  refreshUI();
+  document.getElementById('fs').textContent = score+' 分';
+  const ov = document.getElementById('o-over');
+  ov.classList.remove('off');
+  document.querySelector('#o-over .card').classList.add('pop');
+}
+
+function startGame() {
+  document.getElementById('o-start').classList.add('off');
+  initGame(); phase='play'; draw(); startLoop();
+}
+
+function restart() {
+  document.getElementById('o-over').classList.add('off');
+  initGame(); phase='play'; draw(); startLoop();
+}
+
+// ─────────────────────────────────────────────────
+//  INPUT
+// ─────────────────────────────────────────────────
+const KM = {
+  ArrowUp:{x:0,y:-1}, ArrowDown:{x:0,y:1}, ArrowLeft:{x:-1,y:0}, ArrowRight:{x:1,y:0},
+  w:{x:0,y:-1}, W:{x:0,y:-1}, s:{x:0,y:1}, S:{x:0,y:1},
+  a:{x:-1,y:0}, A:{x:-1,y:0}, d:{x:1,y:0}, D:{x:1,y:0},
+};
+
+document.addEventListener('keydown', e=>{
+  if (phase!=='play') return;
+  const d=KM[e.key]; if(!d) return;
+  e.preventDefault();
+  if(d.x===-dir.x && d.y===-dir.y) return;
+  ndir=d;
+});
+
+function dp(k) {
+  if (phase!=='play') return;
+  const M={U:{x:0,y:-1},D:{x:0,y:1},L:{x:-1,y:0},R:{x:1,y:0}};
+  const d=M[k]; if(!d) return;
+  if(d.x===-dir.x && d.y===-dir.y) return;
+  ndir=d;
+}
+
+// Prevent page scroll on arrow keys
+window.addEventListener('keydown', e=>{
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
+});
+
+// ─────────────────────────────────────────────────
+//  BOOT
+// ─────────────────────────────────────────────────
+initGame(); draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>艾洛瑞亚创世传说</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  background:#07070c;
+  color:#d4c9b0;
+  font-family:'Noto Serif SC','STSong','SimSun',serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── STARFIELD BACKGROUND ── */
+.starfield{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(74,222,128,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(96,165,250,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(192,132,252,0.03) 0%, transparent 60%);
+}
+
+.page-wrap{
+  position:relative;z-index:1;
+  max-width:740px;margin:0 auto;
+  padding:60px 28px 100px;
+}
+
+/* ── SEAL / EMBLEM ── */
+.emblem{
+  text-align:center;margin-bottom:48px;
+}
+.emblem-ring{
+  display:inline-flex;flex-direction:column;align-items:center;
+  border:1px solid rgba(212,201,176,0.15);
+  border-radius:50%;
+  width:110px;height:110px;
+  justify-content:center;
+  position:relative;
+  box-shadow:0 0 40px rgba(74,222,128,0.08), inset 0 0 20px rgba(74,222,128,0.04);
+}
+.emblem-ring::before{
+  content:'';position:absolute;inset:6px;
+  border:1px solid rgba(212,201,176,0.08);border-radius:50%;
+}
+.emblem-icon{font-size:2.4em;line-height:1}
+.emblem-series{
+  font-size:0.65em;letter-spacing:0.2em;color:rgba(212,201,176,0.4);
+  text-transform:uppercase;margin-top:14px;
+}
+
+/* ── MAIN TITLE ── */
+.title-block{text-align:center;margin-bottom:56px}
+.title-eyebrow{
+  font-size:0.72em;letter-spacing:0.3em;
+  color:rgba(74,222,128,0.6);
+  text-transform:uppercase;margin-bottom:14px;
+}
+.main-title{
+  font-size:2.6em;font-weight:900;
+  color:#e8dfc8;
+  line-height:1.2;margin-bottom:8px;
+  text-shadow:0 0 60px rgba(74,222,128,0.15);
+}
+.sub-title{
+  font-size:1em;color:rgba(212,201,176,0.45);
+  letter-spacing:0.15em;margin-bottom:22px;
+}
+.title-divider{
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  color:rgba(212,201,176,0.2);font-size:0.9em;
+}
+.title-divider::before,.title-divider::after{
+  content:'';flex:1;max-width:120px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(212,201,176,0.15),transparent);
+}
+
+/* ── SCROLL CHAPTERS ── */
+.scroll-body{
+  display:flex;flex-direction:column;gap:0;
+}
+
+/* chapter block */
+.chapter{
+  position:relative;
+  padding:0 0 52px 0;
+}
+.chapter:last-child{padding-bottom:0}
+
+/* vertical thread */
+.chapter::before{
+  content:'';
+  position:absolute;left:20px;top:42px;bottom:0;
+  width:1px;
+  background:linear-gradient(to bottom, rgba(212,201,176,0.12), transparent);
+}
+.chapter:last-child::before{display:none}
+
+/* chapter header */
+.ch-head{
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:22px;
+}
+.ch-num-ring{
+  width:42px;height:42px;border-radius:50%;
+  border:1px solid rgba(212,201,176,0.2);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:0.9em;
+  position:relative;z-index:1;
+  background:#07070c;
+}
+.ch-meta{flex:1}
+.ch-label{
+  font-size:0.65em;letter-spacing:0.2em;
+  text-transform:uppercase;margin-bottom:3px;
+  opacity:0.5;
+}
+.ch-title{font-size:1.15em;font-weight:700;color:#e8dfc8;line-height:1.2}
+.ch-en{font-size:0.72em;color:rgba(212,201,176,0.3);letter-spacing:0.1em;margin-top:2px}
+
+/* chapter body */
+.ch-body{
+  padding-left:58px;
+}
+
+/* prose paragraphs */
+.prose{
+  font-size:0.96em;
+  line-height:2.1;
+  color:#c9bea5;
+  font-weight:300;
+}
+.prose p{margin-bottom:1.4em}
+.prose p:last-child{margin-bottom:0}
+.prose .em{color:#e8dfc8;font-weight:600}
+.prose .green{color:#86efac;font-weight:600}
+.prose .gold{color:#fde68a;font-weight:600}
+.prose .blue{color:#bfdbfe;font-weight:600}
+.prose .red{color:#fecaca;font-weight:600}
+.prose .purple{color:#e9d5ff;font-weight:600}
+
+/* ancient verse / poem */
+.verse{
+  margin:20px 0;
+  padding:18px 24px;
+  border-left:2px solid rgba(212,201,176,0.15);
+  font-size:0.93em;
+  color:#b8ad96;
+  line-height:2.2;
+  font-style:italic;
+  background:rgba(255,255,255,0.015);
+  border-radius:0 8px 8px 0;
+}
+.verse .verse-source{
+  display:block;margin-top:10px;
+  font-size:0.75em;color:rgba(212,201,176,0.3);
+  font-style:normal;letter-spacing:0.1em;
+}
+
+/* pull quote */
+.pull{
+  margin:24px 0;
+  text-align:center;
+  font-size:1.05em;
+  font-weight:600;
+  color:#e8dfc8;
+  line-height:1.8;
+  padding:0 12px;
+  opacity:0.8;
+}
+
+/* ── CHAPTER COLOR THEMES ── */
+/* 1 — creation — green */
+.c1 .ch-num-ring{border-color:rgba(74,222,128,0.35);box-shadow:0 0 14px rgba(74,222,128,0.1)}
+.c1 .ch-label{color:#4ade80}
+.c1 .verse{border-color:rgba(74,222,128,0.2);background:rgba(74,222,128,0.03)}
+/* 2 — pact — purple */
+.c2 .ch-num-ring{border-color:rgba(192,132,252,0.35);box-shadow:0 0 14px rgba(192,132,252,0.1)}
+.c2 .ch-label{color:#c084fc}
+.c2 .verse{border-color:rgba(192,132,252,0.2);background:rgba(192,132,252,0.03)}
+/* 3 — dawn — gold */
+.c3 .ch-num-ring{border-color:rgba(251,191,36,0.35);box-shadow:0 0 14px rgba(251,191,36,0.1)}
+.c3 .ch-label{color:#fbbf24}
+.c3 .verse{border-color:rgba(251,191,36,0.2);background:rgba(251,191,36,0.03)}
+/* 4 — fall — red */
+.c4 .ch-num-ring{border-color:rgba(248,113,113,0.35);box-shadow:0 0 14px rgba(248,113,113,0.1)}
+.c4 .ch-label{color:#f87171}
+.c4 .verse{border-color:rgba(248,113,113,0.2);background:rgba(248,113,113,0.03)}
+/* 5 — seal — blue */
+.c5 .ch-num-ring{border-color:rgba(96,165,250,0.35);box-shadow:0 0 14px rgba(96,165,250,0.1)}
+.c5 .ch-label{color:#60a5fa}
+.c5 .verse{border-color:rgba(96,165,250,0.2);background:rgba(96,165,250,0.03)}
+/* 6 — prophecy — all */
+.c6 .ch-num-ring{
+  border-color:rgba(212,201,176,0.4);
+  box-shadow:0 0 20px rgba(212,201,176,0.1), 0 0 40px rgba(74,222,128,0.06);
+}
+.c6 .ch-label{color:#e8dfc8}
+.c6 .verse{
+  border-color:rgba(212,201,176,0.2);
+  background:rgba(212,201,176,0.02);
+}
+
+/* ── ENDING SEAL ── */
+.ending-seal{
+  text-align:center;
+  margin-top:60px;
+  padding-top:40px;
+  border-top:1px solid rgba(212,201,176,0.08);
+}
+.ending-text{
+  font-size:0.75em;letter-spacing:0.15em;
+  color:rgba(212,201,176,0.25);
+  line-height:2;
+}
+.ending-ornament{
+  font-size:1.2em;margin:16px 0;
+  color:rgba(212,201,176,0.15);letter-spacing:0.3em;
+}
+</style>
+</head>
+<body>
+
+<div class="starfield"></div>
+
+<div class="page-wrap">
+
+  <!-- EMBLEM -->
+  <div class="emblem">
+    <div class="emblem-ring">
+      <div class="emblem-icon">🌿</div>
+    </div>
+    <div class="emblem-series">Aeloria · Sacred Chronicles · Vol. I</div>
+  </div>
+
+  <!-- TITLE -->
+  <div class="title-block">
+    <div class="title-eyebrow">艾洛瑞亚圣典 · 第一卷</div>
+    <div class="main-title">源灵创世志</div>
+    <div class="sub-title">The Chronicle of the Aether Root</div>
+    <div class="title-divider">✦</div>
+    <div style="margin-top:16px;font-size:0.8em;color:rgba(212,201,176,0.3);letter-spacing:0.1em;line-height:2">
+      此典录于木冠城深档 · 林灵长老西尔薇誊抄 · 禁止外传<br>
+      Transcribed by Elder Silvi of Canopy Crown · Not for Circulation
+    </div>
+  </div>
+
+  <!-- SCROLL BODY -->
+  <div class="scroll-body">
+
+    <!-- ══ CH 1 · CREATION ══ -->
+    <div class="chapter c1">
+      <div class="ch-head">
+        <div class="ch-num-ring">一</div>
+        <div class="ch-meta">
+          <div class="ch-label">第一章 · 创世</div>
+          <div class="ch-title">混沌之前，有一声叹息</div>
+          <div class="ch-en">Before Chaos, There Was One Breath</div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <div class="prose">
+          <p>诸神学者皆言，艾洛瑞亚大陆的诞生，不是由火，不是由水，不是由任何一场宏大的爆裂。</p>
+          <p>它诞生于<span class="green">一声叹息</span>。</p>
+          <p>在时间尚未被命名的纪元，虚空之中存在一个意识——它既非神明，亦非生灵，林灵族古典文献称其为<span class="em">「息者」（The One Who Breathes）</span>。息者不语，不行，不思。它只是存在，并且，偶尔，轻轻地，叹息。</p>
+          <p>第一声叹息，化为大陆的骨架。山脉隆起，海床下沉，大地如皮肤般在虚空中展开，皱褶成峡谷，鼓起为高原。</p>
+          <p>第二声叹息，化为流动。河流从山顶奔涌，潮汐回应月亮的召唤，北方的冰川缓缓呼吸，像第二个沉睡的肺。</p>
+          <p>第三声叹息，最轻，几乎听不见——</p>
+          <p>那是<span class="green">源灵（Aether Root）</span>。</p>
+          <p>它像种子的气息，从息者的胸口飘落，沉入大地深处。在黑暗中，它生长。它蔓延。它将整片大陆编织成一张看不见的网，连接每一棵树，每一块岩石，每一滴地下水，每一具有生命的躯体。</p>
+          <p>从此，艾洛瑞亚大陆便有了<span class="green">呼吸</span>。</p>
+        </div>
+        <div class="verse">
+          息者叹，山河醒。<br>
+          息者叹，流水生。<br>
+          息者叹第三声，<br>
+          万物皆有根，<br>
+          根与根相连，<br>
+          连成一颗心。<br>
+          <span class="verse-source">——《源灵诗章·创世篇》，林灵族口传古谣，年代不可考</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CH 2 · PACT ══ -->
+    <div class="chapter c2">
+      <div class="ch-head">
+        <div class="ch-num-ring">二</div>
+        <div class="ch-meta">
+          <div class="ch-label">第二章 · 约定</div>
+          <div class="ch-title">守护者之盟，源灵的许诺</div>
+          <div class="ch-en">The Covenant of Wardens, The Vow of the Root</div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <div class="prose">
+          <p>源灵在大地中生长了无数年后，孕育出了第一批生灵。它们不是普通的动物，也不是神明——它们是<span class="purple">源灵的化身</span>，被林灵族古老文献称为<span class="purple">「灵兽族·诸古者（The Ancients）」</span>。</p>
+          <p>第一只出现的，是<span class="green">森罗守护者</span>，在西部巨林中诞生，身形如山，眼如琥珀，他是源灵在大地上最深的根，也是最沉默的守护者。</p>
+          <p>第二只出现的，是<span class="gold">天啸鹰神</span>，从最高峰的闪电中飞出，展翅便能遮住半片天空，他的叫声是天气的先知，他的沉默是灾难的预兆。</p>
+          <p>第三只出现的，是<span class="blue">潮渊鲸灵</span>，从最深的海沟中升起，它每一次呼气便是海面涨潮，它的眼睛里映着所有沉没的文明。</p>
+          <p>还有更多，更多——每一片土地都孕育出了自己的灵兽，如同每片土地都有自己的根系与脉搏。</p>
+          <p>在第一个满月之夜，诸古者聚于大陆中心最古老的橡树之下，彼此凝视，无需言语，立下了<span class="purple">「守护者之盟」</span>：</p>
+        </div>
+        <div class="verse">
+          我守我土，不索不夺。<br>
+          你守你疆，不越不扰。<br>
+          若有外患，共御之。<br>
+          若有内乱，共戒之。<br>
+          若源灵哭泣，<br>
+          吾辈共醒，不问代价。<br>
+          <span class="verse-source">——守护者之盟誓词，据传由第一代森罗守护者亲口宣誓</span>
+        </div>
+        <div class="prose">
+          <p>这一盟约，以各自的一滴血为印，滴入大地，化为源灵根系的一部分。从此，守护者与大陆的命运永远相连——大陆哭泣，他们便会从最深的沉眠中苏醒，无一例外。</p>
+          <p>这是一个诺言，也是一道枷锁。没有人知道是谁先提出的——或者说，那根本不是谁「提出」的，那只是他们的本能，就像根系永远朝向水源生长一样，是无法违背的天性。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CH 3 · DAWN OF CIVILIZATION ══ -->
+    <div class="chapter c3">
+      <div class="ch-head">
+        <div class="ch-num-ring">三</div>
+        <div class="ch-meta">
+          <div class="ch-label">第三章 · 黎明</div>
+          <div class="ch-title">文明之火，各族的崛起</div>
+          <div class="ch-en">The First Fire, The Rise of Peoples</div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <div class="prose">
+          <p>诸古者守护大陆的岁月，被后世称为<span class="gold">「初纪元」</span>，那是一段没有战争、没有边界、没有铁器轰鸣的时光。各种族在各自的土地上缓缓生长，像树一样，安静地，用力地。</p>
+          <p><span class="green">林灵族</span>在西部巨林中学会了倾听——他们把耳朵贴在古树的树皮上，学会了辨认源灵的流动方向，学会了用低语和植物交谈，用轻歌治愈伤口。他们不建城池，他们就<span class="em">是</span>森林的一部分。</p>
+          <p><span class="gold">矮钢族</span>在北方火山的熔岩里学会了锻造——起初他们只是想打造更好的农具，结果他们发现了一件令自己又惊又惧的事：<span class="gold">源灵能量可以被导入金属，使其拥有生命</span>。于是第一台魔能机械诞生了——那只是一只会走路的铁鸟，用来给孩子们玩。没有人预料到，那只铁鸟是后来所有机甲的祖先。</p>
+          <p><span class="blue">海裔族</span>在东部群岛上学会了驾浪——他们用珊瑚和源灵晶体制造船帆，不需要风，因为他们能直接与海水交谈，请求它把自己送到想去的地方。他们是第一个绘制出完整世界地图的种族，也是唯一一个知晓大陆真实轮廓的民族。</p>
+          <p><span class="purple">人类</span>出现得最晚，也是最奇特的一个种族。他们没有与生俱来的自然能力，没有林灵族的感知，没有矮钢族的工艺天赋，没有海裔族的御水之术。但他们有一样独一无二的东西：<span class="em">好奇心</span>，以及由好奇心衍生出的无限适应力。</p>
+          <p>人类看见林灵族，就学习了魔法符文。人类看见矮钢族，就学习了锻造之术。人类接触源灵，就发展出了融合两者的<span class="gold">「魔能科技」</span>。他们是艾洛瑞亚最晚到场的客人，却在最短的时间内，遍布了每一寸土地。</p>
+          <p>诸古者看着这一切，保持沉默。那时候，他们大多数还没有入眠。他们坐在最高的山巅，坐在最深的海底，用古老的眼睛看着年轻的文明燃起一个又一个篝火。</p>
+        </div>
+        <div class="pull">「初纪元没有战争。不是因为那时的人们更善良，<br>而是因为大地还足够宽广，容得下所有人的野心。」</div>
+      </div>
+    </div>
+
+    <!-- ══ CH 4 · THE FIRST FALL ══ -->
+    <div class="chapter c4">
+      <div class="ch-head">
+        <div class="ch-num-ring">四</div>
+        <div class="ch-meta">
+          <div class="ch-label">第四章 · 裂变</div>
+          <div class="ch-title">铁冠战争，源灵第一次哭泣</div>
+          <div class="ch-en">The Iron Crown War · When the Root First Wept</div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <div class="prose">
+          <p>没有人能说清楚，铁冠战争到底是从哪一天开始的。</p>
+          <p>有人说是从第一台采矿机甲踏入灵森域边界的那天。有人说是从矮钢族的卡尔德隆城宣布「源灵能量属于发现者」的那道法令。也有人说，更早，从第一个人类工程师把源灵晶体压碎、装入蒸汽引擎的那一刻，结局就已经注定了。</p>
+          <p>无论起点在哪里，过程是相同的：<span class="red">欲望总是比后悔快一步</span>。</p>
+          <p>起初只是小规模的边境摩擦。铁锻高原需要更多能量，而灵森域的地下遍布最密集的源灵根系。矮钢族和人类联合组建的<span class="em">「工业联合军团」</span>向灵森域提出「共同开发」协议，被守护学院拒绝。</p>
+          <p>拒绝被解读为宣战。</p>
+          <p>战争持续了整整三十年。它被称为「铁冠战争」，因为工业军团的将领们都戴着用源灵金属铸成的头盔，在阳光下发出冷硬的光。</p>
+          <p>三十年中，灵森域的古树倒下了三分之一。源灵根系在采矿机甲的钻头下一条一条断裂，断裂的声音只有林灵族能听见——那是一种低沉的、不断重复的哭声，从地底传来，传入每一个林灵族人的骨髓里。</p>
+          <p>大地在哭泣。</p>
+          <p>于是，<span class="green">诸古者醒了</span>。</p>
+          <p>那一夜，整个艾洛瑞亚大陆同时震动。工业军团的前线营地在一夜之间被古树根系从地下顶出，被藤蔓缠裹，被孢子侵蚀。第一代森罗守护者出现在灵森域中央，没有任何征兆，没有任何预警——他站在被砍伐的树桩上，仰头，<span class="red">发出了第一声「森罗震荡」</span>。</p>
+          <p>那一声，吹平了三十公里内所有的机甲。</p>
+        </div>
+        <div class="verse">
+          大地断了一根筋，<br>
+          血是绿色的。<br>
+          树倒了一千棵，<br>
+          声音积在地下，<br>
+          没有哭出来。<br>
+          直到那一夜，<br>
+          沉默者站起来，<br>
+          代替大地，<br>
+          说出了那声——<br>
+          够了。<br>
+          <span class="verse-source">——《铁冠战争残卷》，来源不明，林灵族图书馆馆藏</span>
+        </div>
+        <div class="prose">
+          <p>铁冠战争在第三十一年结束，不是因为任何一方的胜利，而是因为<span class="red">两败俱伤</span>。</p>
+          <p>工业军团失去了大部分前线机甲和所有灵森域的据点。守护联盟则付出了更沉重的代价——<span class="green">诸古者在这场战争中损失了八位，其余的因为消耗过度，全部陷入深沉的封印之眠</span>。他们不是死，只是睡了。但没有人知道他们何时会醒来。</p>
+          <p>或者，是否还会醒来。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CH 5 · THE SEAL ══ -->
+    <div class="chapter c5">
+      <div class="ch-head">
+        <div class="ch-num-ring">五</div>
+        <div class="ch-meta">
+          <div class="ch-label">第五章 · 封印</div>
+          <div class="ch-title">沉眠的守护者，等待的大地</div>
+          <div class="ch-en">The Sleeping Wardens · The Waiting Earth</div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <div class="prose">
+          <p>铁冠战争后，艾洛瑞亚进入了一段被史学家称为<span class="blue">「灰色岁月」</span>的时期。</p>
+          <p>没有守护者的大地，安静得令人不安。</p>
+          <p>工业军团在战后并未停止，只是暂时退缩。他们开始以更慢、更隐蔽的方式蚕食——不再用几十台机甲强攻，而是一个矿洞一个矿洞地打，以「资源勘探」的名义，在源灵根系密集的地下悄悄钻探。</p>
+          <p>林灵族知道，守护者们也知道。但沉睡中的守护者感知到的只是遥远的刺痛，像噩梦中的一个影子，无法真正醒来应对。</p>
+          <p>于是，林灵族的科学家们做出了一个痛苦的决定：<span class="blue">主动干预，用纳米机甲技术对森罗守护者进行改造强化</span>，让他即使在源灵供给不足的情况下，也能觉醒并作战。</p>
+          <p>这场手术持续了<span class="em">七百七十七天</span>。整个过程，森罗守护者一直沉睡着，而西尔薇坐在他身边，一天也没有离开过。</p>
+          <p>当改造完成的那天，西尔薇用一根林灵族的传统祈祷针，在守护者的左爪掌心刻下了最古老的源灵符文：</p>
+        </div>
+        <div class="verse">
+          汝非钢铁，汝非自然，<br>
+          汝是两者之间，<br>
+          从未有过的东西。<br>
+          愿你醒来时，<br>
+          比睡去时，更完整。<br>
+          <span class="verse-source">——西尔薇·改造完成日祈祷文，自述记录</span>
+        </div>
+        <div class="prose">
+          <p>改造后的森罗守护者有了一个新的名字：<span class="green">银甲龙猫·托罗恩</span>。</p>
+          <p>然后，他继续睡了八百年。</p>
+          <p>大地也跟着等了八百年。</p>
+          <p>每隔数十年，林灵族的守护师们都会派人前往沉眠之地探视，确认胸口那颗绿色源灵晶体仍在跳动，确认那均匀的、巨大的呼吸声仍未停止。他们把这个任务称为<span class="em">「守夜」</span>——不是守护他，而是守护那个等待的念头，让它不要熄灭。</p>
+          <p>这个传统，一代一代，传到了两个普通守护师的儿子手里。</p>
+          <p>他叫阿青。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CH 6 · PROPHECY ══ -->
+    <div class="chapter c6">
+      <div class="ch-head">
+        <div class="ch-num-ring">六</div>
+        <div class="ch-meta">
+          <div class="ch-label">第六章 · 预言</div>
+          <div class="ch-title">赤沙神殿残碑，不完整的预言</div>
+          <div class="ch-en">The Broken Prophecy of Sahra · What Was Never Finished</div>
+        </div>
+      </div>
+      <div class="ch-body">
+        <div class="prose">
+          <p>在赤沙帝国最深的地下神殿中，有一块已经断裂的石碑。</p>
+          <p>考古学者估计它的年代早于铁冠战争，甚至早于诸古者第一次觉醒——这意味着它的书写者，在一切发生之前，就已经知晓了一切。</p>
+          <p>碑文只剩下上半部分，用已经失传的远古源灵文字刻成，费了三代林灵族学者才辨认出大意：</p>
+        </div>
+        <div class="verse">
+          当铁的洪流第二次涌来，<br>
+          守护者将再度沉睡与觉醒。<br>
+          唤醒者非王非神，<br>
+          只是一个寻找失去之物的孩子。<br>
+          <br>
+          孩子之手种下种子，<br>
+          守护者之吼驱散黑暗，<br>
+          而天空最后的翅膀，<br>
+          将指引……<br>
+          <span class="verse-source">——赤沙神殿第七层残碑，下半段已损毁，无法复原</span>
+        </div>
+        <div class="prose">
+          <p>碑文就在这里断了。</p>
+          <p>没有人知道「天空最后的翅膀」指向哪里。没有人知道预言的结局是胜利还是新的轮回。</p>
+          <p>西尔薇曾经去看过那块残碑，在沙漠中站了整整三天。</p>
+          <p>她回来后，什么都没有说，只是把守护学院所有见习学员的考核难度调高了一倍。</p>
+          <p>当有人问她为什么，她只是回答：</p>
+        </div>
+        <div class="pull">「因为接下来的事情，<br>不会只需要守护者一个人。」</div>
+        <div class="prose" style="margin-top:20px">
+          <p>公元2847年。工业联合军团的铁锻机甲第二次踏向深绿禁区的边界。</p>
+          <p>地底，有什么东西，正在苏醒。</p>
+          <p>……</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end scroll-body -->
+
+  <!-- ENDING SEAL -->
+  <div class="ending-seal">
+    <div class="ending-ornament">✦ ✦ ✦</div>
+    <div class="ending-text">
+      此为《源灵创世志·第一卷》全文<br>
+      第二卷《铁冠战争详考》正在整理中<br>
+      第三卷《守护者改造手记》为林灵族机密档案，未予公开<br>
+      <br>
+      艾洛瑞亚守护学院图书馆 · 深档字第零零一号 · 禁止外传
+    </div>
+    <div class="ending-ornament" style="margin-top:20px">🌿</div>
+  </div>
+
+</div><!-- end page-wrap -->
+</body>
+</html>
