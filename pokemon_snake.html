@@ -272,6 +272,7 @@ let snake, dir, ndir, food, score, hiScore = 0, streak;
 let loopId = null, speed = 155;
 let phase = 'start'; // start | play | quiz | over
 let usedQ = new Set(), curQ = null, qAnswered = false;
+let savedSnake = null, savedDir = null;
 
 // ─────────────────────────────────────────────────
 //  INIT
@@ -319,6 +320,10 @@ function stopLoop() {
 }
 
 function tick() {
+  // save state before moving — used to resume after a correct quiz answer
+  savedSnake = snake.map(s => ({...s}));
+  savedDir   = {...ndir};
+
   dir = {...ndir};
   const h = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
 
@@ -456,6 +461,27 @@ function rr(ctx,x,y,w,h,r) {
 }
 
 // ─────────────────────────────────────────────────
+//  SAFE DIRECTION FINDER
+// ─────────────────────────────────────────────────
+// After resuming from quiz, pick a direction that won't immediately collide.
+// Priority: perpendicular > reverse > same (the one that caused the collision).
+function findSafeDir(snake, badDir) {
+  const head = snake[0];
+  const rev  = {x: -badDir.x, y: -badDir.y};
+  const all  = [{x:0,y:-1},{x:0,y:1},{x:-1,y:0},{x:1,y:0}];
+  const rank = d => (d.x===badDir.x && d.y===badDir.y) ? 10
+                  : (d.x===rev.x    && d.y===rev.y)    ?  5
+                  :                                        0;
+  const sorted = [...all].sort((a,b) => rank(a) - rank(b));
+  for (const d of sorted) {
+    const nx = head.x + d.x, ny = head.y + d.y;
+    if (nx>=0 && nx<COLS && ny>=0 && ny<ROWS && !snake.some(s=>s.x===nx&&s.y===ny))
+      return d;
+  }
+  return badDir; // fully trapped — very unlikely
+}
+
+// ─────────────────────────────────────────────────
 //  QUIZ
 // ─────────────────────────────────────────────────
 function pickQ() {
@@ -495,7 +521,14 @@ function checkQ(idx, btn) {
     fb.textContent='✅ 答对啦！继续加油！'; fb.className='fb-ok';
     setTimeout(()=>{
       document.getElementById('o-quiz').classList.add('off');
-      phase='play'; resetSnake(); refreshUI(); draw(); startLoop();
+      // restore snake to the state just before the collision
+      if (savedSnake) {
+        snake = savedSnake;
+        const safe = findSafeDir(snake, savedDir);
+        dir  = safe;
+        ndir = safe;
+      }
+      phase='play'; refreshUI(); draw(); startLoop();
     }, 1100);
   } else {
     btn.classList.add('bad');
